@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <title>
+            startScreen
+        </title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="initial-scale=1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <link href="files/resources/lib/theme/jqm/jqm.css" rel="stylesheet" />
+        <link href="files/resources/lib/theme/ios7/ios7.css" rel="stylesheet" />
+        <link href="files/resources/lib/jquerymobile/1.4.0/jquery.mobile.structure-1.4.0.css"
+        rel="stylesheet" />
+        <script type="text/javascript" src="files/resources/lib/store/json2.js">
+        </script>
+        <script type="text/javascript" src="files/resources/lib/jquery/jquery-1.9.1.js">
+        </script>
+        <script type="text/javascript">
+                    $(document).bind("mobileinit", function()
+            {
+                if (navigator.userAgent.toLowerCase().indexOf("android") != -1)
+                {
+                    $.mobile.defaultPageTransition = 'none';
+                    $.mobile.defaultDialogTransition = 'none';
+                }
+                if (navigator.userAgent.toLowerCase().indexOf("msie") != -1)
+                {
+                    $.mobile.allowCrossDomainPages = true;
+                    $.support.cors = true;
+                }
+            });
+        </script>
+        <script type="text/javascript" src="files/resources/lib/jquerymobile/1.4.0/jquery.mobile-1.4.0.js">
+        </script>
+        <script type="text/javascript" src="files/resources/js/mobilebase.js">
+        </script>
+        <script type="text/javascript" src="files/resources/lib/event/customEventHandler.js">
+        </script>
+        <script type="text/javascript" src="files/resources/lib/base/sha1.js">
+        </script>
+        <script type="text/javascript" src="files/resources/lib/base/oauth.js">
+        </script>
+        <script type="text/javascript" src="files/resources/lib/base/contexts.js">
+        </script>
+        <script type="text/javascript" src="files/resources/lib/base/jsonpath.js">
+        </script>
+        <script type="text/javascript" src="files/resources/lib/base/jquery.xml2json.min.js">
+        </script>
+        <script type="text/javascript" src="files/resources/lib/base/appery.js">
+        </script>
+        <script type="text/javascript" src="files/resources/lib/get_target_platform.js">
+        </script>
+        <script type="text/javascript" src="files/resources/lib/cordova.js">
+        </script>
+        <link href="files/resources/css/mobilebase.css" rel="stylesheet" type="text/css"
+        />
+        <link type="text/css" rel="stylesheet" href="files/views/assets/css/style.css" />
+        <script type="text/javascript" src="files/views/assets/js/GoogleInit.js">
+        </script>
+        <script type="text/javascript" src="files/views/assets/js/memberService.js">
+        </script>
+        <script type="text/javascript" src="files/views/assets/js/messageService.js">
+        </script>
+        <script type="text/javascript" src="files/views/assets/js/postMessageService.js">
+        </script>
+        <script type="text/javascript" src="files/views/assets/js/services/service.js">
+        </script>
+    </head>
+    
+    <body>
+        <script language="JavaScript" type="text/javascript">
+                if (navigator.userAgent.match(/iP/i))
+        {
+            $(window).bind('orientationchange', function(event)
+            {
+                $('meta[name="viewport"]').attr('content', 'initial-scale=1.0,maximum-scale=1.0, ' + ((window.orientation == 90 || window.orientation == -90 || window.orientation == 270) ? "height=device-width,width=device-height" : "height=device-height,width=device-width"));
+            }).trigger('orientationchange');
+        }
+        </script>
+        <div data-role="page" style="min-height:480px;" dsid="startScreen" id="startScreen"
+        class="type-interior" data-theme="b">
+            <!-- mobileheader1 -->
+            <div data-role="header" data-position="fixed" data-add-back-btn="false" data-back-btn-text="Back"
+            data-theme="b" name="mobileheader1" id="startScreen_mobileheader1" class="startScreen_mobileheader1">
+                <h1 dsid="mobileheader1">
+                    Health Expert
+                </h1>
+            </div>
+            <!-- mobilecontainer1 -->
+            <div data-role="content" id="startScreen_mobilecontainer1" name="mobilecontainer1"
+            class="startScreen_mobilecontainer1 ui-content" dsid="mobilecontainer1" data-theme="b">
+                <link href="startScreen.css" rel="stylesheet" type="text/css" />
+                <script type="text/javascript" src="startScreen.js">
+                </script>
+                <!-- signingInLabel -->
+                <div name="signingInLabel" id="startScreen_signingInLabel" dsid="signingInLabel"
+                data-role="appery_label" class="startScreen_signingInLabel">
+                    Signing in ...
+                </div>
+                <!-- loginWithGoogleBtn -->
+                <a data-role="button" name="loginWithGoogleBtn" dsid="loginWithGoogleBtn" class="startScreen_loginWithGoogleBtn"
+                id="startScreen_loginWithGoogleBtn" data-corners="false" data-icon="none" data-iconpos='nowhere'
+                data-mini="false" data-theme="b" tabindex="4">
+                Connect with Google
+                </a>
+                <!-- mobilelabel_15 -->
+                <div name="mobilelabel_15" id="startScreen_mobilelabel_15" dsid="mobilelabel_15"
+                data-role="appery_label" class="startScreen_mobilelabel_15">
+                    My family
+                </div>
+                <!-- mobilegrid_9 -->
+                <div class="startScreen_mobilegrid_9_wrapper" data-wrapper-for="mobilegrid_9">
+                    <table id="startScreen_mobilegrid_9" class="startScreen_mobilegrid_9" dsid="mobilegrid_9"
+                    name="mobilegrid_9" cellpadding=0 cellspacing=0>
+                        <col style="width:auto;" />
+                        <tr class="startScreen_mobilegrid_9_row_0">
+                            <!-- mobilegridcell_10 -->
+                            <td id="startScreen_mobilegridcell_10" name="mobilegridcell_10" class="startScreen_mobilegridcell_10"
+                            colspan=1 rowspan=1>
+                                <div class="cell-wrapper">
+                                    <!-- mobilebutton_14 -->
+                                    <a data-role="button" name="mobilebutton_14" dsid="mobilebutton_14" class="startScreen_mobilebutton_14"
+                                    id="startScreen_mobilebutton_14" data-corners="false" data-icon="none" data-iconpos='nowhere'
+                                    data-mini="false" data-theme="b" tabindex="6">
+                                    Button
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>
