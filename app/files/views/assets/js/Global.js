@@ -1,0 +1,3 @@
+AppGlobal = {
+    prevTime:null
+};

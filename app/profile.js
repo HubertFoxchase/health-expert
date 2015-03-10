@@ -51,6 +51,7 @@ profile_js = function(runBeforeShow) {
         'mobileimage_42': 'profile_mobileimage_42',
         'mobilegrid_11': 'profile_mobilegrid_11',
         'mobilegridcell_12': 'profile_mobilegridcell_12',
+        'mobilelabel_47': 'profile_mobilelabel_47',
         'mobilelabel_16': 'profile_mobilelabel_16',
         'mobilegrid_23': 'profile_mobilegrid_23',
         'mobilegridcell_24': 'profile_mobilegridcell_24',
@@ -127,9 +128,35 @@ profile_js = function(runBeforeShow) {
 
                 }
             }, {
+                'PATH': ['timestamp'],
+                'ID': 'mobilelabel_47',
+                'ATTR': '@',
+                'TRANSFORMATION': function(value, element) {
+                    var m = moment(value);
+                    return m.format("ddd DD MMM HH:MM");
+                }
+            }, {
                 'PATH': ['content'],
                 'ID': 'mobilelabel_16',
                 'ATTR': '@'
+            }, {
+                'PATH': ['timestamp'],
+                'ID': 'mobilelabel_47',
+                'ATTR': 'visible',
+                'TRANSFORMATION': function(value, element) {
+                    var t = AppGlobal.prevTime;
+                    AppGlobal.prevTime = value;
+
+                    if (t) {
+                        var c = moment(value);
+                        var p = moment(t);
+
+                        console.log(c.diff(p));
+
+                        return c.diff(p) > 60 * 1000 * 10;
+                    }
+
+                }
             }]
         }, {
             'PATH': ['ts'],
@@ -160,13 +187,13 @@ profile_js = function(runBeforeShow) {
             Apperyio.refreshScreenFormElements("profile");
         },
         'onSuccess': function(data) {
-            setText('profile_mobiletextinput_46', '');
             try {
                 messageDataSource.execute({})
             } catch (ex) {
                 console.log(ex.name + '  ' + ex.message);
                 hideSpinner();
             };
+            setText('profile_mobiletextinput_46', '');
         },
         'onError': function(jqXHR, textStatus, errorThrown) {},
         'responseMapping': [],

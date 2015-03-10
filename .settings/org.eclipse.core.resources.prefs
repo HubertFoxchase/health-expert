@@ -1,0 +1,8 @@
+eclipse.preferences.version=1
+encoding//bigml/model.py=utf-8
+encoding//requests/api.py=utf-8
+encoding//requests/hooks.py=utf-8
+encoding//requests/models.py=utf-8
+encoding//requests/sessions.py=utf-8
+encoding//requests/status_codes.py=utf-8
+encoding//requests/structures.py=utf-8

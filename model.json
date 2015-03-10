@@ -1,0 +1,1308 @@
+{
+    "category": {
+        "id": 5,
+        "name": "Healthcare"
+    },
+    "description": "Dataset created from a study of diabetes in females 21 years or older and of Pima Indian heritage. \nPima Indians are an interesting population to study for diabetes because they have a higher incidence of diabetes than the general U.S. population.\nSource\nPima Indians Diabetes Data Set[*] \nBache, K. & Lichman, M. (2013). UCI Machine Learning Repository[*]. Irvine, CA: University of California, School of Information and Computer Science.\n\n[*]Pima Indians Diabetes Data Set: http://archive.ics.uci.edu/ml/datasets/Pima+Indians+Diabetes\n[*]UCI Machine Learning Repository: http://archive.ics.uci.edu/ml",
+    "tags": [
+        "Diabetes",
+        "Disease"
+    ],
+    "objective_field": "000008",
+    "name": "Diabetes Diagnosis' dataset | Training (80%) | Test (20%) model",
+    "created": "2014-05-18T23:28:28.330000",
+    "input_fields": [
+        "000000",
+        "000001",
+        "000002",
+        "000003",
+        "000004",
+        "000005",
+        "000006",
+        "000007"
+    ],
+    "model": {
+        "kind": "mtree",
+        "importance": [
+            [
+                "000005",
+                0.27197
+            ],
+            [
+                "000003",
+                0.2279
+            ],
+            [
+                "000001",
+                0.2057
+            ],
+            [
+                "000007",
+                0.10506
+            ],
+            [
+                "000000",
+                0.08689
+            ],
+            [
+                "000006",
+                0.0659
+            ],
+            [
+                "000002",
+                0.02194
+            ],
+            [
+                "000004",
+                0.01464
+            ]
+        ],
+        "fields": {
+            "000006": {
+                "optype": "numeric",
+                "description": "Diabetes pedigree function",
+                "datatype": "double",
+                "preferred": true,
+                "label": "Diabetes pedigree",
+                "column_number": 6,
+                "order": 6,
+                "name": "Diabetes pedigree"
+            },
+            "000007": {
+                "optype": "numeric",
+                "description": "Age (years)",
+                "datatype": "int8",
+                "preferred": true,
+                "label": "Age",
+                "column_number": 7,
+                "order": 7,
+                "name": "Age"
+            },
+            "000004": {
+                "optype": "numeric",
+                "description": "2-Hour serum insulin (mu U/ml)",
+                "datatype": "int16",
+                "preferred": true,
+                "label": "Insulin",
+                "column_number": 4,
+                "order": 4,
+                "name": "Insulin"
+            },
+            "000005": {
+                "optype": "numeric",
+                "description": "Body mass index (weight in kg/(height in m)^2)",
+                "datatype": "double",
+                "preferred": true,
+                "label": "BMI",
+                "column_number": 5,
+                "order": 5,
+                "name": "BMI"
+            },
+            "000002": {
+                "optype": "numeric",
+                "description": "Diastolic blood pressure (mm Hg)",
+                "datatype": "int8",
+                "preferred": true,
+                "label": "Blood pressure",
+                "column_number": 2,
+                "order": 2,
+                "name": "Blood pressure"
+            },
+            "000003": {
+                "optype": "numeric",
+                "description": "Triceps skin fold thickness (mm)",
+                "datatype": "int8",
+                "preferred": true,
+                "label": "Skinfold",
+                "column_number": 3,
+                "order": 3,
+                "name": "Skinfold"
+            },
+            "000000": {
+                "optype": "numeric",
+                "description": "Number of times pregnant",
+                "datatype": "int8",
+                "preferred": true,
+                "label": "Pregnancies",
+                "column_number": 0,
+                "order": 0,
+                "name": "Pregnancies"
+            },
+            "000001": {
+                "optype": "numeric",
+                "description": "Plasma glucose concentration 2 hours after ingesting glucose",
+                "datatype": "int16",
+                "preferred": true,
+                "label": "Glucose",
+                "column_number": 1,
+                "order": 1,
+                "name": "Glucose"
+            },
+            "000008": {
+                "optype": "categorical",
+                "name": "Diabetes",
+                "datatype": "string",
+                "preferred": true,
+                "label": "Diabetes",
+                "term_analysis": {
+                    "enabled": true
+                },
+                "column_number": 8,
+                "order": 8,
+                "categories": [
+                    "\"True\"",
+                    "\"False\""
+                ],
+                "description": "Diabetes (True/False)"
+            }
+        },
+        "node_threshold": 512,
+        "model_fields": {
+            "000006": {
+                "optype": "numeric",
+                "description": "Diabetes pedigree function",
+                "datatype": "double",
+                "preferred": true,
+                "label": "Diabetes pedigree",
+                "column_number": 6,
+                "name": "Diabetes pedigree"
+            },
+            "000007": {
+                "optype": "numeric",
+                "description": "Age (years)",
+                "datatype": "int8",
+                "preferred": true,
+                "label": "Age",
+                "column_number": 7,
+                "name": "Age"
+            },
+            "000004": {
+                "optype": "numeric",
+                "description": "2-Hour serum insulin (mu U/ml)",
+                "datatype": "int16",
+                "preferred": true,
+                "label": "Insulin",
+                "column_number": 4,
+                "name": "Insulin"
+            },
+            "000005": {
+                "optype": "numeric",
+                "description": "Body mass index (weight in kg/(height in m)^2)",
+                "datatype": "double",
+                "preferred": true,
+                "label": "BMI",
+                "column_number": 5,
+                "name": "BMI"
+            },
+            "000002": {
+                "optype": "numeric",
+                "description": "Diastolic blood pressure (mm Hg)",
+                "datatype": "int8",
+                "preferred": true,
+                "label": "Blood pressure",
+                "column_number": 2,
+                "name": "Blood pressure"
+            },
+            "000003": {
+                "optype": "numeric",
+                "description": "Triceps skin fold thickness (mm)",
+                "datatype": "int8",
+                "preferred": true,
+                "label": "Skinfold",
+                "column_number": 3,
+                "name": "Skinfold"
+            },
+            "000000": {
+                "optype": "numeric",
+                "description": "Number of times pregnant",
+                "datatype": "int8",
+                "preferred": true,
+                "label": "Pregnancies",
+                "column_number": 0,
+                "name": "Pregnancies"
+            },
+            "000001": {
+                "optype": "numeric",
+                "description": "Plasma glucose concentration 2 hours after ingesting glucose",
+                "datatype": "int16",
+                "preferred": true,
+                "label": "Glucose",
+                "column_number": 1,
+                "name": "Glucose"
+            },
+            "000008": {
+                "optype": "categorical",
+                "name": "Diabetes",
+                "datatype": "string",
+                "preferred": true,
+                "label": "Diabetes",
+                "term_analysis": {
+                    "enabled": true
+                },
+                "column_number": 8,
+                "categories": [
+                    "\"True\"",
+                    "\"False\""
+                ],
+                "description": "Diabetes (True/False)"
+            }
+        },
+        "missing_tokens": [
+            "?"
+        ],
+        "root": {
+            "count": 123,
+            "confidence": 0.56274,
+            "predicate": true,
+            "id": 0,
+            "objective_summary": {
+                "categories": [
+                    [
+                        "False",
+                        80
+                    ],
+                    [
+                        "True",
+                        43
+                    ]
+                ]
+            },
+            "output": "False",
+            "children": [
+                {
+                    "count": 101,
+                    "confidence": 0.47685,
+                    "predicate": {
+                        "operator": ">",
+                        "field": "000005",
+                        "value": 25.44107
+                    },
+                    "id": 1,
+                    "objective_summary": {
+                        "categories": [
+                            [
+                                "False",
+                                58
+                            ],
+                            [
+                                "True",
+                                43
+                            ]
+                        ]
+                    },
+                    "output": "False",
+                    "children": [
+                        {
+                            "count": 41,
+                            "confidence": 0.5055,
+                            "predicate": {
+                                "operator": ">",
+                                "field": "000001",
+                                "value": 126
+                            },
+                            "id": 2,
+                            "objective_summary": {
+                                "categories": [
+                                    [
+                                        "True",
+                                        27
+                                    ],
+                                    [
+                                        "False",
+                                        14
+                                    ]
+                                ]
+                            },
+                            "output": "True",
+                            "children": [
+                                {
+                                    "count": 6,
+                                    "confidence": 0.60966,
+                                    "predicate": {
+                                        "operator": ">",
+                                        "field": "000003",
+                                        "value": 42
+                                    },
+                                    "objective_summary": {
+                                        "categories": [
+                                            [
+                                                "True",
+                                                6
+                                            ]
+                                        ]
+                                    },
+                                    "output": "True",
+                                    "id": 3
+                                },
+                                {
+                                    "count": 35,
+                                    "confidence": 0.43572,
+                                    "predicate": {
+                                        "operator": "<=",
+                                        "field": "000003",
+                                        "value": 42
+                                    },
+                                    "id": 4,
+                                    "objective_summary": {
+                                        "categories": [
+                                            [
+                                                "True",
+                                                21
+                                            ],
+                                            [
+                                                "False",
+                                                14
+                                            ]
+                                        ]
+                                    },
+                                    "output": "True",
+                                    "children": [
+                                        {
+                                            "count": 5,
+                                            "confidence": 0.37553,
+                                            "predicate": {
+                                                "operator": ">",
+                                                "field": "000003",
+                                                "value": 40
+                                            },
+                                            "id": 5,
+                                            "objective_summary": {
+                                                "categories": [
+                                                    [
+                                                        "False",
+                                                        4
+                                                    ],
+                                                    [
+                                                        "True",
+                                                        1
+                                                    ]
+                                                ]
+                                            },
+                                            "output": "False",
+                                            "children": [
+                                                {
+                                                    "count": 1,
+                                                    "confidence": 0.20654,
+                                                    "predicate": {
+                                                        "operator": ">",
+                                                        "field": "000007",
+                                                        "value": 30
+                                                    },
+                                                    "objective_summary": {
+                                                        "categories": [
+                                                            [
+                                                                "True",
+                                                                1
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "output": "True",
+                                                    "id": 6
+                                                },
+                                                {
+                                                    "count": 4,
+                                                    "confidence": 0.5101,
+                                                    "predicate": {
+                                                        "operator": "<=",
+                                                        "field": "000007",
+                                                        "value": 30
+                                                    },
+                                                    "objective_summary": {
+                                                        "categories": [
+                                                            [
+                                                                "False",
+                                                                4
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "output": "False",
+                                                    "id": 7
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "count": 30,
+                                            "confidence": 0.4878,
+                                            "predicate": {
+                                                "operator": "<=",
+                                                "field": "000003",
+                                                "value": 40
+                                            },
+                                            "id": 8,
+                                            "objective_summary": {
+                                                "categories": [
+                                                    [
+                                                        "True",
+                                                        20
+                                                    ],
+                                                    [
+                                                        "False",
+                                                        10
+                                                    ]
+                                                ]
+                                            },
+                                            "output": "True",
+                                            "children": [
+                                                {
+                                                    "count": 6,
+                                                    "confidence": 0.60966,
+                                                    "predicate": {
+                                                        "operator": ">",
+                                                        "field": "000003",
+                                                        "value": 33
+                                                    },
+                                                    "objective_summary": {
+                                                        "categories": [
+                                                            [
+                                                                "True",
+                                                                6
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "output": "True",
+                                                    "id": 9
+                                                },
+                                                {
+                                                    "count": 24,
+                                                    "confidence": 0.38834,
+                                                    "predicate": {
+                                                        "operator": "<=",
+                                                        "field": "000003",
+                                                        "value": 33
+                                                    },
+                                                    "id": 10,
+                                                    "objective_summary": {
+                                                        "categories": [
+                                                            [
+                                                                "True",
+                                                                14
+                                                            ],
+                                                            [
+                                                                "False",
+                                                                10
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "output": "True",
+                                                    "children": [
+                                                        {
+                                                            "count": 6,
+                                                            "confidence": 0.43649,
+                                                            "predicate": {
+                                                                "operator": ">",
+                                                                "field": "000006",
+                                                                "value": 0.609
+                                                            },
+                                                            "id": 11,
+                                                            "objective_summary": {
+                                                                "categories": [
+                                                                    [
+                                                                        "False",
+                                                                        5
+                                                                    ],
+                                                                    [
+                                                                        "True",
+                                                                        1
+                                                                    ]
+                                                                ]
+                                                            },
+                                                            "output": "False",
+                                                            "children": [
+                                                                {
+                                                                    "count": 1,
+                                                                    "confidence": 0.20654,
+                                                                    "predicate": {
+                                                                        "operator": ">",
+                                                                        "field": "000001",
+                                                                        "value": 188
+                                                                    },
+                                                                    "objective_summary": {
+                                                                        "categories": [
+                                                                            [
+                                                                                "True",
+                                                                                1
+                                                                            ]
+                                                                        ]
+                                                                    },
+                                                                    "output": "True",
+                                                                    "id": 12
+                                                                },
+                                                                {
+                                                                    "count": 5,
+                                                                    "confidence": 0.56551,
+                                                                    "predicate": {
+                                                                        "operator": "<=",
+                                                                        "field": "000001",
+                                                                        "value": 188
+                                                                    },
+                                                                    "objective_summary": {
+                                                                        "categories": [
+                                                                            [
+                                                                                "False",
+                                                                                5
+                                                                            ]
+                                                                        ]
+                                                                    },
+                                                                    "output": "False",
+                                                                    "id": 13
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "count": 18,
+                                                            "confidence": 0.49127,
+                                                            "predicate": {
+                                                                "operator": "<=",
+                                                                "field": "000006",
+                                                                "value": 0.609
+                                                            },
+                                                            "id": 14,
+                                                            "objective_summary": {
+                                                                "categories": [
+                                                                    [
+                                                                        "True",
+                                                                        13
+                                                                    ],
+                                                                    [
+                                                                        "False",
+                                                                        5
+                                                                    ]
+                                                                ]
+                                                            },
+                                                            "output": "True",
+                                                            "children": [
+                                                                {
+                                                                    "count": 11,
+                                                                    "confidence": 0.28009,
+                                                                    "predicate": {
+                                                                        "operator": ">",
+                                                                        "field": "000000",
+                                                                        "value": 3
+                                                                    },
+                                                                    "id": 15,
+                                                                    "objective_summary": {
+                                                                        "categories": [
+                                                                            [
+                                                                                "True",
+                                                                                6
+                                                                            ],
+                                                                            [
+                                                                                "False",
+                                                                                5
+                                                                            ]
+                                                                        ]
+                                                                    },
+                                                                    "output": "True",
+                                                                    "children": [
+                                                                        {
+                                                                            "count": 4,
+                                                                            "confidence": 0.5101,
+                                                                            "predicate": {
+                                                                                "operator": ">",
+                                                                                "field": "000006",
+                                                                                "value": 0.49
+                                                                            },
+                                                                            "objective_summary": {
+                                                                                "categories": [
+                                                                                    [
+                                                                                        "True",
+                                                                                        4
+                                                                                    ]
+                                                                                ]
+                                                                            },
+                                                                            "output": "True",
+                                                                            "id": 16
+                                                                        },
+                                                                        {
+                                                                            "count": 7,
+                                                                            "confidence": 0.35893,
+                                                                            "predicate": {
+                                                                                "operator": "<=",
+                                                                                "field": "000006",
+                                                                                "value": 0.49
+                                                                            },
+                                                                            "id": 17,
+                                                                            "objective_summary": {
+                                                                                "categories": [
+                                                                                    [
+                                                                                        "False",
+                                                                                        5
+                                                                                    ],
+                                                                                    [
+                                                                                        "True",
+                                                                                        2
+                                                                                    ]
+                                                                                ]
+                                                                            },
+                                                                            "output": "False",
+                                                                            "children": [
+                                                                                {
+                                                                                    "count": 4,
+                                                                                    "confidence": 0.5101,
+                                                                                    "predicate": {
+                                                                                        "operator": ">",
+                                                                                        "field": "000003",
+                                                                                        "value": 14
+                                                                                    },
+                                                                                    "objective_summary": {
+                                                                                        "categories": [
+                                                                                            [
+                                                                                                "False",
+                                                                                                4
+                                                                                            ]
+                                                                                        ]
+                                                                                    },
+                                                                                    "output": "False",
+                                                                                    "id": 18
+                                                                                },
+                                                                                {
+                                                                                    "count": 3,
+                                                                                    "confidence": 0.20765,
+                                                                                    "predicate": {
+                                                                                        "operator": "<=",
+                                                                                        "field": "000003",
+                                                                                        "value": 14
+                                                                                    },
+                                                                                    "id": 19,
+                                                                                    "objective_summary": {
+                                                                                        "categories": [
+                                                                                            [
+                                                                                                "True",
+                                                                                                2
+                                                                                            ],
+                                                                                            [
+                                                                                                "False",
+                                                                                                1
+                                                                                            ]
+                                                                                        ]
+                                                                                    },
+                                                                                    "output": "True",
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "count": 2,
+                                                                                            "confidence": 0.34237,
+                                                                                            "predicate": {
+                                                                                                "operator": ">",
+                                                                                                "field": "000007",
+                                                                                                "value": 34
+                                                                                            },
+                                                                                            "objective_summary": {
+                                                                                                "categories": [
+                                                                                                    [
+                                                                                                        "True",
+                                                                                                        2
+                                                                                                    ]
+                                                                                                ]
+                                                                                            },
+                                                                                            "output": "True",
+                                                                                            "id": 20
+                                                                                        },
+                                                                                        {
+                                                                                            "count": 1,
+                                                                                            "confidence": 0.20654,
+                                                                                            "predicate": {
+                                                                                                "operator": "<=",
+                                                                                                "field": "000007",
+                                                                                                "value": 34
+                                                                                            },
+                                                                                            "objective_summary": {
+                                                                                                "categories": [
+                                                                                                    [
+                                                                                                        "False",
+                                                                                                        1
+                                                                                                    ]
+                                                                                                ]
+                                                                                            },
+                                                                                            "output": "False",
+                                                                                            "id": 21
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "count": 7,
+                                                                    "confidence": 0.64566,
+                                                                    "predicate": {
+                                                                        "operator": "<=",
+                                                                        "field": "000000",
+                                                                        "value": 3
+                                                                    },
+                                                                    "objective_summary": {
+                                                                        "categories": [
+                                                                            [
+                                                                                "True",
+                                                                                7
+                                                                            ]
+                                                                        ]
+                                                                    },
+                                                                    "output": "True",
+                                                                    "id": 22
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "count": 60,
+                            "confidence": 0.60991,
+                            "predicate": {
+                                "operator": "<=",
+                                "field": "000001",
+                                "value": 126
+                            },
+                            "id": 23,
+                            "objective_summary": {
+                                "categories": [
+                                    [
+                                        "False",
+                                        44
+                                    ],
+                                    [
+                                        "True",
+                                        16
+                                    ]
+                                ]
+                            },
+                            "output": "False",
+                            "children": [
+                                {
+                                    "count": 11,
+                                    "confidence": 0.3538,
+                                    "predicate": {
+                                        "operator": ">",
+                                        "field": "000007",
+                                        "value": 42
+                                    },
+                                    "id": 24,
+                                    "objective_summary": {
+                                        "categories": [
+                                            [
+                                                "True",
+                                                7
+                                            ],
+                                            [
+                                                "False",
+                                                4
+                                            ]
+                                        ]
+                                    },
+                                    "output": "True",
+                                    "children": [
+                                        {
+                                            "count": 2,
+                                            "confidence": 0.34237,
+                                            "predicate": {
+                                                "operator": ">",
+                                                "field": "000005",
+                                                "value": 37.35
+                                            },
+                                            "objective_summary": {
+                                                "categories": [
+                                                    [
+                                                        "False",
+                                                        2
+                                                    ]
+                                                ]
+                                            },
+                                            "output": "False",
+                                            "id": 25
+                                        },
+                                        {
+                                            "count": 9,
+                                            "confidence": 0.45258,
+                                            "predicate": {
+                                                "operator": "<=",
+                                                "field": "000005",
+                                                "value": 37.35
+                                            },
+                                            "id": 26,
+                                            "objective_summary": {
+                                                "categories": [
+                                                    [
+                                                        "True",
+                                                        7
+                                                    ],
+                                                    [
+                                                        "False",
+                                                        2
+                                                    ]
+                                                ]
+                                            },
+                                            "output": "True",
+                                            "children": [
+                                                {
+                                                    "count": 3,
+                                                    "confidence": 0.20765,
+                                                    "predicate": {
+                                                        "operator": ">",
+                                                        "field": "000002",
+                                                        "value": 81
+                                                    },
+                                                    "id": 27,
+                                                    "objective_summary": {
+                                                        "categories": [
+                                                            [
+                                                                "False",
+                                                                2
+                                                            ],
+                                                            [
+                                                                "True",
+                                                                1
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "output": "False",
+                                                    "children": [
+                                                        {
+                                                            "count": 1,
+                                                            "confidence": 0.20654,
+                                                            "predicate": {
+                                                                "operator": ">",
+                                                                "field": "000006",
+                                                                "value": 0.706
+                                                            },
+                                                            "objective_summary": {
+                                                                "categories": [
+                                                                    [
+                                                                        "True",
+                                                                        1
+                                                                    ]
+                                                                ]
+                                                            },
+                                                            "output": "True",
+                                                            "id": 28
+                                                        },
+                                                        {
+                                                            "count": 2,
+                                                            "confidence": 0.34237,
+                                                            "predicate": {
+                                                                "operator": "<=",
+                                                                "field": "000006",
+                                                                "value": 0.706
+                                                            },
+                                                            "objective_summary": {
+                                                                "categories": [
+                                                                    [
+                                                                        "False",
+                                                                        2
+                                                                    ]
+                                                                ]
+                                                            },
+                                                            "output": "False",
+                                                            "id": 29
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "count": 6,
+                                                    "confidence": 0.60966,
+                                                    "predicate": {
+                                                        "operator": "<=",
+                                                        "field": "000002",
+                                                        "value": 81
+                                                    },
+                                                    "objective_summary": {
+                                                        "categories": [
+                                                            [
+                                                                "True",
+                                                                6
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "output": "True",
+                                                    "id": 30
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "count": 49,
+                                    "confidence": 0.68642,
+                                    "predicate": {
+                                        "operator": "<=",
+                                        "field": "000007",
+                                        "value": 42
+                                    },
+                                    "id": 31,
+                                    "objective_summary": {
+                                        "categories": [
+                                            [
+                                                "False",
+                                                40
+                                            ],
+                                            [
+                                                "True",
+                                                9
+                                            ]
+                                        ]
+                                    },
+                                    "output": "False",
+                                    "children": [
+                                        {
+                                            "count": 3,
+                                            "confidence": 0.20765,
+                                            "predicate": {
+                                                "operator": ">",
+                                                "field": "000000",
+                                                "value": 7
+                                            },
+                                            "id": 32,
+                                            "objective_summary": {
+                                                "categories": [
+                                                    [
+                                                        "True",
+                                                        2
+                                                    ],
+                                                    [
+                                                        "False",
+                                                        1
+                                                    ]
+                                                ]
+                                            },
+                                            "output": "True",
+                                            "children": [
+                                                {
+                                                    "count": 1,
+                                                    "confidence": 0.20654,
+                                                    "predicate": {
+                                                        "operator": ">",
+                                                        "field": "000007",
+                                                        "value": 41
+                                                    },
+                                                    "objective_summary": {
+                                                        "categories": [
+                                                            [
+                                                                "False",
+                                                                1
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "output": "False",
+                                                    "id": 33
+                                                },
+                                                {
+                                                    "count": 2,
+                                                    "confidence": 0.34237,
+                                                    "predicate": {
+                                                        "operator": "<=",
+                                                        "field": "000007",
+                                                        "value": 41
+                                                    },
+                                                    "objective_summary": {
+                                                        "categories": [
+                                                            [
+                                                                "True",
+                                                                2
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "output": "True",
+                                                    "id": 34
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "count": 46,
+                                            "confidence": 0.71776,
+                                            "predicate": {
+                                                "operator": "<=",
+                                                "field": "000000",
+                                                "value": 7
+                                            },
+                                            "id": 35,
+                                            "objective_summary": {
+                                                "categories": [
+                                                    [
+                                                        "False",
+                                                        39
+                                                    ],
+                                                    [
+                                                        "True",
+                                                        7
+                                                    ]
+                                                ]
+                                            },
+                                            "output": "False",
+                                            "children": [
+                                                {
+                                                    "count": 29,
+                                                    "confidence": 0.57892,
+                                                    "predicate": {
+                                                        "operator": ">",
+                                                        "field": "000005",
+                                                        "value": 30.9
+                                                    },
+                                                    "id": 36,
+                                                    "objective_summary": {
+                                                        "categories": [
+                                                            [
+                                                                "False",
+                                                                22
+                                                            ],
+                                                            [
+                                                                "True",
+                                                                7
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "output": "False",
+                                                    "children": [
+                                                        {
+                                                            "count": 23,
+                                                            "confidence": 0.67872,
+                                                            "predicate": {
+                                                                "operator": ">",
+                                                                "field": "000003",
+                                                                "value": 26
+                                                            },
+                                                            "id": 37,
+                                                            "objective_summary": {
+                                                                "categories": [
+                                                                    [
+                                                                        "False",
+                                                                        20
+                                                                    ],
+                                                                    [
+                                                                        "True",
+                                                                        3
+                                                                    ]
+                                                                ]
+                                                            },
+                                                            "output": "False",
+                                                            "children": [
+                                                                {
+                                                                    "count": 14,
+                                                                    "confidence": 0.78468,
+                                                                    "predicate": {
+                                                                        "operator": ">",
+                                                                        "field": "000001",
+                                                                        "value": 94
+                                                                    },
+                                                                    "objective_summary": {
+                                                                        "categories": [
+                                                                            [
+                                                                                "False",
+                                                                                14
+                                                                            ]
+                                                                        ]
+                                                                    },
+                                                                    "output": "False",
+                                                                    "id": 38
+                                                                },
+                                                                {
+                                                                    "count": 9,
+                                                                    "confidence": 0.3542,
+                                                                    "predicate": {
+                                                                        "operator": "<=",
+                                                                        "field": "000001",
+                                                                        "value": 94
+                                                                    },
+                                                                    "id": 39,
+                                                                    "objective_summary": {
+                                                                        "categories": [
+                                                                            [
+                                                                                "False",
+                                                                                6
+                                                                            ],
+                                                                            [
+                                                                                "True",
+                                                                                3
+                                                                            ]
+                                                                        ]
+                                                                    },
+                                                                    "output": "False",
+                                                                    "children": [
+                                                                        {
+                                                                            "count": 3,
+                                                                            "confidence": 0.43849,
+                                                                            "predicate": {
+                                                                                "operator": ">",
+                                                                                "field": "000004",
+                                                                                "value": 82
+                                                                            },
+                                                                            "objective_summary": {
+                                                                                "categories": [
+                                                                                    [
+                                                                                        "True",
+                                                                                        3
+                                                                                    ]
+                                                                                ]
+                                                                            },
+                                                                            "output": "True",
+                                                                            "id": 40
+                                                                        },
+                                                                        {
+                                                                            "count": 6,
+                                                                            "confidence": 0.60966,
+                                                                            "predicate": {
+                                                                                "operator": "<=",
+                                                                                "field": "000004",
+                                                                                "value": 82
+                                                                            },
+                                                                            "objective_summary": {
+                                                                                "categories": [
+                                                                                    [
+                                                                                        "False",
+                                                                                        6
+                                                                                    ]
+                                                                                ]
+                                                                            },
+                                                                            "output": "False",
+                                                                            "id": 41
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "count": 6,
+                                                            "confidence": 0.29999,
+                                                            "predicate": {
+                                                                "operator": "<=",
+                                                                "field": "000003",
+                                                                "value": 26
+                                                            },
+                                                            "id": 42,
+                                                            "objective_summary": {
+                                                                "categories": [
+                                                                    [
+                                                                        "True",
+                                                                        4
+                                                                    ],
+                                                                    [
+                                                                        "False",
+                                                                        2
+                                                                    ]
+                                                                ]
+                                                            },
+                                                            "output": "True",
+                                                            "children": [
+                                                                {
+                                                                    "count": 4,
+                                                                    "confidence": 0.5101,
+                                                                    "predicate": {
+                                                                        "operator": ">",
+                                                                        "field": "000002",
+                                                                        "value": 63
+                                                                    },
+                                                                    "objective_summary": {
+                                                                        "categories": [
+                                                                            [
+                                                                                "True",
+                                                                                4
+                                                                            ]
+                                                                        ]
+                                                                    },
+                                                                    "output": "True",
+                                                                    "id": 43
+                                                                },
+                                                                {
+                                                                    "count": 2,
+                                                                    "confidence": 0.34237,
+                                                                    "predicate": {
+                                                                        "operator": "<=",
+                                                                        "field": "000002",
+                                                                        "value": 63
+                                                                    },
+                                                                    "objective_summary": {
+                                                                        "categories": [
+                                                                            [
+                                                                                "False",
+                                                                                2
+                                                                            ]
+                                                                        ]
+                                                                    },
+                                                                    "output": "False",
+                                                                    "id": 44
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "count": 17,
+                                                    "confidence": 0.81568,
+                                                    "predicate": {
+                                                        "operator": "<=",
+                                                        "field": "000005",
+                                                        "value": 30.9
+                                                    },
+                                                    "objective_summary": {
+                                                        "categories": [
+                                                            [
+                                                                "False",
+                                                                17
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "output": "False",
+                                                    "id": 45
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "count": 22,
+                    "confidence": 0.85134,
+                    "predicate": {
+                        "operator": "<=",
+                        "field": "000005",
+                        "value": 25.44107
+                    },
+                    "objective_summary": {
+                        "categories": [
+                            [
+                                "False",
+                                22
+                            ]
+                        ]
+                    },
+                    "output": "False",
+                    "id": 46
+                }
+            ]
+        },
+        "distribution": {
+            "training": {
+                "categories": [
+                    [
+                        "False",
+                        80
+                    ],
+                    [
+                        "True",
+                        43
+                    ]
+                ]
+            },
+            "predictions": {
+                "categories": [
+                    [
+                        "False",
+                        80
+                    ],
+                    [
+                        "True",
+                        43
+                    ]
+                ]
+            }
+        },
+        "depth_threshold": 512
+    }
+}

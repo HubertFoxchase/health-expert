@@ -5,7 +5,6 @@ Created on 18 May 2014
 
 from protorpc import messages
 
-
 #users
 class UserRequestMessage(messages.Message):
     id = messages.StringField(1)

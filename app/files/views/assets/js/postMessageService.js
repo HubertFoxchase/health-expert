@@ -11,9 +11,11 @@ Appery.postMessageService = Appery.createClass(null, {
             settings.success(this.__requestOptions.echo);
         } else {
             
-            gapi.client.messages.put(settings.data).execute(function(resp) {
-	            settings.success({});
-            }); 
+            if(settings.data.content !== ""){
+                gapi.client.messages.put(settings.data).execute(function(resp) {
+                    settings.success({});
+                }); 
+            }
         }
         settings.complete('success');
     }

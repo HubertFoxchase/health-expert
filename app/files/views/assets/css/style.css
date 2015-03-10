@@ -4,6 +4,7 @@
     padding: 4px 10px 6px 10px;
     border-radius: 14px;
     background-color: #ddd;
+    float:left;
 }
 
 .bubble-right {

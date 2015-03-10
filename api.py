@@ -12,6 +12,10 @@ from protorpc import remote
 import api_models
 import api_messages
 
+import bigml.api
+from bigml.api import BigML
+from bigml.model import Model
+
 package = 'Hello'
 
 WEB_CLIENT_ID = '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com'
@@ -20,6 +24,14 @@ IOS_CLIENT_ID = 'replace this with your iOS client ID'
 OTHER_CLIENT_ID = '817202020074-utvardicvh3oaqhf2tqagqnrmk52cv2p.apps.googleusercontent.com'
 ANDROID_AUDIENCE = WEB_CLIENT_ID
 
+
+BIGML_USERNAME = "michaellisovski"
+BIGML_API_KEY = "b9065b0309020eb71b1a5bca99dc8cabcaabc9f9"
+
+
+api = BigML(BIGML_USERNAME, BIGML_API_KEY)
+model = api.get_model('model/537a0067d994976c05000a05', query_string='only_model=true;limit=-1')
+local_model = Model(model)
 
 STORED_GREETINGS = api_messages.GreetingCollection(items=[
     api_messages.Greeting(message='hello world!'),

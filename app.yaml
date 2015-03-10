@@ -10,7 +10,7 @@ handlers:
   upload: favicon\.ico
 
 - url: /_ah/spi/.*
-  script: api.app
+  script: api2.app
 
 - url: /s
   static_dir: s
@@ -27,4 +27,6 @@ libraries:
 - name: pycrypto
   version: latest
 - name: endpoints
-  version: 1.0  
+  version: 1.0
+- name: ssl
+  version: latest    

@@ -250,7 +250,7 @@ class Msg(ndb.Model):
                                     type=self.type,
                                     direction = self.direction,
                                     content=self.content,
-                                    timestamp=self.timestamp.strftime(TIME_FORMAT_STRING),
+                                    timestamp=self.timestamp.isoformat(),
                                     session = self.session,
                                     member=self.key.parent().id(),
                                     user=str(self.key.parent().parent().id()))
