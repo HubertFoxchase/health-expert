@@ -21,6 +21,7 @@ from bigml.model import Model
 from bigml.fields import Fields
 from api2_messages import OutcomeRequestMessage
 from bigml.tree import PROPORTIONAL
+import bigml_model
 
 
 WEB_CLIENT_ID = '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com'
@@ -139,11 +140,38 @@ class PatientApi(remote.Service):
 class SessionApi(remote.Service):
    
     @Session.method(request_fields=('patient',),
-                    response_fields=('id', 'created', 'state', 'patient',),
+                    response_fields=('id', 'created', 'state', 'patient', 'next'),
                     path='session', 
                     http_method='POST',
                     name='insert')   
     def SessionInsert(self, model):
+        
+        bm = bigml_model.get_model()
+        bml = bigml_model.get_local_model()
+        
+        field_id = bm['object']['model']['root']['children'][0]['predicate']['field']
+        field = bml.fields[field_id]
+
+        if 'label' in field :
+            label = field['label']
+        else :
+            label = field['name']
+
+        if 'description' in field :
+            description = field['description']
+        else :
+            description = ''
+
+        if 'categories' in field['summary'] :
+            
+            cat = []
+            for c in field['summary']['categories'] :
+                cat.append(c[0])
+            
+            model.next = Question(label=label, description=description, type=field['optype'], categories=cat)
+        else:
+            model.next = Question(label=label, description=description, type=field['optype'])
+        
         model.put()
         return model
 
@@ -224,16 +252,8 @@ class SessionApi(remote.Service):
         for symptom in session.symptoms:
             p[symptom.name] = symptom.value
                     
-        bigml_api = BigML(BIGML_USERNAME, BIGML_API_KEY, dev_mode=True)
-        #54fa4dc7af447f278e000083 - production
-        #5379421cd994976c0800013b - development
-        bigml_model = memcache.Client().get('53794a0ed994976c0d001092')
+        bigml_local_model = bigml_model.get_local_model()
         
-        if bigml_model is None :
-            bigml_model = bigml_api.get_model('model/53794a0ed994976c0d001092', query_string='only_model=true;limit=-1')
-            memcache.Client().add('53794a0ed994976c0d001092', bigml_model, time=3600)
-        
-        bigml_local_model = Model(bigml_model)
         prediction = bigml_local_model.predict(p, add_confidence=True, add_path=True, add_distribution=True, add_count=True, add_next=True)
         
         if prediction['next'] is not None :
@@ -266,9 +286,7 @@ class SessionApi(remote.Service):
         else :
             session.next = None
             
-        prediction_class = prediction['prediction']
-        
-        session.outcome = Outcome(name=prediction_class, confidence=str(prediction['confidence']))        
+        session.outcome = Outcome(name=prediction['prediction'], confidence=str(prediction['confidence']))        
         session.put()
         
         return session
