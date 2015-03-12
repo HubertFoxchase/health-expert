@@ -1,3 +1,3 @@
 'use strict'
 
-angular.module('c4c', ['ngMaterial', 'controllers']);
+angular.module('c4c', ['ngMaterial', 'controllers', 'services']);
