@@ -18,9 +18,7 @@ angular.module("controllers", []).
 				},
 				5000);
 		}
-		poll();
-		
-		
+		poll();	
 	}]).
 	controller("GridCtrl", ['$scope', '$rootScope', '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
 		

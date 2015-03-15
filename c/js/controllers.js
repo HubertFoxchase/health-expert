@@ -63,7 +63,7 @@ angular.module("controllers", []).
 		}
 
 		$scope.gender = function(g){
-			_api.patient.update({id:$rootScope.patient, gender:g}).execute(function(resp){
+			_api.patient.update({id:$rootScope.patient.id, gender:g}).execute(function(resp){
 				$rootScope.patient.gender = g;
 				location.hash = "/" + resp.id + "/age";
 			});
@@ -71,14 +71,14 @@ angular.module("controllers", []).
 
 		$scope.age = function(a){
 			
-			if(angular.isNumber(a)) {
+			if(!isNaN(a)) {
 				_api.patient.update({id:$rootScope.patient.id, age:a}).execute(function(resp){
 					$rootScope.patient.age = a;
 					location.hash = "/" + resp.id + "/reason";
 				});
 			}
 			else{
-				location.hash = "/" + resp.id + "/reason";
+				location.hash = "/" + $rootScope.patient.id + "/reason";
 			}
 		}
 
