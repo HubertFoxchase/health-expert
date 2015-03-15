@@ -1,18 +1,10 @@
 <html ng-app="c4c">
 <head>
+	<meta name="viewport" content="width=device-width, height=device-height, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.8.2/angular-material.min.css">
     <link rel="stylesheet" href="/c/css/style.css">
     <link rel="stylesheet" href="/c/css/animation.css">
 
-	<script type='text/javascript'>
-	function startApp() {
-	
-	    var ROOT = 'http://localhost:11080/_ah/api';
-	    gapi.client.load('c4c', 'v1', function() {
-	        document.getElementById("main").style.visibility = "visible";
-	    }, ROOT);
-	}
-	</script>
 </head>
 <body layout="column" ng-controller="AppCtrl">
 
@@ -21,6 +13,11 @@
 	<div layout="column" flex style="visibility:hidden" id="main">
 		<md-toolbar layout="row" class="md-default-theme">
 			<h1>Click4Care</h1>
+			<div style="margin:auto 16px">
+			    <md-button class="md-primary md-raised md-hue-1 toolbar-button" ng-click="restart()">
+			      Restart
+			    </md-button>			
+			</div>
 		</md-toolbar>
 		<div class="view-container">
 			<div ng-view class="view-frame">

@@ -112,7 +112,7 @@ class Session(EndpointsModel):
     symptoms = ndb.LocalStructuredProperty(Symptom, repeated=True)
     next = ndb.LocalStructuredProperty(Question)
     outcome = ndb.LocalStructuredProperty(Outcome)
-    
+
     patient_ref = ndb.KeyProperty(kind=Patient)
     
     def nameSetter(self, value):

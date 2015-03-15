@@ -185,8 +185,8 @@ class SessionApi(remote.Service):
                       http_method='GET',
                       name='listActive')   
     def SessionListActive(self, query):
-        return query.filter(Session.state == int(SessionState.ACTIVE))
-
+        #return query.filter(Session.state == int(SessionState.ACTIVE))
+        return query.order(-Session.state, -Session.created)
 
     @Session.method(path='get_session/{id}', 
                       http_method='GET',

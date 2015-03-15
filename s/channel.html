@@ -1,18 +1,11 @@
 <html ng-app="c4c">
 <head>
+	<meta name="viewport" content="width=device-width, height=device-height, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.8.2/angular-material.min.css">
     <link rel="stylesheet" href="/s/css/style.css">
     <link rel="stylesheet" href="/s/css/animation.css">
 
-	<script type='text/javascript'>
-	function startApp() {
-	
-	    var ROOT = 'http://health-expert-1705.appspot.com/_ah/api';
-	    gapi.client.load('c4c', 'v1', function() {
-	        document.getElementById("main").style.visibility = "visible";
-	    }, ROOT);
-	}
-	</script>
 </head>
 <body layout="column" ng-controller="AppCtrl">
 

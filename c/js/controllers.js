@@ -1,6 +1,38 @@
 angular.module("controllers", []).
-	controller("AppCtrl", ['$scope', '$mdSidenav', '$api', function($scope, $mdSidenav, $api){
+	controller("AppCtrl", ['$scope', '$mdSidenav', '$mdDialog', '$api', function($scope, $mdSidenav, $mdDialog, $api){
+	    
+		$scope.restart = function ($event) {
+	        $mdDialog.show({
+	          targetEvent: $event,
+	          template:
+	            '<md-dialog>' +
+	            '  <md-content><h3>Restart</h3><p>Do you want to resart current session?</p></md-content>' +
+	            '  <div class="md-actions">' +
+	            '    <md-button ng-click="closeDialog()">' +
+	            '      No, continue' +
+	            '    </md-button>' +
+	            '    <md-button ng-click="restartSession()">' +
+	            '      Okay' +
+	            '    </md-button>' +
+	            '  </div>' +
+	            '</md-dialog>',
+	            controller: 'AppCtrl'
+	            
+	        });
+	    }
+		
+		$scope.closeDialog = function(){
+			$mdDialog.hide();
+		}
 
+		$scope.restartSession = function(){
+			$mdDialog.hide().then(
+				function(){
+					location.hash = "/start"
+				}
+			);
+		}
+		
 	}]).
 
 	controller("StartCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", function($scope, $rootScope, $routeParams, $api, $location){
@@ -38,10 +70,16 @@ angular.module("controllers", []).
 		}
 
 		$scope.age = function(a){
-			_api.patient.update({id:$rootScope.patient.id, age:a}).execute(function(resp){
-				$rootScope.patient.age = a;
+			
+			if(angular.isNumber(a)) {
+				_api.patient.update({id:$rootScope.patient.id, age:a}).execute(function(resp){
+					$rootScope.patient.age = a;
+					location.hash = "/" + resp.id + "/reason";
+				});
+			}
+			else{
 				location.hash = "/" + resp.id + "/reason";
-			});
+			}
 		}
 
 		$scope.session = function(a){

@@ -1,14 +1,17 @@
 <md-content md-scroll-y layout="column" layout-align="center center" layout-margin layout-padding flex>
 	<div class="form-container" layout="column" layout-align="space-between center" flex>
-	     <md-input-container  class="form-item-med">
-			<label>Patient reference</label>
-			<input required name="ref" ng-model="patient.ref">
-			<div ng-messages="patient.ref.$error">
-				<div ng-message="required">Please enter patient reference</div>
-			</div>
-	     </md-input-container>
-	   	<md-button  class="md-raised md-primary button-med" ng-click="start(patient.ref)">
-	    	New Patient
-	   	</md-button>
+		<form name="form" novalidate>
+		     <md-input-container class="form-item-med">
+				<label>Patient reference</label>
+				<input required name="ref" ng-model="ref" ng-model-options="{ debounce: '100'}">
+				<div ng-messages="ref.$error">
+					<div ng-message="required">Please enter patient reference</div>
+				</div>
+		     </md-input-container>
+		     <br>
+		   	<md-button  class="md-raised md-primary button-med" ng-disabled="form.ref.$error.required" ng-click="start(ref)">
+		    	New Patient
+		   	</md-button>
+	   	</form>
 	</div>      
 </md-content>

@@ -4,6 +4,10 @@ md-toolbar h1 {
   margin: auto;
 }
 
+md-toolbar .toolbar-button {
+	font-size: 0.8em;
+}
+
 .form-container {
 	width:300px; 
 	height:180px

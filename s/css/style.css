@@ -15,6 +15,10 @@ md-toolbar h1 {
   font-weight: 400;
   margin: auto;
 }
+
+md-toolbar .toolbar-button {
+	font-size: 1em;
+}
 md-list .md-button {
   color: inherit;
   font-weight: 500;
@@ -35,28 +39,21 @@ md-list .md-button {
 	background-color: #eee; 
 	height: 300px
 }
-
 .session-tile {
 	font-size: 100%;
 }
-
 .session-tile dt {
 	font-weight: bolder;
 }
-
-
-
 .no-margin {
 	margin: 0;
 }
-
 .grey {
 	background-color: #eee;
 }
-
 md-grid-tile {
-  transition: all 400ms ease-out 50ms; }
-
+  transition: all 400ms ease-out 50ms; 
+}
 md-sidenav, 
 md-sidenav.md-locked-open, 
 md-sidenav.md-closed.md-locked-open-add-active {
