@@ -20,3 +20,10 @@ indexes:
   - name: channel
   - name: timestamp
     direction: desc
+
+- kind: Session
+  properties:
+  - name: state
+    direction: desc
+  - name: created
+    direction: desc

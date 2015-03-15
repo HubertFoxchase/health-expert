@@ -1,11 +1,25 @@
 angular.module("controllers", []).
-	controller("AppCtrl", ['$scope', '$mdSidenav', '$api', function($scope, $mdSidenav, $api){
+	controller("AppCtrl", ['$scope', '$rootScope', '$mdSidenav', '$api', '$timeout', function($scope, $rootScope, $mdSidenav, $api, $timeout){
 		
 		var _api;
 		
 		$scope.toggleSidenav = function(menuId) {
 			    $mdSidenav(menuId).toggle();
 		};
+		
+		$scope.keepPolling = false;
+		
+		var poll = function(){
+			$timeout(function(){
+					if($scope.keepPolling){
+						$rootScope.$broadcast('refresh');
+					}
+					poll();
+				},
+				5000);
+		}
+		poll();
+		
 		
 	}]).
 	controller("GridCtrl", ['$scope', '$rootScope', '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
@@ -21,13 +35,17 @@ angular.module("controllers", []).
 			});
 		}
 
+		$rootScope.$on('refresh', function(){
+			loadSessions();
+		})
+		
 		$scope.showDetail = function($event, itemData) {
 			window.clearInterval(timer);
 			timer = 0;
 			$rootScope.item = itemData;
 	    	$location.path("/session/" + itemData.id);
-	    };		
-		
+	    };	
+
 		if($rootScope.gridItems){
 			$scope.sessions	= $rootScope.gridItems;
 			//timer = window.setInterval(loadSessions, 5000);
@@ -44,7 +62,6 @@ angular.module("controllers", []).
 					document.getElementById("main").style.visibility = "visible";
 					document.getElementById("progress").style.display = "none";
 					_api = data;
-
 					loadSessions();
 					//timer = window.setInterval(loadSessions, 5000);
 				}
