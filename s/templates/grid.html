@@ -1,0 +1,24 @@
+<md-content md-scroll-y flex>
+	<md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-lg="3" md-cols="4" md-row-height="300px"  md-gutter="16px">
+	 	<md-grid-tile ng-repeat="item in sessions" class="grey" layout-padding ng-click="showDetail(event, item)">
+		 	<div class="md-tile-content session-tile">
+		 		<dl>
+		 			<dt>Ref</dt>
+		 			<dd>{{item.ref}}</dd>
+		 			<dt>Age</dt>
+		 			<dd>{{item.ref}}</dd>
+		 			<dt>Gender</dt>
+		 			<dd>{{item.ref}}</dd>
+		 			<dt>Outcome</dt>
+		 			<dd>{{item.outcome.name}}</dd>
+		 			<dt>Confidence</dt>
+		 			<dd>{{item.outcome.confidence}}</dd>
+		 		</dl>
+			</div>
+			<md-grid-tile-footer>
+    			<h3>Last updated: {{item.updated}}</h3>
+  			</md-grid-tile-footer>
+		</md-grid-tile>			
+	</md-grid-list>
+</md-content>
+	

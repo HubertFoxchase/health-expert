@@ -32,5 +32,5 @@ factory('$api', ['$q', function ($q) {
     	get : function(){
     		return _api;
     	}
-    };     
+    };
 }]);

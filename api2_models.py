@@ -28,11 +28,14 @@ class User(EndpointsModel):
 
 class Patient(EndpointsModel):
     
-    _message_fields_schema = ('id', 'ref', 'organisation')
+    _message_fields_schema = ('id', 'ref', 'organisation', 'gender', 'age')
     
     _organisationId = None
 
     ref = ndb.StringProperty()
+    gender = ndb.StringProperty()
+    age = ndb.IntegerProperty()
+    
     organisation_ref = ndb.KeyProperty(kind=Organisation)
 
     def OrganisationId(self, value):
@@ -104,6 +107,7 @@ class Session(EndpointsModel):
     
     state = ndb.IntegerProperty(default = int(SessionState.ACTIVE))
     created = ndb.DateTimeProperty(auto_now_add=True)
+    updated = ndb.DateTimeProperty(auto_now=True)
     ended = ndb.DateTimeProperty()
     symptoms = ndb.LocalStructuredProperty(Symptom, repeated=True)
     next = ndb.LocalStructuredProperty(Question)
@@ -152,6 +156,7 @@ class Session(EndpointsModel):
             raise endpoints.NotFoundException('Session %s does not exist.' % message.session)         
         
         symptom = Symptom(name=message.name, value=message.value)
+        entity.updated = datetime.datetime.now()
         entity.symptoms.append(symptom)
         
         entity.put()

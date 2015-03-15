@@ -1,3 +1,0 @@
-AppGlobal = {
-    prevTime:null
-};

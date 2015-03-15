@@ -1,0 +1,23 @@
+<md-content md-scroll-y layout="column" layout-align="center center" layout-margin layout-padding flex>
+	<div layout="column" layout-align="space-between center" layout-margin flex>
+		<h3>Reason for your visit</h3>
+	   	<md-button flex class="md-raised md-primary button-lg md-accent" ng-click="session()">
+	    	I'm not feeling well
+	   	</md-button>
+	   	<md-button flex class="md-raised md-primary button-lg" ng-href="#/{{$root.patient.id}}/end">
+	    	Renew prescription
+	   	</md-button>
+	   	<md-button flex class="md-raised md-primary button-lg" ng-href="#/{{$root.patient.id}}/end">
+	    	Test results
+	   	</md-button>
+	   	<md-button flex class="md-raised md-primary button-lg" ng-href="#/{{$root.patient.id}}/end">
+	    	Check up
+	   	</md-button>
+	   	<md-button flex class="md-raised md-primary button-lg" ng-href="#/{{$root.patient.id}}/end">
+	    	Planned procedure
+	   	</md-button>
+	   	<md-button flex class="md-raised md-primary button-lg" ng-href="#/{{$root.patient.id}}/end">
+	    	Other
+	   	</md-button>
+	</div>      
+</md-content>

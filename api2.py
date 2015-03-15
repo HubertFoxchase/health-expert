@@ -83,8 +83,8 @@ class AdminApi(remote.Service):
 @c4c_api.api_class(resource_name='patient')
 class PatientApi(remote.Service):
    
-    @Patient.method(request_fields=('ref','organisation',),
-                    response_fields=('id', 'ref', 'organisation',),
+    @Patient.method(request_fields=('ref','organisation', 'age', 'gender'),
+                    response_fields=('id', 'ref', 'organisation', 'age', 'gender'),
                     path='patient', 
                     http_method='POST',
                     name='insert')   
@@ -108,7 +108,7 @@ class PatientApi(remote.Service):
             raise endpoints.NotFoundException('Patient not found.')
         return model        
 
-    @Patient.method(request_fields=('ref', 'organisation'),
+    @Patient.method(request_fields=('ref', 'organisation', 'age', 'gender'),
                       path='patient/{id}', 
                       http_method='POST',
                       name='update')   
@@ -197,7 +197,8 @@ class SessionApi(remote.Service):
             raise endpoints.NotFoundException('Session not found.')
         return model        
 
-    @Session.method(path='end_session/{id}', 
+    @Session.method(request_fields=('id',),
+                    path='end_session/{id}', 
                       http_method='POST',
                       name='end')   
     def SessionEnd(self, model):

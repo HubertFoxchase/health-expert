@@ -1,0 +1,18 @@
+md-toolbar h1 {
+  font-size: 1.250em;
+  font-weight: 400;
+  margin: auto;
+}
+
+.form-container {
+	width:300px; 
+	height:180px
+}
+
+.button-med, .form-item-med {
+	min-width: 10em;
+}
+
+.button-lg {
+	min-width: 15em;
+}

@@ -1,0 +1,22 @@
+<div layout="column" class="loginBox md-whiteframe-z1">
+    <md-toolbar class="md-default-theme">
+      <h2 class="md-toolbar-tools"><span>Login</span></h2>
+    </md-toolbar>
+    <md-content layout="column" class="md-padding md-default-theme">
+      <md-input-container class="md-default-theme">
+        <label for="input_001">EmailAddress</label>
+        <input type="email" ng-model="username" class="ng-pristine ng-untouched ng-valid md-input ng-valid-email" tabindex="0" id="input_001" aria-invalid="false">
+      </md-input-container>
+      <md-input-container class="md-default-theme">
+        <label for="input_002">Password</label>
+        <input type="password" ng-model="password" class="ng-pristine ng-untouched ng-valid md-input" tabindex="0" id="input_002" aria-invalid="false">
+      </md-input-container>
+    </md-content>
+    <md-toolbar style="background-color: transparent" class="md-default-theme">
+      <div layout="row" class="md-toolbar-tools">
+        <button class="md-raised md-primary md-button md-default-theme" ng-transclude="" flex="flex"><span class="ng-scope">Login</span></button>
+        <div flex="flex"></div>
+        <a class="md-primary md-button md-default-theme" ng-transclude="" flex="flex" href="" md-no-ink="md-no-ink"><span class="ng-scope">Forgot Password</span></a>
+      </div>
+    </md-toolbar>
+  </div>

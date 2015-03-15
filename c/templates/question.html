@@ -1,0 +1,31 @@
+<md-content md-scroll-y layout="column" layout-align="center center" layout-margin layout-padding flex>
+	<div layout="column" layout-align="space-between center" layout-margin flex ng-show="session.next.type=='categorical'">
+		<h3>{{session.next.label}}</h3>
+		
+		<md-radio-group ng-model="nextQuestion">
+  			<md-radio-button ng-repeat="cat in session.next.categories" ng-value="cat" aria-label="{{ d }}">
+         		{{ cat }}
+  			</md-radio-button>
+		</md-radio-group>
+		
+	   	<md-button flex class="md-raised md-primary button-lg" ng-click="question(nextQuestion)">
+	    	Next
+	   	</md-button>
+	</div>      
+	<div layout="column" layout-align="space-between center" layout-margin flex ng-show="session.next.type=='numeric'">
+		<h3>{{session.next.label}}</h3>
+
+	     <md-input-container  class="form-item-med">
+			<label>{{session.next.label}}</label>
+			<input name="ref" ng-model="symptom.value">
+			<div ng-messages="symptom.value.$error">
+				<div ng-message="required">{{session.next.description}}</div>
+			</div>
+	     </md-input-container>
+
+	   	<md-button flex class="md-raised md-primary button-lg" ng-click="question(symptom.value)">
+	    	Next
+	   	</md-button>
+		
+	</div>      
+</md-content>
