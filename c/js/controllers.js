@@ -82,8 +82,8 @@ angular.module("controllers", []).
 			}
 		}
 
-		$scope.session = function(a){
-			_api.session.insert({patient:$rootScope.patient.id}).execute(function(resp){
+		$scope.session = function(){
+			_api.session.insert({patient_id:$rootScope.patient.id}).execute(function(resp){
 				$rootScope.session = resp;
 				location.hash = "/" + resp.id + "/symptom";
 			});
