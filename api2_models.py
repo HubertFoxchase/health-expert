@@ -10,6 +10,7 @@ from protorpc import messages
 from google.appengine.ext import ndb
 from endpoints_proto_datastore.ndb import EndpointsModel
 from endpoints_proto_datastore.ndb import EndpointsAliasProperty
+from api2_messages import PatientResposeMessage
 
 class Organisation(EndpointsModel):
     
@@ -94,27 +95,30 @@ class Question(EndpointsModel):
     categories = ndb.StringProperty(repeated=True)
 
 class SessionState(messages.Enum):
-    ACTIVE = 1
-    ENDED = 0
+    IN_PROGRESS = 1
+    ENDED = 2
+    REVIEWED = 3
+    DELETED = 4
    
 class Session(EndpointsModel):
     
-    _message_fields_schema = ('id', 'created', 'ended', 'state','symptoms', 'outcome', 'next','patient', 'name', 'value')    
+    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'state', 'symptoms', 'outcome', 'next', 'patient', 'patient_id', 'name', 'value')    
     
     _patientId = None
     _name = None
     _value = None
+    _patient = None
     
-    state = ndb.IntegerProperty(default = int(SessionState.ACTIVE))
+    state = ndb.IntegerProperty(default = int(SessionState.IN_PROGRESS))
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
     ended = ndb.DateTimeProperty()
     symptoms = ndb.LocalStructuredProperty(Symptom, repeated=True)
     next = ndb.LocalStructuredProperty(Question)
     outcome = ndb.LocalStructuredProperty(Outcome)
-
-    patient_ref = ndb.KeyProperty(kind=Patient)
     
+    patient = ndb.LocalStructuredProperty(Patient)
+
     def nameSetter(self, value):
         self._name = value
     
@@ -139,12 +143,11 @@ class Session(EndpointsModel):
             raise endpoints.NotFoundException('Patient %s does not exist.' % value)        
 
         self._patientId = value
-        self.patient_ref = patient_key
+        self.patient = patient_key.get()
 
     @EndpointsAliasProperty(setter=PatientId, property_type=messages.IntegerField)
-    def patient(self):
-
-        return self.patient_ref.integer_id()   
+    def patient_id(self):
+        pass  
     
     @classmethod
     def add_symptom(cls, message):
@@ -156,8 +159,9 @@ class Session(EndpointsModel):
             raise endpoints.NotFoundException('Session %s does not exist.' % message.session)         
         
         symptom = Symptom(name=message.name, value=message.value)
-        entity.updated = datetime.datetime.now()
         entity.symptoms.append(symptom)
+
+        entity.updated = datetime.datetime.now()
         
         entity.put()
         return entity    
@@ -171,10 +175,11 @@ class Session(EndpointsModel):
         if entity is None:
             raise endpoints.NotFoundException('Session %s does not exist.' % message.session)         
         
-        outcome = Outcome(name=message.name, confidence=message.confidence)
-        entity.outcome = outcome
-        #entity.state = int(SessionState.ENDED)
-        #entity.ended = datetime.datetime.now() 
+        entity.outcome = Outcome(name=message.name, confidence=message.confidence)
+
+        entity.state = int(SessionState.REVIEWED)
+        entity.updated = datetime.datetime.now()
+        entity.ended = datetime.datetime.now() 
         
         entity.put()
         return entity    

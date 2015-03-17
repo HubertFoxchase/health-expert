@@ -139,7 +139,7 @@ class PatientApi(remote.Service):
 @c4c_api.api_class(resource_name='session')
 class SessionApi(remote.Service):
    
-    @Session.method(request_fields=('patient',),
+    @Session.method(request_fields=('patient_id',),
                     response_fields=('id', 'created', 'state', 'patient', 'next'),
                     path='session', 
                     http_method='POST',
@@ -179,13 +179,14 @@ class SessionApi(remote.Service):
                       http_method='GET',
                       name='list')   
     def SessionList(self, query):
-        return query
-
+        return query.order(-Session.created)
+    
     @Session.query_method(path='active_sessions', 
                       http_method='GET',
                       name='listActive')   
     def SessionListActive(self, query):
         #return query.filter(Session.state == int(SessionState.ACTIVE))
+        
         return query.order(-Session.state, -Session.created)
 
     @Session.method(path='get_session/{id}', 

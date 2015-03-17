@@ -16,6 +16,13 @@ class SymptomResponseMessage(messages.Message):
     name = messages.StringField(1)
     value = messages.StringField(2)
 
+class PatientResposeMessage(messages.Message):
+    id = messages.IntegerField(1)
+    ref = messages.StringField(2)
+    gender = messages.StringField(3)
+    age = messages.IntegerField(4)
+    organisation = messages.IntegerField(5)
+
 class QuestionsResponseMessage(messages.Message):
     label = messages.StringField(1)
     description = messages.StringField(2)
