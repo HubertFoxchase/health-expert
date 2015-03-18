@@ -81,11 +81,18 @@ class Symptom(EndpointsModel):
     name = ndb.StringProperty()
     #question = ndb.StringProperty()
     value = ndb.StringProperty()  
+
+class OutcomeListItem(EndpointsModel):
+    count = ndb.FloatProperty()
+    confidence = ndb.FloatProperty()  
+    prediction = ndb.StringProperty()
+    probability = ndb.FloatProperty()
     
 class Outcome(EndpointsModel):
     
     name = ndb.StringProperty()
     confidence = ndb.StringProperty()  
+    full = ndb.LocalStructuredProperty(OutcomeListItem, repeated=True) 
 
 class Question(EndpointsModel):
     

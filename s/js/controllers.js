@@ -79,7 +79,7 @@ angular.module("controllers", []).
 			loadSessions()
 		}
 		else {
-			$api.loadApi().then(
+			$api.load().then(
 				function(data){
 					document.getElementById("main").style.visibility = "visible";
 					document.getElementById("progress").style.display = "none";

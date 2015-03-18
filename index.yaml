@@ -24,6 +24,12 @@ indexes:
 - kind: Session
   properties:
   - name: state
+  - name: created
+    direction: desc
+
+- kind: Session
+  properties:
+  - name: state
     direction: desc
   - name: created
     direction: desc

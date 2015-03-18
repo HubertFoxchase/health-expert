@@ -1,16 +1,55 @@
 <md-content md-scroll-y flex>
-	<div layout="row" flex class="md-whiteframe md-button session-card">
-		<div flex="33">
-			person
-		</div>		
-		<div flex="33">
-		    <h2>Outcome</h2>
-		    <p>{{item.outcome.name}}</p>
-		    <h2>Confidence</h2>
-		    <p>{{item.outcome.confidence}}</p>
-		</div>		
-		<div flex="33">
-			outcome
-		</div>		
+	<div layout="row" flex class="md-whiteframe session-card">
+ 		<div class="md-tile-content patient-tile" flex layout="column" layout-align="start start" >
+	 			<div layout="row" class="item line">
+ 			<h3>Patient</h3>
+ 			</div>
+ 			<div layout="row" class="item">
+ 				<div class="dd" flex>Reference</div>
+ 				<div class="dt" flex>{{item.patient.ref}}</div>
+ 			</div>
+ 			<div layout="row" class="item">
+ 				<div class="dd" flex>Age</div>
+ 				<div class="dt" flex>{{item.patient.age}}</div>
+ 			</div>
+ 			<div layout="row" class="item">
+ 				<div class="dd" flex>Gender</div>
+ 				<div class="dt" flex>{{item.patient.gender}}</div>
+ 			</div>
+ 			<div layout="row" class="item">
+ 				<div class="dd" flex>Outcome</div>
+ 				<div class="dt" flex>{{item.outcome.name}}</div>
+ 			</div>
+ 			<div layout="row" class="item">
+ 				<div class="dd" flex>Confidence</div>
+ 				<div class="dt" flex>{{item.outcome.confidence}}</div>
+ 			</div>
+ 			<div layout="row" class="item" ng-show="item.state == '1'">
+ 				<div class="dd" flex>Status</div>
+ 				<div class="dt" flex>In progress</div>
+ 			</div>
+ 			<div layout="row" class="item" ng-show="item.state == '2'">
+ 				<div class="dd" flex>Completed</div>
+ 				<div class="dt" flex>{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
+ 			</div> 			
+ 		</div>		
+ 		<div class="md-tile-content patient-tile" flex layout="column" layout-align="start start" >
+	 			<div layout="row" class="item line">
+ 			<h3>Symptoms</h3>
+ 			</div>
+ 			<div layout="row" class="item" ng-repeat="symptom in item.symptoms">
+ 				<div class="dd" flex>{{symptom.name}}</div>
+ 				<div class="dt" flex>{{symptom.value}}</div>
+ 			</div>
+ 		</div>		
+ 		<div class="md-tile-content patient-tile" flex layout="column" layout-align="start start" >
+	 			<div layout="row" class="item line">
+ 			<h3>Outcome</h3>
+			</div>
+ 			<div layout="row" class="item" ng-repeat="outcome in item.outcome.full">
+ 				<div class="dd" flex>{{outcome.prediction}}</div>
+ 				<div class="dt" flex>{{outcome.confidence*100|number:1}}%</div>
+ 			</div>
+ 		</div>		
 	</div>	
 </md-content>

@@ -187,7 +187,7 @@ class SessionApi(remote.Service):
     def SessionListActive(self, query):
         #return query.filter(Session.state == int(SessionState.ACTIVE))
         
-        return query.order(-Session.state, -Session.created)
+        return query.order(Session.state, -Session.created)
 
     @Session.method(path='get_session/{id}', 
                       http_method='GET',
@@ -257,6 +257,8 @@ class SessionApi(remote.Service):
         bigml_local_model = bigml_model.get_local_model()
         
         prediction = bigml_local_model.predict(p, add_confidence=True, add_path=True, add_distribution=True, add_count=True, add_next=True)
+
+        prediction_all = bigml_local_model.predict(p, multiple=5)
         
         if prediction['next'] is not None :
             logging.debug('got fields %s' % bigml_local_model.fields)
@@ -288,7 +290,7 @@ class SessionApi(remote.Service):
         else :
             session.next = None
             
-        session.outcome = Outcome(name=prediction['prediction'], confidence=str(prediction['confidence']))        
+        session.outcome = Outcome(name=prediction['prediction'], confidence=str(prediction['confidence']), full=prediction_all)        
         session.put()
         
         return session

@@ -1,6 +1,10 @@
 'use strict';
 
-angular.module('c4c', ['ngMaterial', 'ngRoute', 'controllers', 'services'])
+angular.module('c4c', ['ngMaterial', 'ngRoute', 'angularMoment', 'controllers', 'services'])
+.constant('angularMomentConfig', {
+    preprocess: 'utc', // optional
+    timezone: 'Europe/London' // optional
+})
 .config(['$routeProvider', '$locationProvider',
   function($routeProvider, $locationProvider) {
     $routeProvider
