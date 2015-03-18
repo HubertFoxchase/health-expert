@@ -1,6 +1,6 @@
 <md-content md-scroll-y flex>
-	<div layout="row" flex class="md-whiteframe session-card">
- 		<div class="md-tile-content patient-tile" flex layout="column" layout-align="start start" >
+	<div layout="row" class="md-whiteframe session-card">
+ 		<div class="md-tile-content patient-tile" layout="column" layout-align="start start" >
 	 			<div layout="row" class="item line">
  			<h3>Patient</h3>
  			</div>
@@ -25,7 +25,7 @@
  				<div class="dt" flex>{{item.outcome.confidence}}</div>
  			</div>
  			<div layout="row" class="item" ng-show="item.state == '1'">
- 				<div class="dd" flex>Status</div>
+ 				<div class="dd" flex>Session</div>
  				<div class="dt" flex>In progress</div>
  			</div>
  			<div layout="row" class="item" ng-show="item.state == '2'">
@@ -37,7 +37,7 @@
 	 			<div layout="row" class="item line">
  			<h3>Symptoms</h3>
  			</div>
- 			<div layout="row" class="item" ng-repeat="symptom in item.symptoms">
+ 			<div layout="row" class="item" ng-repeat="symptom in item.symptoms.items">
  				<div class="dd" flex>{{symptom.name}}</div>
  				<div class="dt" flex>{{symptom.value}}</div>
  			</div>

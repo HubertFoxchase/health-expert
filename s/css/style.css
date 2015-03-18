@@ -61,11 +61,16 @@ md-list .md-button {
 }
 
 .patient-tile {
-	height: 300px;
+	min-height: 300px;
 }
 
 .patient-tile .item{
-	min-height: 2em;
+  min-height: 1.5em;
+  padding: 0.5em;
+}
+
+.patient-tile .item:nth-child(even) {
+    background: #f3f3f3;
 }
 
 .patient-tile h3{
@@ -81,6 +86,7 @@ md-list .md-button {
 
 .item .dd {
 	color: #0227bd;
+	padding-right: 12px;
 }
 
 md-grid-tile {

@@ -239,19 +239,22 @@ class SessionApi(remote.Service):
         if session is None:
             raise endpoints.NotFoundException('Session not found.')             
 
-        for s in session.symptoms :
+        if session.symptoms is None :
+            session.symptoms = Symptoms()
+
+        for s in session.symptoms.items :
             if s.name == model.name :
                 s.value = model.value
                 break
         else :
             symptom = Symptom(name=model.name, value=model.value)
-            session.symptoms.append(symptom)
+            session.symptoms.items.append(symptom)
 
         logging.debug('starting prediction')        
 
         p = {}
         
-        for symptom in session.symptoms:
+        for symptom in session.symptoms.items:
             p[symptom.name] = symptom.value
                     
         bigml_local_model = bigml_model.get_local_model()

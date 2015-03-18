@@ -77,10 +77,12 @@ class Patient(EndpointsModel):
         return self._parent
 '''
 class Symptom(EndpointsModel):
-    
     name = ndb.StringProperty()
-    #question = ndb.StringProperty()
     value = ndb.StringProperty()  
+
+class Symptoms(EndpointsModel):
+    items = ndb.LocalStructuredProperty(Symptom, repeated=True) 
+
 
 class OutcomeListItem(EndpointsModel):
     count = ndb.FloatProperty()
@@ -120,7 +122,7 @@ class Session(EndpointsModel):
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
     ended = ndb.DateTimeProperty()
-    symptoms = ndb.LocalStructuredProperty(Symptom, repeated=True)
+    symptoms = ndb.LocalStructuredProperty(Symptoms)
     next = ndb.LocalStructuredProperty(Question)
     outcome = ndb.LocalStructuredProperty(Outcome)
     
