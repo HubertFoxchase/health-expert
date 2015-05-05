@@ -1,8 +1,8 @@
 <md-content md-scroll-y flex>
 	<div layout="row" class="md-whiteframe session-card">
  		<div class="md-tile-content patient-tile" layout="column" layout-align="start start" >
-	 			<div layout="row" class="item line">
- 			<h3>Patient</h3>
+	 		<div layout="row" class="item line">
+ 				<h3>Patient</h3>
  			</div>
  			<div layout="row" class="item">
  				<div class="dd" flex>Reference</div>
@@ -15,14 +15,6 @@
  			<div layout="row" class="item">
  				<div class="dd" flex>Gender</div>
  				<div class="dt" flex>{{item.patient.gender}}</div>
- 			</div>
- 			<div layout="row" class="item">
- 				<div class="dd" flex>Outcome</div>
- 				<div class="dt" flex>{{item.outcome.name}}</div>
- 			</div>
- 			<div layout="row" class="item">
- 				<div class="dd" flex>Confidence</div>
- 				<div class="dt" flex>{{item.outcome.confidence}}</div>
  			</div>
  			<div layout="row" class="item" ng-show="item.state == '1'">
  				<div class="dd" flex>Session</div>

@@ -10,7 +10,7 @@ handlers:
   upload: favicon\.ico
 
 - url: /_ah/spi/.*
-  script: api2.app
+  script: api3.app
 
 - url: /s
   static_dir: s

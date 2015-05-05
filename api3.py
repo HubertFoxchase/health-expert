@@ -21,8 +21,8 @@ from bigml.model import Model
 from bigml.fields import Fields
 from api2_messages import OutcomeRequestMessage
 from bigml.tree import PROPORTIONAL
-import bigml_model 
-
+import bigml_model
+import informedica_api
 
 WEB_CLIENT_ID = '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com'
 ANDROID_CLIENT_ID = 'replace this with your Android client ID'
@@ -146,6 +146,11 @@ class SessionApi(remote.Service):
                     name='insert')   
     def SessionInsert(self, model):
         
+        r = informedica_api.lookup("headache", "male")
+        
+        
+        '''
+        
         bm = bigml_model.get_model()
         bml = bigml_model.get_local_model()
         
@@ -171,6 +176,8 @@ class SessionApi(remote.Service):
             model.next = Question(label=label, description=description, type=field['optype'], categories=cat)
         else:
             model.next = Question(label=label, description=description, type=field['optype'])
+        
+        '''
         
         model.put()
         return model

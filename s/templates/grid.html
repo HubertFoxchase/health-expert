@@ -19,7 +19,7 @@
 	 			</div>
 	 			<div layout="row" class="item">
 	 				<div class="dd" flex="33">Confidence</div>
-	 				<div class="dt" flex="66">{{item.outcome.confidence}}</div>
+	 				<div class="dt" flex="66">{{outcome.confidence*100|number:1}}%</div>
 	 			</div>
 	 			<div layout="row" class="item" ng-show="item.state == '1'">
 	 				<div class="dd" flex="33">Status</div>

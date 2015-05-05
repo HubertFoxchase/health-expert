@@ -10,13 +10,18 @@ md-toolbar .toolbar-button {
 
 .form-container {
 	width:300px; 
-	height:180px
+	min-height:180px
 }
 
 .button-med, .form-item-med {
-	min-width: 10em;
+	min-width: 12.5em;
+}
+
+.button-med {
+	padding: 10px !important;
 }
 
 .button-lg {
 	min-width: 15em;
+	padding: 15px;
 }
