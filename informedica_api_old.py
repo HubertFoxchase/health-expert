@@ -15,6 +15,7 @@ HEADERS = {
 }
 
 LOOKUP_URL = "https://api.infermedica.com/v1/lookup"
+DIAGNOSIS_URL = "https://api.infermedica.com/v1/diagnosis"
         
 def lookup(observation, sex):
 
@@ -23,7 +24,21 @@ def lookup(observation, sex):
         "sex" : sex
     }
     
-    r = requests.get(LOOKUP_URL, params=payload, headers=HEADERS)        
+    r = requests.get(LOOKUP_URL, params=payload, headers=HEADERS)     
+
+    logging.debug(r.text)
+        
+    return r.json()
+
+def diagnosis(observations, sex, age):
+
+    payload = {
+        "sex" : sex,
+        "age" : age,
+        "evidence" : []
+    }
+    
+    r = requests.post(DIAGNOSIS_URL, json=payload, headers=HEADERS)     
         
     logging.debug(r.text)
     

@@ -22,7 +22,8 @@ from bigml.fields import Fields
 from api2_messages import OutcomeRequestMessage
 from bigml.tree import PROPORTIONAL
 import bigml_model
-import informedica_api
+import infermedica_api
+import informedica_api_old
 
 WEB_CLIENT_ID = '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com'
 ANDROID_CLIENT_ID = 'replace this with your Android client ID'
@@ -32,6 +33,9 @@ ANDROID_AUDIENCE = WEB_CLIENT_ID
 
 BIGML_USERNAME = "michaellisovski"
 BIGML_API_KEY = "b9065b0309020eb71b1a5bca99dc8cabcaabc9f9"
+
+APP_ID = "b2bc2e86"
+APP_KEY = "92d49a8b4302920c299e038041049741"
 
 c4c_api = endpoints.api(name='c4c', 
                version='v1',
@@ -146,38 +150,34 @@ class SessionApi(remote.Service):
                     name='insert')   
     def SessionInsert(self, model):
         
-        r = informedica_api.lookup("headache", "male")
-        
-        
-        '''
-        
-        bm = bigml_model.get_model()
-        bml = bigml_model.get_local_model()
-        
-        field_id = bm['object']['model']['root']['children'][0]['predicate']['field']
-        field = bml.fields[field_id]
+        patient = model.patient.key.get()
 
-        if 'label' in field :
-            label = field['label']
-        else :
-            label = field['name']
-
-        if 'description' in field :
-            description = field['description']
-        else :
-            description = ''
-
-        if 'categories' in field['summary'] :
-            
-            cat = []
-            for c in field['summary']['categories'] :
-                cat.append(c[0])
-            
-            model.next = Question(label=label, description=description, type=field['optype'], categories=cat)
-        else:
-            model.next = Question(label=label, description=description, type=field['optype'])
+        observations = []
         
-        '''
+        #observations.append({
+        #    "id" : observation_id,
+        #    "choice_id" : "present" 
+        #})
+
+        inf_api = infermedica_api.API(app_id=APP_ID, app_key=APP_KEY)
+        r = infermedica_api.Diagnosis(sex=patient.gender, age=patient.age)
+
+        r.add_observation('s_21', 'present')
+
+        #r.set_pursued_conditions(['c_76', 'c_9'])  # Optional
+
+        # call diagnosis
+        r = inf_api.diagnosis(r)      
+
+        label = r.question.text
+        description = label
+        type = r.question.type
+        
+        cat = []
+        for c in r.question.items :
+            cat.append(Symptom(id=c['id'], name=c['name'], value=''))
+        
+        model.next = Question(label=label, description=description, type=type, symptoms=cat)
         
         model.put()
         return model
@@ -235,13 +235,15 @@ class SessionApi(remote.Service):
         ndb.delete_multi(query.iter(keys_only=True))
         return query 
 
-    @Session.method(request_fields=('id', 'name', 'value'),
-                    path='insert_symptom', 
+    @endpoints.method(api2_messages.SymptomRequestMessage, 
+                      Session.ProtoModel(),
+                      path='insert_symptom', 
                       http_method='POST',
                       name='insertSymptom')
-    def SymptomInsert(self, model):
+    def SymptomInsert(self, request):
 
-        session = model.key.get()
+        session = ndb.Key(Session, request.session).get()
+        patient = session.patient
 
         if session is None:
             raise endpoints.NotFoundException('Session not found.')             
@@ -250,60 +252,111 @@ class SessionApi(remote.Service):
             session.symptoms = Symptoms()
 
         for s in session.symptoms.items :
-            if s.name == model.name :
-                s.value = model.value
+            if s.id == request.id :
+                s.value = request.value
                 break
         else :
-            symptom = Symptom(name=model.name, value=model.value)
+            symptom = Symptom(id=request.id, name=_lookupName(request.id, session.next.symptoms), value=request.value)
             session.symptoms.items.append(symptom)
 
         logging.debug('starting prediction')        
-
-        p = {}
         
+        inf_api = infermedica_api.API(app_id=APP_ID, app_key=APP_KEY)
+        r = infermedica_api.Diagnosis(sex=patient.gender, age=patient.age)
+        
+        logging.debug(session.symptoms.items)
+
         for symptom in session.symptoms.items:
-            p[symptom.name] = symptom.value
-                    
-        bigml_local_model = bigml_model.get_local_model()
+            r.add_observation(symptom.id, symptom.value)
         
-        prediction = bigml_local_model.predict(p, add_confidence=True, add_path=True, add_distribution=True, add_count=True, add_next=True)
+        r = inf_api.diagnosis(r)      
 
-        prediction_all = bigml_local_model.predict(p, multiple=5)
+        label = r.question.text
+        description = label
+        type = r.question.type
         
-        if prediction['next'] is not None :
-            logging.debug('got fields %s' % bigml_local_model.fields)
+        cat = []
+        for c in r.question.items :
+            cat.append(Symptom(id=c['id'], name=c['name'], value=''))
+        
+        session.next = Question(label=label, description=description, type=type, symptoms=cat)
 
-            fields = Fields(bigml_local_model.fields)
-            field_id = fields.field_id(prediction['next'])
-            field = bigml_local_model.fields[field_id]
-
-            if 'label' in field :
-                label = field['label']
-            else :
-                label = field['name']
-
-            if 'description' in field :
-                description = field['description']
-            else :
-                description = ''
-
-            if 'categories' in field['summary'] :
-                
-                cat = []
-                for c in field['summary']['categories'] :
-                    cat.append(c[0])
-                
-                session.next = Question(label=label, description=description, type=field['optype'], categories=cat)
-            else:
-                session.next = Question(label=label, description=description, type=field['optype'])
-
-        else :
-            session.next = None
-            
-        session.outcome = Outcome(name=prediction['prediction'], confidence=str(prediction['confidence']), full=prediction_all)        
+        session.outcome = Outcome(id=r.conditions[0]['id'], 
+                                  name=r.conditions[0]['name'], 
+                                  probability=float(r.conditions[0]['probability']), 
+                                  full=r.conditions[:3] )        
         session.put()
         
-        return session
+        return session.ToMessage()
+
+    @endpoints.method(api2_messages.SymptomMultiRequestMessage, 
+                      Session.ProtoModel(),
+                      path='insert_symptoms_multi', 
+                      http_method='POST',
+                      name='insertSymptoms')
+    def SymptomInsertMulti(self, request):
+
+        session = ndb.Key(Session, request.session).get()
+        patient = session.patient
+
+        if session is None:
+            raise endpoints.NotFoundException('Session not found.')             
+
+        if session.symptoms is None :
+            session.symptoms = Symptoms()
+
+        if request.present is not None :
+            
+            for sp in request.present :
+                for s in session.symptoms.items :
+                    if s.id == sp :
+                        s.value = 'present'
+                        break
+                else :
+                    symptom = Symptom(id=sp, name=_lookupName(sp, session.next.symptoms), value='present')
+                    session.symptoms.items.append(symptom)
+
+        if request.absent is not None : 
+        
+            for sp in request.absent :
+                for s in session.symptoms.items :
+                    if s.id == sp :
+                        s.value = 'absent'
+                        break
+                else :
+                    symptom = Symptom(id=sp, name=_lookupName(sp, session.next.symptoms), value='absent')
+                    session.symptoms.items.append(symptom)            
+
+        logging.debug('starting prediction')        
+        
+        inf_api = infermedica_api.API(app_id=APP_ID, app_key=APP_KEY)
+        r = infermedica_api.Diagnosis(sex=patient.gender, age=patient.age)
+
+        for symptom in session.symptoms.items:
+            r.add_observation(symptom.id, symptom.value)
+        
+        r = inf_api.diagnosis(r)      
+
+        logging.debug(r)
+
+        label = r.question.text
+        description = label
+        type = r.question.type
+        
+        cat = []
+        for c in r.question.items :
+            cat.append(Symptom(id=c['id'], name=c['name'], value=''))
+        
+        session.next = Question(label=label, description=description, type=type, symptoms=cat)
+
+        session.outcome = Outcome(id=r.conditions[0]['id'], 
+                                  name=r.conditions[0]['name'], 
+                                  probability=float(r.conditions[0]['probability']), 
+                                  full=r.conditions[:3] )        
+        session.put()
+        
+        return session.ToMessage()
+
 
     @endpoints.method(api2_messages.OutcomeRequestMessage, 
                       message_types.VoidMessage,
@@ -315,6 +368,13 @@ class SessionApi(remote.Service):
         Session.add_outcome(request)
         return message_types.VoidMessage()
 
+
+def _lookupName(lookupId, lookupList):
+    for item in lookupList :
+        if lookupId == item.id :
+            return item.name
+    else :
+        return ''
 
 
 app = endpoints.api_server([c4c_api], restricted=False)    

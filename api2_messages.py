@@ -8,13 +8,20 @@ from protorpc import messages
 
 #users
 class SymptomRequestMessage(messages.Message):
-    name = messages.StringField(1)
-    value = messages.StringField(2)
-    session = messages.IntegerField(3)
+    id = messages.StringField(1)
+    name = messages.StringField(2)
+    value = messages.StringField(3)
+    session = messages.IntegerField(4)
+
+class SymptomMultiRequestMessage(messages.Message):
+    session = messages.IntegerField(1)
+    present = messages.StringField(2, repeated=True)
+    absent = messages.StringField(3, repeated=True)
 
 class SymptomResponseMessage(messages.Message):
-    name = messages.StringField(1)
-    value = messages.StringField(2)
+    id = messages.StringField(1)
+    name = messages.StringField(2)
+    value = messages.StringField(3)
 
 class PatientResposeMessage(messages.Message):
     id = messages.IntegerField(1)
@@ -27,16 +34,18 @@ class QuestionsResponseMessage(messages.Message):
     label = messages.StringField(1)
     description = messages.StringField(2)
     type = messages.StringField(3)
-    categories = messages.StringField(4, repeated=True)
+    categories = messages.MessageField(SymptomResponseMessage, 4, repeated=True)
          
 class OutcomeRequestMessage(messages.Message):
-    name = messages.StringField(1)
-    confidence = messages.StringField(2)
-    session = messages.IntegerField(3)
+    id = messages.StringField(1)
+    name = messages.StringField(2)
+    probability = messages.FloatField(3)
+    session = messages.IntegerField(4)
 
 class OutcomeResposeMessage(messages.Message):
-    name = messages.StringField(1)
-    confidence = messages.StringField(2)
+    id = messages.StringField(1)
+    name = messages.StringField(2)
+    probability = messages.FloatField(3)
 
 class SessionResponseMessage(messages.Message):
     patient = messages.IntegerField(1)

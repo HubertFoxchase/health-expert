@@ -100,6 +100,13 @@ angular.module("controllers", []).
 						document.getElementById("main").style.visibility = "visible";
 						document.getElementById("progress").style.display = "none";
 						_api = $api.get();
+						
+						_api.session.get({id:$routeParams.session}).execute(function(resp){
+							$rootScope.session = resp;
+							$rootScope.patient = resp.patient;
+							$scope.session = $rootScope.session;
+							$scope.$apply();
+						});
 					}
 			)
 		}
@@ -112,8 +119,9 @@ angular.module("controllers", []).
 		
 		$scope.session = $rootScope.session;
 		
-		$scope.question = function(value){
-			_api.session.insertSymptom({id:$rootScope.session.id, name:$rootScope.session.next.label, value:value}).execute(function(resp){
+		$scope.questionSingle = function(symptom){
+			
+			_api.session.insertSymptom({session:$rootScope.session.id, id:symptom.id, value:symptom.value}).execute(function(resp){
 
 				if(resp.next){
 					$scope.symptom = {value:null};
@@ -129,4 +137,34 @@ angular.module("controllers", []).
 				}
 			});
 		}
+		
+		$scope.questionMulti = function(symptoms){
+			
+			var present = [];
+			var absent = [];
+			
+			angular.forEach(symptoms, function(val){
+				if(val.value == 'present')
+					present.push(val.id);
+				else
+					absent.push(val.id);
+			})
+			
+			_api.session.insertSymptoms({session:$rootScope.session.id, present:present, absent:absent}).execute(function(resp){
+
+				if(resp.next){
+					$scope.symptom = {value:null};
+					$rootScope.session = resp;
+					$scope.session = $rootScope.session;
+					$scope.$apply();
+				}
+				else {
+					
+					_api.session.end({id:$rootScope.session.id}).execute(function(resp){
+						location.hash = "/" + resp.id + "/end";
+					});
+				}
+			});
+		}
+		
 	}]);	

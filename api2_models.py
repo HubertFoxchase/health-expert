@@ -77,6 +77,7 @@ class Patient(EndpointsModel):
         return self._parent
 '''
 class Symptom(EndpointsModel):
+    id = ndb.StringProperty()
     name = ndb.StringProperty()
     value = ndb.StringProperty()  
 
@@ -85,23 +86,21 @@ class Symptoms(EndpointsModel):
 
 
 class OutcomeListItem(EndpointsModel):
-    count = ndb.FloatProperty()
-    confidence = ndb.FloatProperty()  
-    prediction = ndb.StringProperty()
-    probability = ndb.FloatProperty()
+    id = ndb.StringProperty()
+    name = ndb.StringProperty()
+    probability = ndb.FloatProperty() 
     
 class Outcome(EndpointsModel):
-    
+    id = ndb.StringProperty()
     name = ndb.StringProperty()
-    confidence = ndb.StringProperty()  
+    probability = ndb.FloatProperty()  
     full = ndb.LocalStructuredProperty(OutcomeListItem, repeated=True) 
 
 class Question(EndpointsModel):
-    
     label = ndb.StringProperty()
     description = ndb.StringProperty()
     type = ndb.StringProperty()  
-    categories = ndb.StringProperty(repeated=True)
+    symptoms = ndb.LocalStructuredProperty(Symptom, repeated=True)
 
 class SessionState(messages.Enum):
     IN_PROGRESS = 1
@@ -111,12 +110,14 @@ class SessionState(messages.Enum):
    
 class Session(EndpointsModel):
     
-    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'state', 'symptoms', 'outcome', 'next', 'patient', 'patient_id', 'name', 'value')    
+    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'state', 'symptoms', 'outcome', 'next', 'patient', 'patient_id', 'symptom_id', 'symptom_name', 'symptom_value')    
     
     _patientId = None
-    _name = None
-    _value = None
+    _symptomId = None
+    _symptomName = None
+    _symptomValue = None
     _patient = None
+    _symptomsArray = None
     
     state = ndb.IntegerProperty(default = int(SessionState.IN_PROGRESS))
     created = ndb.DateTimeProperty(auto_now_add=True)
@@ -128,19 +129,27 @@ class Session(EndpointsModel):
     
     patient = ndb.LocalStructuredProperty(Patient)
 
-    def nameSetter(self, value):
-        self._name = value
+    def symptom_idSetter(self, value):
+        self._symptomId = value
     
-    @EndpointsAliasProperty(setter=nameSetter, property_type=messages.StringField)
-    def name(self):
-        return self._name
+    @EndpointsAliasProperty(setter=symptom_idSetter, property_type=messages.StringField)
+    def symptom_id(self):
+        return self._symptomId
 
-    def valueSetter(self, value):
-        self._value = value
+    def symptom_nameSetter(self, value):
+        self._symptomName = value
+    
+    @EndpointsAliasProperty(setter=symptom_nameSetter, property_type=messages.StringField)
+    def symptom_name(self):
+        return self._symptomName
 
-    @EndpointsAliasProperty(setter=valueSetter, property_type=messages.StringField)
-    def value(self):
-        return self._value
+    def symptom_valueSetter(self, value):
+        self._symptomValue = value
+
+    @EndpointsAliasProperty(setter=symptom_valueSetter, property_type=messages.StringField)
+    def symptom_value(self):
+        return self._symptomValue
+
 
     def PatientId(self, value):
         if not isinstance(value, (int, long)):
@@ -167,7 +176,7 @@ class Session(EndpointsModel):
         if entity is None:
             raise endpoints.NotFoundException('Session %s does not exist.' % message.session)         
         
-        symptom = Symptom(name=message.name, value=message.value)
+        symptom = Symptom(id=message.id, name=message.name, value=message.value)
         entity.symptoms.append(symptom)
 
         entity.updated = datetime.datetime.now()
@@ -184,7 +193,7 @@ class Session(EndpointsModel):
         if entity is None:
             raise endpoints.NotFoundException('Session %s does not exist.' % message.session)         
         
-        entity.outcome = Outcome(name=message.name, confidence=message.confidence)
+        entity.outcome = Outcome(id=message.id, name=message.name, probability=message.probability)
 
         entity.state = int(SessionState.REVIEWED)
         entity.updated = datetime.datetime.now()

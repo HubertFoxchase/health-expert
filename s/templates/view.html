@@ -29,7 +29,7 @@
 	 			<div layout="row" class="item line">
  			<h3>Symptoms</h3>
  			</div>
- 			<div layout="row" class="item" ng-repeat="symptom in item.symptoms.items">
+ 			<div layout="row" class="item" ng-repeat="symptom in item.symptoms.items | filter: { value: 'present' }">
  				<div class="dd" flex>{{symptom.name}}</div>
  				<div class="dt" flex>{{symptom.value}}</div>
  			</div>
@@ -39,8 +39,8 @@
  			<h3>Outcome</h3>
 			</div>
  			<div layout="row" class="item" ng-repeat="outcome in item.outcome.full">
- 				<div class="dd" flex>{{outcome.prediction}}</div>
- 				<div class="dt" flex>{{outcome.confidence*100|number:1}}%</div>
+ 				<div class="dd" flex>{{outcome.name}}</div>
+ 				<div class="dt" flex>{{outcome.probability*100 | number:1}}%</div>
  			</div>
  		</div>		
 	</div>	
