@@ -9,8 +9,11 @@ factory('$api', ['$q', function ($q) {
 	
 	var clientReady = function() {
 		
-    	var ROOT = 'http://localhost:11080/_ah/api';
-    	//var ROOT = 'https://health-expert-1705.appspot.com/_ah/api';
+    	var ROOT = 'https://health-expert-1705.appspot.com/_ah/api';
+		
+    	if(location.hostname.indexOf("localhost") > -1)
+    		ROOT = 'http://localhost:11080/_ah/api';
+    	
     	gapi.client.load('c4c', 'v1', apiReady, ROOT);
     }      
 

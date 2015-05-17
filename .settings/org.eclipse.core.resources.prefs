@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
+encoding//bigml/api.py=utf-8
+encoding//bigml/bigmlconnection.py=utf-8
 encoding//bigml/model.py=utf-8
 encoding//bigml/sslposter.py=utf-8
 encoding//infermedica_api/models.py=utf-8

@@ -10,7 +10,14 @@ This module contains classes and function responsible for making API requests.
 import json
 import platform
 
-import requests
+try:
+    #added to allow GAE to work
+    from google.appengine.api import urlfetch
+    GAE_ENABLED = True
+except ImportError:
+    GAE_ENABLED = False
+    import requests
+
 from . import __version__, exceptions, models, API_CONFIG, DEFAULT_API_VERSION
 
 
@@ -18,7 +25,11 @@ class API(object):
     """Class which handles requests to the Infermedica API."""
 
     # User-Agent for HTTP request
-    library_details = "requests %s; python %s" % (requests.__version__, platform.python_version())
+    if GAE_ENABLED :
+        library_details = "urlfetch %s; python %s" % ('?', platform.python_version())
+    else:
+        library_details = "requests %s; python %s" % (requests.__version__, platform.python_version())
+    
     user_agent = "Infermedica-API-Python %s (%s)" % (__version__, library_details)
 
     def __init__(self, **kwargs):
@@ -54,8 +65,21 @@ class API(object):
 
         kwargs['headers'] = self.__get_headers(kwargs['headers'] or {})
 
-        response = requests.request(method, url, **kwargs)
-
+        if GAE_ENABLED :
+            if 'data' in kwargs :
+                payload = kwargs['data']
+            else:
+                payload = None
+                
+            if method == 'POST' :
+                u_method = urlfetch.POST
+            else:
+                u_method = urlfetch.GET
+            
+            response = urlfetch.fetch(url = url, payload = payload, method=u_method, headers = kwargs['headers'])
+        else:
+            response = requests.request(method, url, **kwargs)
+        
         return self.__handle_response(response)
 
     def __handle_response(self, response):
@@ -141,11 +165,11 @@ class API(object):
         :returns: A Observation object
         :rtype: :class:`infermedica_api.models.Observation`
         """
-        try:
-            url = self.api_methods['observation_details'].format(**{'id': _id})
-            response = self.__get(url)
-        except KeyError as e:
-            raise exceptions.MethodNotAvailableInAPIVersion(self.api_version, 'observation_details')
+        #try:
+        url = self.api_methods['observation_details'].format(**{'id': _id})
+        response = self.__get(url)
+        #except KeyError as e:
+        #    raise exceptions.MethodNotAvailableInAPIVersion(self.api_version, 'observation_details')
 
         return models.Observation.from_json(response)
 

@@ -17,7 +17,7 @@
 			    <md-button class="md-primary md-raised md-hue-1 toolbar-button" ng-click="end()" ng-show="$root.session.state == 1">
 			      End session
 			    </md-button>			
-			    <md-button class="md-primary md-raised md-hue-1 toolbar-button" ng-click="start()" ng-hide="$root.session.state">
+			    <md-button class="md-primary md-raised md-hue-1 toolbar-button" ng-click="start()" ng-show="!$root.session.state || $root.session.state > 1">
 			      New session
 			    </md-button>			
 			</div>
@@ -28,6 +28,7 @@
 
 			</div>
 		</div>
+		<div class="attribution">This demo is powered by <a href="http://www.infermedica.com">Infermedica</a> diagnostic engine</div>
 	</div>
 
 	<script src="https://apis.google.com/js/client.js"></script>

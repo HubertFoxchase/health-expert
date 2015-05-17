@@ -37,3 +37,12 @@ h3.questionLabel {
   right: 0px;
   top: 16px;
 }
+
+.attribution {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 95%;
+  background: #eee;
+  padding: 5px 10px;
+}
