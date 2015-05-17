@@ -44,14 +44,14 @@ angular.module("controllers", []).
 	    	$location.path("/session/" + itemData.id);
 	    };	
 
-		if($rootScope.gridItems){
-			$scope.sessions	= $rootScope.gridItems;
-			//timer = window.setInterval(loadSessions, 5000);
-			return;
-		}
-		
 		if(_api) {
-			loadSessions()
+			if($rootScope.gridItems){
+				$scope.sessions	= $rootScope.gridItems;
+			}
+			else {
+				$scope.sessions = null;
+				loadSessions();
+			}
 			//timer = window.setInterval(loadSessions, 5000);
 		}
 		else {
@@ -68,15 +68,16 @@ angular.module("controllers", []).
 	}]).	
 	controller("SessionCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', function($scope, $rootScope, $routeParams, $api){
 		
-		if($rootScope.item){
-			$scope.item	= $rootScope.item;
-			return;
-		}
-		
 		var _api = $api.get();
-		
+
 		if(_api) {
-			loadSessions()
+			
+			if($rootScope.item){
+				$scope.item	= $rootScope.item;
+			}
+			else {
+				loadSessions();
+			}
 		}
 		else {
 			$api.load().then(
@@ -97,4 +98,17 @@ angular.module("controllers", []).
 			});
 		}
 		
+		$scope.delete = function(id){
+			_api.session.markDeleted({id:$routeParams.id}).execute(function(resp){
+				$rootScope.gridItems = null;
+		    	location.href = "#/grid";
+			});
+		}
+
+		$scope.reviewed = function(id){
+			_api.session.markReviewed({id:$routeParams.id}).execute(function(resp){
+				$rootScope.gridItems = null;
+		    	location.href = "#/grid";
+			});
+		}		
 	}]);	

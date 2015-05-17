@@ -1,4 +1,10 @@
 <md-content md-scroll-y flex>
+	<div layout="row" layout-align="end center" style="margin-bottom: 10px; padding-right:5px">
+ 		<md-button class="md-raised button-med" style="margin-right:20px" ng-href="#/grid">Cancel</md-button>
+ 		<md-button class="md-raised button-med" style="margin-right:20px" ng-click="delete()">Delete</md-button>
+ 		<md-button class="md-raised button-med" style="margin-right:20px" ng-click="update()">Update Diagnosis</md-button>
+ 		<md-button class="md-raised button-med" ng-click="reviewed()">Mark Reviewed</md-button>
+	</div>
 	<div layout="row" class="md-whiteframe session-card">
  		<div class="md-tile-content patient-tile" layout="column" layout-align="start start" >
 	 		<div layout="row" class="item line">

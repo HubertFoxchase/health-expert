@@ -1,14 +1,17 @@
 <md-content layout="column" layout-align="center center" layout-margin layout-padding flex>
-	<div class="form-container" layout="column" layout-align="space-between center" flex>
+
+	<form name="form" novalidate>
 	     <md-input-container  class="form-item-med">
 			<label>Your Age</label>
 			<input required name="ref" ng-model="patient.age">
 			<div ng-messages="patient.age.$error">
 				<div ng-message="required">Please enter your age (e.g. 43).</div>
 			</div>
-	     </md-input-container>
+	    </md-input-container>
+	   	<br>
 	   	<md-button  class="md-raised md-primary button-med" ng-click="age(patient.age)">
 	    	Next
 	   	</md-button>
-	</div>      
+   	</form>
+   	      
 </md-content>

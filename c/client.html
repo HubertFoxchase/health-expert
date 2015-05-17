@@ -13,12 +13,16 @@
 	<div layout="column" flex style="visibility:hidden" id="main">
 		<md-toolbar layout="row" class="md-default-theme">
 			<h1>Click4Care</h1>
-			<div style="margin:auto 16px">
-			    <md-button class="md-primary md-raised md-hue-1 toolbar-button" ng-click="restart()">
-			      Restart
+			<div class="restartBtnContainer">
+			    <md-button class="md-primary md-raised md-hue-1 toolbar-button" ng-click="end()" ng-show="$root.session.state == 1">
+			      End session
+			    </md-button>			
+			    <md-button class="md-primary md-raised md-hue-1 toolbar-button" ng-click="start()" ng-hide="$root.session.state">
+			      New session
 			    </md-button>			
 			</div>
 		</md-toolbar>
+		<md-progress-linear class="md-accent" md-mode="determinate" value="{{$root.progress}}"></md-progress-linear>		
 		<div class="view-container">
 			<div ng-view class="view-frame">
 

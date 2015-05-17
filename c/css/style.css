@@ -8,6 +8,10 @@ md-toolbar .toolbar-button {
 	font-size: 0.8em;
 }
 
+h3.questionLabel {
+	text-align: center;
+}
+
 .form-container {
 	width:300px; 
 	min-height:180px
@@ -24,4 +28,12 @@ md-toolbar .toolbar-button {
 .button-lg {
 	min-width: 15em;
 	padding: 15px;
+}
+
+
+.restartBtnContainer {
+  margin: auto 16px;
+  position: absolute;
+  right: 0px;
+  top: 16px;
 }

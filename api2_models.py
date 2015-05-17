@@ -107,10 +107,10 @@ class SessionState(messages.Enum):
     ENDED = 2
     REVIEWED = 3
     DELETED = 4
-   
+
 class Session(EndpointsModel):
     
-    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'state', 'symptoms', 'outcome', 'next', 'patient', 'patient_id', 'symptom_id', 'symptom_name', 'symptom_value')    
+    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'state', 'symptoms', 'outcome', 'next', 'patient', 'patient_id')    
     
     _patientId = None
     _symptomId = None
@@ -135,21 +135,6 @@ class Session(EndpointsModel):
     @EndpointsAliasProperty(setter=symptom_idSetter, property_type=messages.StringField)
     def symptom_id(self):
         return self._symptomId
-
-    def symptom_nameSetter(self, value):
-        self._symptomName = value
-    
-    @EndpointsAliasProperty(setter=symptom_nameSetter, property_type=messages.StringField)
-    def symptom_name(self):
-        return self._symptomName
-
-    def symptom_valueSetter(self, value):
-        self._symptomValue = value
-
-    @EndpointsAliasProperty(setter=symptom_valueSetter, property_type=messages.StringField)
-    def symptom_value(self):
-        return self._symptomValue
-
 
     def PatientId(self, value):
         if not isinstance(value, (int, long)):

@@ -1,0 +1,11 @@
+<md-content md-scroll-y layout="column" layout-align="center center" layout-margin layout-padding flex>
+	<div layout="column" layout-align="space-between" layout-margin flex >
+		
+		<h3 class="questionLabel">Please select one of the symptoms to start the assesment:</h3>
+
+	   	<md-button  ng-repeat="s in initialSymptoms.symptoms" flex class="md-raised md-primary button-med" ng-click="session(s.id)">
+	    	{{s.name}}
+	   	</md-button>
+
+	</div>      
+</md-content>

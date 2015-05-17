@@ -15,13 +15,7 @@ from protorpc import remote, message_types
 from protorpc import message_types
 from api2_models import *
 
-import bigml.api
-from bigml.api import BigML
-from bigml.model import Model
-from bigml.fields import Fields
 from api2_messages import OutcomeRequestMessage
-from bigml.tree import PROPORTIONAL
-import bigml_model
 import infermedica_api
 import informedica_api_old
 
@@ -31,11 +25,10 @@ IOS_CLIENT_ID = 'replace this with your iOS client ID'
 OTHER_CLIENT_ID = '817202020074-utvardicvh3oaqhf2tqagqnrmk52cv2p.apps.googleusercontent.com'
 ANDROID_AUDIENCE = WEB_CLIENT_ID
 
-BIGML_USERNAME = "michaellisovski"
-BIGML_API_KEY = "b9065b0309020eb71b1a5bca99dc8cabcaabc9f9"
-
 APP_ID = "b2bc2e86"
 APP_KEY = "92d49a8b4302920c299e038041049741"
+
+
 
 c4c_api = endpoints.api(name='c4c', 
                version='v1',
@@ -143,29 +136,34 @@ class PatientApi(remote.Service):
 @c4c_api.api_class(resource_name='session')
 class SessionApi(remote.Service):
    
-    @Session.method(request_fields=('patient_id',),
-                    response_fields=('id', 'created', 'state', 'patient', 'next'),
-                    path='session', 
-                    http_method='POST',
-                    name='insert')   
-    def SessionInsert(self, model):
+    @endpoints.method(api2_messages.SessionNewRequestInsertMessage,
+                      Session.ProtoModel(),
+                      path='new_session', 
+                      http_method='POST',
+                      name='new')   
+    def SessionInsert(self, request):
         
-        patient = model.patient.key.get()
-
-        observations = []
+        patient = ndb.Key(Patient, request.patient).get()
+        session = Session(patient = patient, symptoms = Symptoms())
         
-        #observations.append({
-        #    "id" : observation_id,
-        #    "choice_id" : "present" 
-        #})
-
         inf_api = infermedica_api.API(app_id=APP_ID, app_key=APP_KEY)
         r = infermedica_api.Diagnosis(sex=patient.gender, age=patient.age)
 
-        r.add_observation('s_21', 'present')
+        if request.present is not None :
+            
+            for sp in request.present :
 
-        #r.set_pursued_conditions(['c_76', 'c_9'])  # Optional
+                observation = inf_api.observation_details(sp)
+                
+                if observation is not None :
+                    symptom = Symptom(id=sp, name=observation.name, value='present')
+                    session.symptoms.items.append(symptom)
 
+        logging.debug(session.symptoms.items)
+
+        for symptom in session.symptoms.items:
+            r.add_observation(symptom.id, symptom.value)
+        
         # call diagnosis
         r = inf_api.diagnosis(r)      
 
@@ -177,26 +175,35 @@ class SessionApi(remote.Service):
         for c in r.question.items :
             cat.append(Symptom(id=c['id'], name=c['name'], value=''))
         
-        model.next = Question(label=label, description=description, type=type, symptoms=cat)
+        session.next = Question(label=label, description=description, type=type, symptoms=cat)
         
-        model.put()
-        return model
+        session.put()
+        return session.ToMessage()
 
-    @Session.query_method(path='list_sessions', 
+    @Session.query_method(path='sessions/list', 
                       http_method='GET',
                       name='list')   
     def SessionList(self, query):
-        return query.order(-Session.created)
-    
-    @Session.query_method(path='active_sessions', 
+        return query.filter(Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED), int(SessionState.REVIEWED)])).order(-Session.created, Session.key)
+
+    @Session.query_method(path='sessions/listAll', 
                       http_method='GET',
-                      name='listActive')   
+                      name='listAll',
+                      limit_default = 99)   
+    def SessionListAll(self, query):
+        return query.order(-Session.created)
+
+    
+    @Session.query_method(path='sessions/listActive', 
+                      http_method='GET',
+                      name='listActive',
+                      limit_default = 99)   
     def SessionListActive(self, query):
         #return query.filter(Session.state == int(SessionState.ACTIVE))
         
-        return query.order(Session.state, -Session.created)
+        return query.filter(Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED)])).order(Session.state, -Session.created, Session.key)
 
-    @Session.method(path='get_session/{id}', 
+    @Session.method(path='session/{id}', 
                       http_method='GET',
                       name='get')   
     def SessionGet(self, model):
@@ -206,7 +213,7 @@ class SessionApi(remote.Service):
         return model        
 
     @Session.method(request_fields=('id',),
-                    path='end_session/{id}', 
+                    path='session/end/{id}', 
                       http_method='POST',
                       name='end')   
     def SessionEnd(self, model):
@@ -218,7 +225,7 @@ class SessionApi(remote.Service):
         return model        
 
 
-    @Session.method(path='delete_session/{id}', 
+    @Session.method(path='session/delete/{id}', 
                       http_method='GET',
                       name='delete')   
     def SessionDelete(self, model):
@@ -227,7 +234,17 @@ class SessionApi(remote.Service):
             raise endpoints.NotFoundException('Session not found.')
         return model        
 
-    @Session.query_method(path='delete_all_sessions', 
+    @Session.method(path='session/markDeleted/{id}', 
+                      http_method='GET',
+                      name='markDeleted')   
+    def SessionMarkDeleted(self, model):
+        model.state = int(SessionState.DELETED)
+        model.put()        
+        if not model.from_datastore:
+            raise endpoints.NotFoundException('Session not found.')
+        return model  
+
+    @Session.query_method(path='sessions/deleteAll', 
                       http_method='GET',
                       name='deleteAll')   
     def SessionDeleteAll(self, query):
@@ -235,66 +252,22 @@ class SessionApi(remote.Service):
         ndb.delete_multi(query.iter(keys_only=True))
         return query 
 
-    @endpoints.method(api2_messages.SymptomRequestMessage, 
-                      Session.ProtoModel(),
-                      path='insert_symptom', 
-                      http_method='POST',
-                      name='insertSymptom')
-    def SymptomInsert(self, request):
-
-        session = ndb.Key(Session, request.session).get()
-        patient = session.patient
-
-        if session is None:
-            raise endpoints.NotFoundException('Session not found.')             
-
-        if session.symptoms is None :
-            session.symptoms = Symptoms()
-
-        for s in session.symptoms.items :
-            if s.id == request.id :
-                s.value = request.value
-                break
-        else :
-            symptom = Symptom(id=request.id, name=_lookupName(request.id, session.next.symptoms), value=request.value)
-            session.symptoms.items.append(symptom)
-
-        logging.debug('starting prediction')        
-        
-        inf_api = infermedica_api.API(app_id=APP_ID, app_key=APP_KEY)
-        r = infermedica_api.Diagnosis(sex=patient.gender, age=patient.age)
-        
-        logging.debug(session.symptoms.items)
-
-        for symptom in session.symptoms.items:
-            r.add_observation(symptom.id, symptom.value)
-        
-        r = inf_api.diagnosis(r)      
-
-        label = r.question.text
-        description = label
-        type = r.question.type
-        
-        cat = []
-        for c in r.question.items :
-            cat.append(Symptom(id=c['id'], name=c['name'], value=''))
-        
-        session.next = Question(label=label, description=description, type=type, symptoms=cat)
-
-        session.outcome = Outcome(id=r.conditions[0]['id'], 
-                                  name=r.conditions[0]['name'], 
-                                  probability=float(r.conditions[0]['probability']), 
-                                  full=r.conditions[:3] )        
-        session.put()
-        
-        return session.ToMessage()
+    @Session.method(path='session/markReviewed/{id}', 
+                      http_method='GET',
+                      name='markReviewed')   
+    def SessionMarkReviewed(self, model):
+        model.state = int(SessionState.REVIEWED)
+        model.put()        
+        if not model.from_datastore:
+            raise endpoints.NotFoundException('Session not found.')
+        return model  
 
     @endpoints.method(api2_messages.SymptomMultiRequestMessage, 
                       Session.ProtoModel(),
-                      path='insert_symptoms_multi', 
+                      path='session/insertMultipleSymptoms', 
                       http_method='POST',
-                      name='insertSymptoms')
-    def SymptomInsertMulti(self, request):
+                      name='insertMultipleSymptoms')
+    def SymptomsInsertMulti(self, request):
 
         session = ndb.Key(Session, request.session).get()
         patient = session.patient
@@ -359,14 +332,14 @@ class SessionApi(remote.Service):
 
 
     @endpoints.method(api2_messages.OutcomeRequestMessage, 
-                      message_types.VoidMessage,
-                      path='insert_outcome', 
+                      Session.ProtoModel(),
+                      path='session/insertOutcome', 
                       http_method='POST',
                       name='insertOutcome')
     def OutcomeInsert(self, request): 
 
-        Session.add_outcome(request)
-        return message_types.VoidMessage()
+        session = Session.add_outcome(request)
+        return session.ToMessage()
 
 
 def _lookupName(lookupId, lookupList):

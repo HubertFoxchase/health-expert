@@ -47,6 +47,11 @@ class OutcomeResposeMessage(messages.Message):
     name = messages.StringField(2)
     probability = messages.FloatField(3)
 
+class SessionNewRequestInsertMessage(messages.Message):
+    patient = messages.IntegerField(1)
+    present = messages.StringField(2, repeated=True)
+
+
 class SessionResponseMessage(messages.Message):
     patient = messages.IntegerField(1)
     created = messages.StringField(2)

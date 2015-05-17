@@ -1,26 +1,11 @@
 <md-content md-scroll-y layout="column" layout-align="center center" layout-margin layout-padding flex>
 	<div layout="column" layout-align="space-between" layout-margin flex >
-		<h3 style="text-align: center">What is your main complaint?</h3>
-	   	<md-button flex class="md-raised md-primary button-med" ng-click="session()">
-	    	Fever, general weakness or feeling unwell
+		
+		<h3 class="questionLabel">What is your main complaint?</h3>
+
+	   	<md-button  ng-repeat="g in groupsOfSymptoms" flex class="md-raised md-primary button-med" ng-click="setInitialSymptoms($index, g.symptoms)">
+	    	{{g.name}}
 	   	</md-button>
-	   	<md-button flex class="md-raised md-primary button-med md-accent" ng-click="session()">
-	    	Pain in a specific location
-	   	</md-button>
-	   	<md-button flex class="md-raised md-primary button-med" ng-click="session()">
-	    	Trauma or accident 
-	   	</md-button>
-	   	<md-button flex class="md-raised md-primary button-med" ng-click="session()">
-	    	Respiratory problems
-	   	</md-button>
-	   	<md-button flex class="md-raised md-primary button-med" ng-click="session()">
-	    	Skin problems
-	   	</md-button>
-	   	<md-button flex class="md-raised md-primary button-med" ng-click="session()">
-	    	Psychological problems
-	   	</md-button>
-	   	<md-button flex class="md-raised md-primary button-med" ng-click="session()">
-	    	Other
-	   	</md-button>
+
 	</div>      
 </md-content>
