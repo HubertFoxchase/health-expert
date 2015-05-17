@@ -1,7 +1,7 @@
 <md-content md-scroll-y layout="column" layout-align="center center" layout-margin layout-padding flex>
 	<div layout="column" layout-align="space-between center" layout-margin flex>
 		<h3 class="questionLabel">Reason for your visit</h3>
-	   	<md-button flex class="md-raised md-primary button-med md-accent" ng-href="#/{{$root.patient.id}}/groups">
+	   	<md-button flex class="md-raised md-primary button-med md-accent" ng-click="setReason()">
 	    	I'm not feeling well
 	   	</md-button>
 	   	<md-button flex class="md-raised md-primary button-med" ng-href="#/{{$root.patient.id}}/end">

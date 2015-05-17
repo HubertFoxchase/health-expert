@@ -132,8 +132,15 @@ angular.module("controllers", []).
 				location.hash = "/" + $rootScope.patient.id + "/reason";
 			}
 		}
+
+		$scope.setReason = function(id){
+			$rootScope.progress += 5;
+			location.hash = "/" + $rootScope.patient.id + "/groups";
+		}
+		
 		
 		$scope.setInitialSymptoms = function(id){
+			$rootScope.progress += 5;
 			location.hash = "/" + $rootScope.patient.id + "/initial/" + id;
 		}
 		
@@ -215,8 +222,12 @@ angular.module("controllers", []).
 
 					if(resp.outcome){
 						var p = resp.outcome.probability * 100;
-						if(p > $rootScope.progress){
+						
+						if($rootScope.progress && p > $rootScope.progress){
 							$rootScope.progress = p;
+						}
+						else{
+							$rootScope.progress += 7;
 						}
 					}
 					
