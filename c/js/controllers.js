@@ -94,12 +94,31 @@ angular.module("controllers", []).
 		
 		if(!_api){
 			$api.load().then(
-					function(data){
+					function(data){ //success
 						document.getElementById("main").style.visibility = "visible";
 						document.getElementById("progress").style.display = "none";
 						_api = $api.get();
+					},
+					function(data){ //failed
+						document.getElementById("main").style.visibility = "visible";
+						document.getElementById("progress").style.display = "none";
+						location.hash = "/authorise";
 					}
 			)
+		}
+		
+		$scope.authorise = function(){
+			$api.handleAuthClick().then(
+					function(data){ //success
+						document.getElementById("main").style.visibility = "visible";
+						document.getElementById("progress").style.display = "none";
+						_api = $api.get();
+						location.hash = "/start";
+					},
+					function(data){ //failed
+						$scope.authFailed = true;
+					}
+			);
 		}
 
 		$scope.start = function(ref){

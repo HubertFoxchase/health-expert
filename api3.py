@@ -28,6 +28,7 @@ ANDROID_AUDIENCE = WEB_CLIENT_ID
 APP_ID = "b2bc2e86"
 APP_KEY = "92d49a8b4302920c299e038041049741"
 
+RAISE_UNAUTHORISED = True
 
 
 c4c_api = endpoints.api(name='c4c', 
@@ -86,7 +87,9 @@ class PatientApi(remote.Service):
                     http_method='POST',
                     name='insert')   
     def PatientInsert(self, model):
-
+        
+        _isValidUser()
+        
         model.put()
         return model
 
@@ -94,12 +97,14 @@ class PatientApi(remote.Service):
                       http_method='GET',
                       name='list')   
     def PatientList(self, query):
+        _isValidUser()
         return query
 
     @Patient.method(path='patient/{id}', 
                       http_method='GET',
                       name='get')   
     def PatientGet(self, model):
+        _isValidUser()
         
         if not model.from_datastore:
             raise endpoints.NotFoundException('Patient not found.')
@@ -110,6 +115,7 @@ class PatientApi(remote.Service):
                       http_method='POST',
                       name='update')   
     def PatientUpdate(self, model):
+        _isValidUser()
         model.put()        
         if not model.from_datastore:
             raise endpoints.NotFoundException('Patient not found.')
@@ -120,6 +126,7 @@ class PatientApi(remote.Service):
                       http_method='DELETE',
                       name='delete')   
     def PatientDelete(self, model):
+        _isValidUser()
         model.key.delete()
         if not model.from_datastore:
             raise endpoints.NotFoundException('Patient not found.')
@@ -129,6 +136,7 @@ class PatientApi(remote.Service):
                       http_method='GET',
                       name='deleteAll')   
     def PatientDeleteAll(self, query):
+        _isValidUser()
         
         ndb.delete_multi(query.iter(keys_only=True))
         return query         
@@ -143,6 +151,8 @@ class SessionApi(remote.Service):
                       name='new')   
     def SessionInsert(self, request):
         
+        _isValidUser()
+
         patient = ndb.Key(Patient, request.patient).get()
         session = Session(patient = patient, symptoms = Symptoms())
         
@@ -184,6 +194,7 @@ class SessionApi(remote.Service):
                       http_method='GET',
                       name='list')   
     def SessionList(self, query):
+        _isValidUser()
         return query.filter(Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED), int(SessionState.REVIEWED)])).order(-Session.created, Session.key)
 
     @Session.query_method(path='sessions/listAll', 
@@ -191,6 +202,7 @@ class SessionApi(remote.Service):
                       name='listAll',
                       limit_default = 99)   
     def SessionListAll(self, query):
+        _isValidUser()
         return query.order(-Session.created)
 
     
@@ -201,6 +213,7 @@ class SessionApi(remote.Service):
     def SessionListActive(self, query):
         #return query.filter(Session.state == int(SessionState.ACTIVE))
         
+        _isValidUser()
         return query.filter(Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED)])).order(Session.state, -Session.created, Session.key)
 
     @Session.method(path='session/{id}', 
@@ -208,6 +221,7 @@ class SessionApi(remote.Service):
                       name='get')   
     def SessionGet(self, model):
         
+        _isValidUser()
         if not model.from_datastore:
             raise endpoints.NotFoundException('Session not found.')
         return model        
@@ -217,6 +231,7 @@ class SessionApi(remote.Service):
                       http_method='POST',
                       name='end')   
     def SessionEnd(self, model):
+        _isValidUser()
         model.state = int(SessionState.ENDED)
         model.ended = datetime.datetime.now()
         model.put()        
@@ -229,6 +244,7 @@ class SessionApi(remote.Service):
                       http_method='GET',
                       name='delete')   
     def SessionDelete(self, model):
+        _isValidUser()
         model.key.delete()
         if not model.from_datastore:
             raise endpoints.NotFoundException('Session not found.')
@@ -238,6 +254,7 @@ class SessionApi(remote.Service):
                       http_method='GET',
                       name='markDeleted')   
     def SessionMarkDeleted(self, model):
+        _isValidUser()
         model.state = int(SessionState.DELETED)
         model.put()        
         if not model.from_datastore:
@@ -248,6 +265,7 @@ class SessionApi(remote.Service):
                       http_method='GET',
                       name='deleteAll')   
     def SessionDeleteAll(self, query):
+        _isValidUser()
         
         ndb.delete_multi(query.iter(keys_only=True))
         return query 
@@ -256,6 +274,7 @@ class SessionApi(remote.Service):
                       http_method='GET',
                       name='markReviewed')   
     def SessionMarkReviewed(self, model):
+        _isValidUser()
         model.state = int(SessionState.REVIEWED)
         model.put()        
         if not model.from_datastore:
@@ -268,6 +287,7 @@ class SessionApi(remote.Service):
                       http_method='POST',
                       name='insertMultipleSymptoms')
     def SymptomsInsertMulti(self, request):
+        _isValidUser()
 
         session = ndb.Key(Session, request.session).get()
         patient = session.patient
@@ -337,6 +357,7 @@ class SessionApi(remote.Service):
                       http_method='POST',
                       name='insertOutcome')
     def OutcomeInsert(self, request): 
+        _isValidUser()
 
         session = Session.add_outcome(request)
         return session.ToMessage()
@@ -348,6 +369,19 @@ def _lookupName(lookupId, lookupList):
             return item.name
     else :
         return ''
+
+def _isValidUser():
+    
+    if RAISE_UNAUTHORISED:
+    
+        current_user = endpoints.get_current_user()
+        
+        if current_user is None:
+            raise endpoints.UnauthorizedException('Invalid token.')
+
+        #if 
+    else:
+        return True
 
 
 app = endpoints.api_server([c4c_api], restricted=False)    

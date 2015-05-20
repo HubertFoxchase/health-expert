@@ -1,11 +1,22 @@
 'use strict';
 
 angular.module('c4c', ['ngMaterial', 'ngRoute', 'controllers', 'services'])
+.value('config', {
+      appId        : 'pure-summit-402',
+      clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
+      scope        : [ 
+                      'https://www.googleapis.com/auth/userinfo.email'
+                     ]
+})
 .config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
 	$routeProvider
 		.when('/start', {
 			templateUrl: 'templates/start.html',
+			controller: 'StartCtrl'
+		})
+		.when('/authorise', {
+			templateUrl: 'templates/authorise.html',
 			controller: 'StartCtrl'
 		})
 		.when('/:patient/intro', {
