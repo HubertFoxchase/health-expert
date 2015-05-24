@@ -42,7 +42,21 @@ angular.module("controllers", []).
 			timer = 0;
 			$rootScope.item = itemData;
 	    	$location.path("/session/" + itemData.id);
-	    };	
+	    };
+	    
+		$scope.authorise = function(){
+			$api.handleAuthClick().then(
+					function(data){ //success
+						document.getElementById("main").style.visibility = "visible";
+						document.getElementById("progress").style.display = "none";
+						_api = $api.get();
+						location.hash = "/grid";
+					},
+					function(data){ //failed
+						$scope.authFailed = true;
+					}
+			);
+		}	    
 
 		if(_api) {
 			if($rootScope.gridItems){
@@ -56,14 +70,18 @@ angular.module("controllers", []).
 		}
 		else {
 			$api.load().then(
-				function(data){
-					document.getElementById("main").style.visibility = "visible";
-					document.getElementById("progress").style.display = "none";
-					_api = data;
-					loadSessions();
-					//timer = window.setInterval(loadSessions, 5000);
-				}
-			);
+					function(data){ //success
+						document.getElementById("main").style.visibility = "visible";
+						document.getElementById("progress").style.display = "none";
+						_api = $api.get();
+						loadSessions();
+					},
+					function(data){ //failed
+						document.getElementById("main").style.visibility = "visible";
+						document.getElementById("progress").style.display = "none";
+						location.hash = "/authorise";
+					}
+			)			
 		}
 	}]).	
 	controller("SessionCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', function($scope, $rootScope, $routeParams, $api){
@@ -81,14 +99,18 @@ angular.module("controllers", []).
 		}
 		else {
 			$api.load().then(
-				function(data){
-					document.getElementById("main").style.visibility = "visible";
-					document.getElementById("progress").style.display = "none";
-					_api = data;
-					loadSession();
-				},
-				function(){}
-			);
+					function(data){ //success
+						document.getElementById("main").style.visibility = "visible";
+						document.getElementById("progress").style.display = "none";
+						_api = $api.get();
+						loadSession();
+					},
+					function(data){ //failed
+						document.getElementById("main").style.visibility = "visible";
+						document.getElementById("progress").style.display = "none";
+						location.hash = "/authorise";
+					}
+			)			
 		}
 			
 		var loadSession = function(){
@@ -101,14 +123,14 @@ angular.module("controllers", []).
 		$scope.delete = function(id){
 			_api.session.markDeleted({id:$routeParams.id}).execute(function(resp){
 				$rootScope.gridItems = null;
-		    	location.href = "#/grid";
+		    	location.hash = "/grid";
 			});
 		}
 
 		$scope.reviewed = function(id){
 			_api.session.markReviewed({id:$routeParams.id}).execute(function(resp){
 				$rootScope.gridItems = null;
-		    	location.href = "#/grid";
+		    	location.hash = "/grid";
 			});
 		}		
 	}]);	

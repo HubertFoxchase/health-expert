@@ -22,13 +22,11 @@
  				<div class="dd" flex>Gender</div>
  				<div class="dt" flex>{{item.patient.gender}}</div>
  			</div>
- 			<div layout="row" class="item" ng-show="item.state == '1'">
- 				<div class="dd" flex>Session</div>
- 				<div class="dt" flex>In progress</div>
- 			</div>
- 			<div layout="row" class="item" ng-show="item.state == '2'">
- 				<div class="dd" flex>Completed</div>
- 				<div class="dt" flex>{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
+ 			<div layout="row" class="item" >
+ 				<div class="dd" flex ng-show="item.state == '1'">Session</div>
+ 				<div class="dt" flex ng-show="item.state == '1'">In progress</div>
+ 				<div class="dd" flex ng-show="item.state == '2'">Completed</div>
+ 				<div class="dt" flex ng-show="item.state == '2'">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
  			</div> 			
  		</div>		
  		<div class="md-tile-content patient-tile" flex layout="column" layout-align="start start" >

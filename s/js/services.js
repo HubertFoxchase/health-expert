@@ -2,18 +2,34 @@
 
 angular.module('services', []).
 
-factory('$api', ['$q', function ($q) {
+factory('$api',  ['$q', 'config', function ($q, config) {
 
 	var deferred = $q.defer();;
 	var _api = null;
 	
+    var clientId = config.clientId,
+        scopes = config.scope;
+    
+	var checkAuth = function() {
+	    gapi.auth.authorize({ 
+	    	client_id: clientId, 
+	    	scope: scopes, 
+	    	immediate: true
+	    }, 
+	    handleAuthResult );
+	};
+	
+	var handleAuthResult = function(authResult) {
+	    if (authResult && !authResult.error) {
+        	gapi.load('client', {'callback': clientReady});
+	    } 
+	    else {
+	        deferred.reject('authentication error');
+	    }
+	};    
+	
 	var clientReady = function() {
-    	
-    	var ROOT = 'https://health-expert-1705.appspot.com/_ah/api';
-		
-    	if(location.hostname.indexOf("localhost") > -1)
-    		ROOT = 'http://localhost:11080/_ah/api';
-
+    	var ROOT = '//' + location.host + '/_ah/api';
     	gapi.client.load('c4c', 'v1', apiReady, ROOT);
     }      
 
@@ -23,19 +39,32 @@ factory('$api', ['$q', function ($q) {
             deferred.resolve(_api);
         } 
         else {
-            deferred.reject('error');
+            deferred.reject('api load error');
         }
     }      
     
     return {
     	load : function() {
+    	    gapi.load('auth', {'callback': checkAuth});
 
-        	gapi.load('client', {'callback': clientReady});
             return deferred.promise;
     	},
+    	
+    	handleAuthClick : function (event) {
+    	    gapi.auth.authorize({ 
+    	    	client_id: clientId, 
+    	    	scope: scopes, 
+    	    	immediate: false
+    	    }, 
+    	    handleAuthResult );
+    	    
+    	    deferred = $q.defer();
+    	    return deferred.promise;
+    	},
+    	
     	
     	get : function(){
     		return _api;
     	}
-    };     
+    };
 }]);

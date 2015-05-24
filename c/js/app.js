@@ -1,11 +1,10 @@
 'use strict';
 
-angular.module('c4c', ['ngMaterial', 'ngRoute', 'controllers', 'services'])
+angular.module('c4c', ['ngMaterial', 'ngRoute', 'controllers', 'services', 'values'])
 .value('config', {
-      appId        : 'pure-summit-402',
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
       scope        : [ 
-                      'https://www.googleapis.com/auth/userinfo.email'
+                      'https://www.googleapis.com/auth/userinfo.email' 
                      ]
 })
 .config(['$routeProvider', '$locationProvider',
@@ -57,92 +56,3 @@ function($routeProvider, $locationProvider) {
 
     //$locationProvider.html5Mode({enabled: true,requireBase:false});
 }])
-.value(
-		'groupsOfSymptoms', 
-		[
-			 {
-				 name : 'Fever, weakness, feeling unwell',
-				 symptoms : 
-					 [
-					  	{
-					  		name : 'Fever',
-					  		id : 's_98'
-					  	},
-					  	{
-					  		name : 'Shortness of breath',
-					  		id : 's_88'
-					  	}
-				     ]
-			 },
-			 {
-				 name : 'Pain or discomfort',
-				 symptoms : 
-					 [
-					  	{
-					  		name : 'Headache',
-					  		id : 's_21'
-					  	},
-					  	{
-					  		name : 'Earache',
-					  		id : 's_47'
-					  	},
-					  	{
-					  		name : 'Abdominal pain',
-					  		id : 's_13'
-					  	},
-					  	{
-					  		name : 'Chest pain',
-					  		id : 's_50'
-					  	},
-					  	{
-					  		name : 'Joint pain',
-					  		id : 's_44'
-					  	}
-				     ]
-			 },
-			 {
-				 name : 'Respiratory problems',
-				 symptoms : 
-					 [
-					  	{
-					  		name : 'Cough',
-					  		id : 's_102'
-					  	},
-					  	{
-					  		name : 'Sore throat',
-					  		id : 's_20'
-					  	},
-					  	{
-					  		name : 'Blocked nose',
-					  		id : 's_331'
-					  	}				     
-					 ]
-			 },
-			 {
-				 name : 'Skin problems',
-				 symptoms : 
-					 [
-					  	{
-					  		name : 'Red skin',
-					  		id : 's_229'
-					  	}
-				     ]
-			 },
-			 {
-				 name : 'Pshycological problems',
-				 symptoms : 
-					 [
-					  	{
-					  		name : 'Anxiety',
-					  		id : 's_120'
-					  	}
-				     ]
-			 },
-			 {
-				 name : 'Other',
-				 symptoms : []
-			 }
-		]
-
-
-)

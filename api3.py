@@ -379,7 +379,6 @@ def _isValidUser():
         if current_user is None:
             raise endpoints.UnauthorizedException('Invalid token.')
 
-        #if 
     else:
         return True
 
