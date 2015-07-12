@@ -18,6 +18,7 @@ from api2_models import *
 from api2_messages import OutcomeRequestMessage
 import infermedica_api
 import informedica_api_old
+from string import lower
 
 WEB_CLIENT_ID = '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com'
 ANDROID_CLIENT_ID = 'replace this with your Android client ID'
@@ -28,7 +29,7 @@ ANDROID_AUDIENCE = WEB_CLIENT_ID
 APP_ID = "b2bc2e86"
 APP_KEY = "92d49a8b4302920c299e038041049741"
 
-RAISE_UNAUTHORISED = True
+RAISE_UNAUTHORISED = False
 
 
 c4c_api = endpoints.api(name='c4c', 
@@ -49,6 +50,7 @@ class AdminApi(remote.Service):
                     http_method='POST',
                     name='insert')   
     def OrganisationInsert(self, model):
+        _isAdminUser()
         model.put()
         return model
 
@@ -57,6 +59,7 @@ class AdminApi(remote.Service):
                     http_method='POST',
                     name='update')   
     def OrganisationUpdate(self, model):
+        _isAdminUser()
         model.put()
         if not model.from_datastore:
             raise endpoints.NotFoundException('Organisation not found.')        
@@ -66,6 +69,7 @@ class AdminApi(remote.Service):
                       http_method='GET',
                       name='list')   
     def OrganisationList(self, query):
+        _isAdminUser()
         return query
 
     @Organisation.method(path='organisation/{id}', 
@@ -78,6 +82,46 @@ class AdminApi(remote.Service):
         return model        
 
 
+@c4c_api.api_class(resource_name='user')
+class UserApi(remote.Service):
+    
+    @User.method(request_fields=('name', 'organisation'),
+                    response_fields=('id','email', 'name', 'created', 'organisation'),
+                    path='user', 
+                    http_method='POST',
+                    name='insert')   
+    def UserInsert(self, model):
+        _isAdminUser()
+
+        current_user = endpoints.get_current_user()
+        
+        if current_user is None:
+            raise endpoints.UnauthorizedException('Invalid token.')
+        
+        model.email = current_user.email().lower()
+        
+        model.put()
+        return model
+    
+    @User.method(request_fields=('name', 'type', 'email'),
+                      path='user/{id}', 
+                      http_method='POST',
+                      name='update')   
+    def UserUpdate(self, model):
+        _isAdminUser()
+        model.put()        
+        if not model.from_datastore:
+            raise endpoints.NotFoundException('User not found.')
+        return model       
+
+    @User.query_method(path='user', 
+                      http_method='GET',
+                      name='list')   
+    def UserList(self, query):
+        _isAdminUser()
+        return query
+
+
 @c4c_api.api_class(resource_name='patient')
 class PatientApi(remote.Service):
    
@@ -87,7 +131,6 @@ class PatientApi(remote.Service):
                     http_method='POST',
                     name='insert')   
     def PatientInsert(self, model):
-        
         _isValidUser()
         
         model.put()
@@ -378,6 +421,28 @@ def _isValidUser():
         
         if current_user is None:
             raise endpoints.UnauthorizedException('Invalid token.')
+        else :
+            user = User.query(User.email == current_user.email().lower()).get()
+            
+            if user is None:
+                raise endpoints.UnauthorizedException('Not authorised')
+
+    else:
+        return True
+
+def _isAdminUser():
+    
+    if RAISE_UNAUTHORISED:
+    
+        current_user = endpoints.get_current_user()
+        
+        if current_user is None:
+            raise endpoints.UnauthorizedException('Invalid token.')
+        else :
+            user = User.query(ndb.AND(User.email == current_user.email().lower(), User.type == int(UserRole.ADMIN))).get()
+            
+            if user is None:
+                raise endpoints.UnauthorizedException('Not authorised')
 
     else:
         return True

@@ -19,13 +19,38 @@ class Organisation(EndpointsModel):
     name = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     
+class UserRole(messages.Enum):
+    ADMIN = 1
+    NORMAL = 2
 
 class User(EndpointsModel):
     
+    _message_fields_schema = ('id', 'email', 'name', 'type', 'organisation', 'created')
+
+    email = ndb.StringProperty()
     name = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     type = ndb.IntegerProperty()
-    owner = ndb.UserProperty()
+
+    _organisationId = None
+
+    organisation_ref = ndb.KeyProperty(kind=Organisation)
+
+    def OrganisationId(self, value):
+        if not isinstance(value, (int, long)):
+            raise endpoints.BadRequestException('Organisation id must be an integer.')
+        
+        if ndb.Key(Organisation, value) is None:
+            raise endpoints.NotFoundException('Organisation %s does not exist.' % value)        
+
+        self._organisationId = value
+        self.organisation_ref = ndb.Key(Organisation, value)
+
+    @EndpointsAliasProperty(setter=OrganisationId, property_type=messages.IntegerField)
+    def organisation(self):
+
+        return self.organisation_ref.integer_id()   
+
 
 class Patient(EndpointsModel):
     

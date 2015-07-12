@@ -7,11 +7,11 @@ angular.module("controllers", []).
 			    $mdSidenav(menuId).toggle();
 		};
 		
-		$scope.keepPolling = false;
+		$scope.refresh = false;
 		
 		var poll = function(){
 			$timeout(function(){
-					if($scope.keepPolling){
+					if($scope.refresh){
 						$rootScope.$broadcast('refresh');
 					}
 					poll();
@@ -44,80 +44,36 @@ angular.module("controllers", []).
 	    	$location.path("/session/" + itemData.id);
 	    };
 	    
-		$scope.authorise = function(){
-			$api.handleAuthClick().then(
-					function(data){ //success
-						document.getElementById("main").style.visibility = "visible";
-						document.getElementById("progress").style.display = "none";
-						_api = $api.get();
-						location.hash = "/grid";
-					},
-					function(data){ //failed
-						$scope.authFailed = true;
-					}
-			);
-		}	    
-
-		if(_api) {
-			if($rootScope.gridItems){
-				$scope.sessions	= $rootScope.gridItems;
-			}
-			else {
-				$scope.sessions = null;
-				loadSessions();
-			}
-			//timer = window.setInterval(loadSessions, 5000);
+		if($rootScope.gridItems){
+			$scope.sessions	= $rootScope.gridItems;
 		}
 		else {
-			$api.load().then(
-					function(data){ //success
-						document.getElementById("main").style.visibility = "visible";
-						document.getElementById("progress").style.display = "none";
-						_api = $api.get();
-						loadSessions();
-					},
-					function(data){ //failed
-						document.getElementById("main").style.visibility = "visible";
-						document.getElementById("progress").style.display = "none";
-						location.hash = "/authorise";
-					}
-			)			
+			$scope.sessions = null;
+			loadSessions();
 		}
+			//timer = window.setInterval(loadSessions, 5000);
+
+		document.getElementById("left").style.visibility = "visible";
+		document.getElementById("main").style.visibility = "visible";
+		document.getElementById("progress").style.display = "none";
+		
 	}]).	
 	controller("SessionCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', function($scope, $rootScope, $routeParams, $api){
 		
 		var _api = $api.get();
 
-		if(_api) {
-			
-			if($rootScope.item){
-				$scope.item	= $rootScope.item;
-			}
-			else {
-				loadSessions();
-			}
-		}
-		else {
-			$api.load().then(
-					function(data){ //success
-						document.getElementById("main").style.visibility = "visible";
-						document.getElementById("progress").style.display = "none";
-						_api = $api.get();
-						loadSession();
-					},
-					function(data){ //failed
-						document.getElementById("main").style.visibility = "visible";
-						document.getElementById("progress").style.display = "none";
-						location.hash = "/authorise";
-					}
-			)			
-		}
-			
 		var loadSession = function(){
 			_api.session.get({id:$routeParams.id}).execute(function(resp){
 				$scope.item = resp;
 				$scope.$apply()
 			});
+		}
+
+		if($rootScope.item){
+			$scope.item	= $rootScope.item;
+		}
+		else {
+			loadSession();
 		}
 		
 		$scope.delete = function(id){
@@ -133,4 +89,9 @@ angular.module("controllers", []).
 		    	location.hash = "/grid";
 			});
 		}		
+		
+		document.getElementById("left").style.visibility = "visible";
+		document.getElementById("main").style.visibility = "visible";
+		document.getElementById("progress").style.display = "none";
+		
 	}]);	

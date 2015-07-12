@@ -1,20 +1,26 @@
 <html ng-app="c4c">
 <head>
-	<meta name="viewport" content="width=device-width, height=device-height, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.8.2/angular-material.min.css">
-    <link rel="stylesheet" href="/c/css/style.css">
-    <link rel="stylesheet" href="/c/css/animation.css">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animation.css">
 
 </head>
 <body layout="column" ng-controller="AppCtrl">
 
-    <md-progress-circular id="progress" class="md-accent" md-mode="indeterminate" style="position:absolute; top:50%;left:50%"></md-progress-circular>
+	<div id="loading">
+		<p>Launching Click4Care ...</p>
+	    <md-progress-circular id="progress" class="md-accent" md-mode="indeterminate"></md-progress-circular>
+	</div>
 
-	<div layout="column" flex style="visibility:hidden" id="main">
+	<div layout="column" layout-fill style="visibility:hidden" id="main">
+	
 		<md-toolbar layout="row" class="md-default-theme">
-			<h1>Click4Care</h1>
-			<div class="restartBtnContainer">
-			    <md-button class="md-primary md-raised md-hue-1 toolbar-button" ng-click="end()" ng-show="$root.session.state == 1">
+			<div class="md-toolbar-tools">
+				<h1>Click4Care</h1>
+				<span flex></span>
+			    <md-button class="md-primary md-raised md-hue-1" ng-click="end()" ng-show="$root.session.state == 1">
 			      End session
 			    </md-button>			
 			    <md-button class="md-primary md-raised md-hue-1 toolbar-button" ng-click="start()" ng-show="!$root.session.state || $root.session.state > 1">
@@ -22,27 +28,42 @@
 			    </md-button>			
 			</div>
 		</md-toolbar>
-		<md-progress-linear class="md-accent" md-mode="determinate" value="{{$root.progress}}"></md-progress-linear>		
-		<div class="view-container">
-			<div ng-view class="view-frame">
+
+		<md-progress-linear style="height:18px" class="md-accent" md-mode="determinate" value="{{$root.progress}}"></md-progress-linear>	
+
+		<md-content flex md-scroll-y>
+			<div class="inset" hide-sm></div>
+
+			<div ng-view layout="column" layout-padding>
 
 			</div>
-		</div>
-		<div class="attribution">This demo is powered by <a href="http://www.infermedica.com">Infermedica</a> diagnostic engine</div>
+		</md-content>
+
+		<div class="attribution">This demo is powered by <a target="_blank" href="http://www.infermedica.com">Infermedica</a> diagnostic engine</div>
 	</div>
 
-	<script src="https://apis.google.com/js/client.js"></script>
+	<script src="//apis.google.com/js/client.js"></script>
 	
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-route.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-animate.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-aria.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.8.2/angular-material.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-route.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-aria.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.js"></script>
 
 	<script src="/c/js/app.js"></script>
 	<script src="/c/js/values.js"></script>
 	<script src="/c/js/controllers.js"></script>
 	<script src="/c/js/services.js"></script>
-
+	
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	
+	  ga('create', 'UA-60113800-2', 'auto');
+	  ga('send', 'pageview');
+	
+	</script>	
 </body>
 </html>

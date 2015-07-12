@@ -1,11 +1,9 @@
 'use strict';
 
-angular.module('c4c', ['ngMaterial', 'ngRoute', 'angularMoment', 'controllers', 'services'])
+angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'angularMoment', 'controllers', 'services', 'directives'])
 .value('config', {
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
-      scope        : [ 
-                      'https://www.googleapis.com/auth/userinfo.email' 
-                     ]
+      scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ]
 })
 .constant('angularMomentConfig', {
     preprocess: 'utc', // optional
@@ -17,7 +15,11 @@ angular.module('c4c', ['ngMaterial', 'ngRoute', 'angularMoment', 'controllers', 
       .when('/session/:id', {
         templateUrl: 'templates/view.html',
         controller: 'SessionCtrl',
-        controllerAs: 'session'
+        controllerAs: 'session',
+		resolve : { init: ['$api', function($api) {
+          	return $api.load();
+	    	}]
+		}
       })
 	 .when('/authorise', {
 			templateUrl: 'templates/authorise.html',
@@ -27,7 +29,11 @@ angular.module('c4c', ['ngMaterial', 'ngRoute', 'angularMoment', 'controllers', 
       .when('/grid', {
         templateUrl: 'templates/grid.html',
         controller: 'GridCtrl',
-        controllerAs: 'grid'
+        controllerAs: 'grid',
+		resolve : { init: ['$api', function($api) {
+          	return $api.load();
+	    	}]
+		}
       }).
 	  otherwise({
 	          redirectTo: '/grid'
@@ -35,3 +41,9 @@ angular.module('c4c', ['ngMaterial', 'ngRoute', 'angularMoment', 'controllers', 
 
     //$locationProvider.html5Mode({enabled: true,requireBase:false});
 }])
+.run(["$rootScope", "$location", 
+      function ($rootScope, $location) {
+    	$rootScope.$on('$routeChangeSuccess', function(){
+    		ga('send', 'pageview', $location.path());
+    });
+}]);

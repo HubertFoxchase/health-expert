@@ -1,3 +1,90 @@
+#main, #left {
+	visibility: hidden;
+}
+
+.user-avatar {
+  border-radius: 99%;
+}
+
+.user-box {
+	padding: 16px; 
+}
+
+.user-box h4 {
+	margin:5px 0 2px 0;	
+}
+
+.user-box span {
+	font-size: 85%;	
+}
+
+
+md-list.menu a {
+	cursor: pointer;
+}
+
+md-list.menu a md-item-content {
+	position: relative;
+}
+
+md-toolbar:not(.md-hue-1), .md-fab {
+  fill: #fff;
+}
+
+md-toolbar h1 {
+  font-size: 1.20em;
+  font-weight: 400;
+  margin: auto;
+}
+
+
+.bg-grey {
+	background-color: #fafafa;
+}
+
+.bg-dark {
+	background-color: #252833;	
+}
+
+.patient-tile  {
+	background-color: #fff;
+}
+
+.session-detials .patient-tile {
+	margin-right: 16px;
+}
+
+.session-detials .patient-tile:last-child {
+	margin-right: 0px;
+}
+
+.session-detials .patient-tile h3{
+	margin: 0px 0px 16px 0px;
+}
+
+.session-detials .patient-tile md-divider{
+	margin-bottom: 16px;
+}
+
+.item {
+	min-height: 24px;
+	padding:5px 0px;
+}
+
+.item .dd {
+	color: #0227bd;
+	min-width: 100px;
+	padding-right: 8px;
+}
+
+.inset-2 {
+	padding:16px;
+}
+
+
+/*
+old
+
 .menuBtn {
   background: transparent url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iMjRweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI0IDI0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGcgaWQ9IkhlYWRlciI+CiAgICA8Zz4KICAgICAgICA8cmVjdCB4PSItNjE4IiB5PSItMjIzMiIgZmlsbD0ibm9uZSIgd2lkdGg9IjE0MDAiIGhlaWdodD0iMzYwMCIvPgogICAgPC9nPgo8L2c+CjxnIGlkPSJMYWJlbCI+CjwvZz4KPGcgaWQ9Ikljb24iPgogICAgPGc+CiAgICAgICAgPHJlY3QgZmlsbD0ibm9uZSIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+CiAgICAgICAgPHBhdGggZD0iTTMsMThoMTh2LTJIM1YxOHogTTMsMTNoMTh2LTJIM1YxM3ogTTMsNnYyaDE4VjZIM3oiIHN0eWxlPSJmaWxsOiNmM2YzZjM7Ii8+CiAgICA8L2c+CjwvZz4KPGcgaWQ9IkdyaWQiIGRpc3BsYXk9Im5vbmUiPgogICAgPGcgZGlzcGxheT0iaW5saW5lIj4KICAgIDwvZz4KPC9nPgo8L3N2Zz4=) no-repeat  center center;
 }
@@ -48,13 +135,6 @@ md-list .md-button {
 .no-margin {
 	margin: 0;
 }
-.bg-grey {
-	background-color: #fafafa;
-}
-
-.bg-dark {
-	background-color: #252833;	
-}
 
 .patient-tile > *{
 	width: 100%
@@ -92,13 +172,6 @@ md-list .md-button {
 md-grid-tile {
   transition: all 400ms ease-out 50ms; 
 }
-md-sidenav, 
-md-sidenav.md-locked-open, 
-md-sidenav.md-closed.md-locked-open-add-active {
-    min-width: 120px !important;
-    width: 40vw !important;
-    max-width: 120px !important;
-} 
 
 .hero {
 	top:0px  !important;
@@ -107,3 +180,5 @@ md-sidenav.md-closed.md-locked-open-add-active {
 	height:calc(100% - 12px) !important;
 	z-index: 10;
 }
+
+*/

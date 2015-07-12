@@ -29,7 +29,13 @@ factory('$api',  ['$q', 'config', function ($q, config) {
 	};    
 	
 	var clientReady = function() {
-    	var ROOT = '//' + location.host + '/_ah/api';
+		var protocol = "https://"; 
+		
+		if (location.host.indexOf("localhost") > -1)
+			protocol = "http://"
+		
+    	var ROOT = protocol + location.host + '/_ah/api';
+    	
     	gapi.client.load('c4c', 'v1', apiReady, ROOT);
     }      
 

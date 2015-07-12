@@ -1,13 +1,12 @@
 angular.module("controllers", []).
 	controller("AppCtrl", ['$scope', '$rootScope', '$mdSidenav', '$mdDialog', '$api', function($scope, $rootScope, $mdSidenav, $mdDialog, $api){
-	    
 		$scope.end = function ($event) {
 	        $mdDialog.show({
 	          targetEvent: $event,
 	          template:
 	            '<md-dialog>' +
-	            '  <md-content><h3>End assesment</h3><p>Would you like to end your current assesment session?</p></md-content>' +
-	            '  <div class="md-actions">' +
+	            '  <md-dialog-content><h3>End assesment</h3><p>Would you like to end your current assessment session?</p></md-dialog-content>' +
+	            '  <div class="md-actions" layout="row">' +
 	            '    <md-button ng-click="closeDialog()">' +
 	            '      No, continue' +
 	            '    </md-button>' +
@@ -17,7 +16,6 @@ angular.module("controllers", []).
 	            '  </div>' +
 	            '</md-dialog>',
 	            controller: 'AppCtrl'
-	            
 	        });
 	    }
 
@@ -26,8 +24,8 @@ angular.module("controllers", []).
 	          targetEvent: $event,
 	          template:
 	            '<md-dialog>' +
-	            '  <md-content><h3>New session</h3><p>Would you like to start a new assesmsnt session?</p></md-content>' +
-	            '  <div class="md-actions">' +
+	            '  <md-dialog-content><h3>New session</h3><p>Would you like to start a new assessment session?</p></md-dialog-content>' +
+	            '  <div class="md-actions" layout="row">' +
 	            '    <md-button ng-click="closeDialog()">' +
 	            '      No, continue' +
 	            '    </md-button>' +
@@ -37,10 +35,8 @@ angular.module("controllers", []).
 	            '  </div>' +
 	            '</md-dialog>',
 	            controller: 'AppCtrl'
-	            
 	        });
 	    }
-		
 		
 		$scope.closeDialog = function(){
 			$mdDialog.hide();
@@ -52,11 +48,12 @@ angular.module("controllers", []).
 					$rootScope.session = null;
 					$rootScope.patient = null;
 					$rootScope.progress = 0;
+					$rootScope.outcome = null;
+					
 					location.hash = "/start";
 				}
 			);
-		}
-		
+		}		
 		
 		$scope.endSession = function(){
 			$mdDialog.hide().then(
@@ -82,46 +79,40 @@ angular.module("controllers", []).
 		
 	}]).
 
-	controller("StartCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", "groupsOfSymptoms", function($scope, $rootScope, $routeParams, $api, $location, groupsOfSymptoms){
+	controller("StartCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", "$mdDialog", "groupsOfSymptoms", function($scope, $rootScope, $routeParams, $api, $location, $mdDialog, groupsOfSymptoms){
 		
 		var _api = $api.get();
 		
-		var patientId = $routeParams.patient;
-		
 		if(!$rootScope.patient){
-			$rootScope.patient = {id:patientId};
+			$rootScope.patient = {id:$routeParams.patient};
 		}
 		
-		if(!_api){
-			$api.load().then(
-					function(data){ //success
-						document.getElementById("main").style.visibility = "visible";
-						document.getElementById("progress").style.display = "none";
-						_api = $api.get();
-					},
-					function(data){ //failed
-						document.getElementById("main").style.visibility = "visible";
-						document.getElementById("progress").style.display = "none";
-						location.hash = "/authorise";
-					}
-			)
-		}
-		
-		$scope.authorise = function(){
-			$api.handleAuthClick().then(
-					function(data){ //success
-						document.getElementById("main").style.visibility = "visible";
-						document.getElementById("progress").style.display = "none";
-						_api = $api.get();
-						location.hash = "/start";
-					},
-					function(data){ //failed
-						$scope.authFailed = true;
-					}
-			);
-		}
+		var _path = $location.path()
 
+		if(_path.indexOf("gender") > 0){
+			$rootScope.progress = 5;
+		}
+		else if (_path.indexOf("age") > 0){
+			$rootScope.progress = 10;
+		}
+		else if (_path.indexOf("reason") > 0){
+			$rootScope.progress = 15;
+		}
+		else if (_path.indexOf("groups") > 0){
+			$rootScope.progress = 20;
+		}
+		else if (_path.indexOf("initial") > 0){
+			$rootScope.progress = 25;
+		}
+		
+		$scope.groupsOfSymptoms = groupsOfSymptoms;
+
+		if($routeParams.groupId) {
+			$scope.initialSymptoms = groupsOfSymptoms[$routeParams.groupId];
+		}
+		
 		$scope.start = function(ref){
+			console.log("start");
 			_api.patient.insert({ref:ref, organisation:"6192449487634432"}).execute(function(resp){
 				$rootScope.progress = 5;
 				$rootScope.patient = {id:resp.id, ref:ref};
@@ -130,7 +121,8 @@ angular.module("controllers", []).
 			});
 		}
 
-		$scope.gender = function(g){
+		$scope.setGender = function(g){
+			console.log("gender");
 			_api.patient.update({id:$rootScope.patient.id, gender:g}).execute(function(resp){
 				$rootScope.progress += 5;
 				$rootScope.patient.gender = g;
@@ -138,89 +130,111 @@ angular.module("controllers", []).
 			});
 		}
 
-		$scope.age = function(a){
-			
-			if(!isNaN(a)) {
-				_api.patient.update({id:$rootScope.patient.id, age:a}).execute(function(resp){
-					$rootScope.progress += 5;
-					$rootScope.patient.age = a;
-					location.hash = "/" + resp.id + "/reason";
-				});
-			}
-			else{
-				location.hash = "/" + $rootScope.patient.id + "/reason";
-			}
+		$scope.setAge = function(a){
+			console.log("age");
+			_api.patient.update({id:$rootScope.patient.id, age:a}).execute(function(resp){
+				$rootScope.progress += 5;
+				$rootScope.patient.age = a;
+				location.hash = "/" + resp.id + "/reason";
+			});
 		}
 
 		$scope.setReason = function(id){
+			console.log("reason");
 			$rootScope.progress += 5;
 			location.hash = "/" + $rootScope.patient.id + "/groups";
 		}
 		
-		
 		$scope.setInitialSymptoms = function(id){
+			console.log("initial symptoms");
 			$rootScope.progress += 5;
 			location.hash = "/" + $rootScope.patient.id + "/initial/" + id;
 		}
 		
-		$scope.session = function(symptom){
-			_api.session.new({
-					patient:$rootScope.patient.id,
-					present:[symptom]
-			}).execute(function(resp){
-				$rootScope.session = resp;
-				location.hash = "/" + resp.id + "/symptom";
-			});
-		}		
-		
-		$scope.groupsOfSymptoms = groupsOfSymptoms;
+		$scope.newSession = function(symptom){
+			console.log("new session");
 
-		if($routeParams.groupId)
-			$scope.initialSymptoms = groupsOfSymptoms[$routeParams.groupId];
-		
+			var showError = function() {
+				$mdDialog.show({
+		          template:
+			            '<md-dialog>' +
+			            '  <md-dialog-content><h3>Hmm... something went wrog here</h3><p>Probably missing or incorrect symptom data. Try another symptom.</p></md-dialog-content>' +
+			            '  <div class="md-actions" layout="row">' +
+			            '    <md-button ng-click="closeDialog()">' +
+			            '      Close' +
+			            '    </md-button>' +
+			            '  </div>' +
+			            '</md-dialog>',
+			            controller: 'AppCtrl'
+			        });					
+			}
+			
+			if(!symptom || symptom == ""){
+				showError();
+			}
+			else {
+				_api.session.new({
+						patient:$rootScope.patient.id,
+						present:[symptom]
+				}).execute(function(resp){
+					
+					if(resp.error){
+						showError();
+					}
+					else {
+						$rootScope.session = resp;
+						location.hash = "/" + resp.id + "/symptom";
+					}
+				});
+			}
+		}		
+
+		document.getElementById("main").style.visibility = "visible";
+		document.getElementById("progress").style.display = "none";
+
 	}]).	
 	
 	controller("QuestionsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", function($scope, $rootScope, $routeParams, $api, $location){
 		
+		console.log("question");
+		
 		var _api = $api.get();
 		
-		if(!_api){
-			$api.load().then(
-					function(data){
-						document.getElementById("main").style.visibility = "visible";
-						document.getElementById("progress").style.display = "none";
-						_api = $api.get();
-						
-						_api.session.get({id:$routeParams.session}).execute(function(resp){
-							$rootScope.session = resp;
-							$rootScope.patient = resp.patient;
-							
-							if(resp.outcome){
-								var p = resp.outcome.probability * 100;
-								
-								if($rootScope.progress && p > $rootScope.progress){
-									$rootScope.progress = p;
-								}
-								else{
-									$rootScope.progress += 7;
-								}
-							}
-							
-							$scope.session = $rootScope.session;
-							$scope.$apply();
-						});
-					}
-			)
+		if($rootScope.session){
+			$scope.session = $rootScope.session;
+			
+			document.getElementById("main").style.visibility = "visible";
+			document.getElementById("progress").style.display = "none";
+			
 		}
+		else {
+			_api.session.get({id:$routeParams.session}).execute(function(resp){
+				$rootScope.session = resp;
+				$rootScope.patient = resp.patient;
+				$rootScope.progress = 25; //this is a recovered session, we can set progress to 25%
 
-		var sessionId = $routeParams.session;
-		
-		if(!$rootScope.session){
-			$rootScope.session = {id:sessionId};
+				document.getElementById("main").style.visibility = "visible";
+				document.getElementById("progress").style.display = "none";
+				
+				if(resp.outcome){
+					var p = resp.outcome.probability * 100;
+					
+					if($rootScope.progress && p > $rootScope.progress){
+						$rootScope.progress = p;
+					}
+					else{
+						$rootScope.progress += 5;
+					}
+					
+					$rootScope.outcome = Math.round(p)
+				}
+				
+				$scope.session = $rootScope.session;
+				$scope.$apply();
+			});
 		}
 		
-		$scope.session = $rootScope.session;
-		
+
 		$scope.question = function(symptoms){
 			
 			var present = [];
@@ -235,7 +249,7 @@ angular.module("controllers", []).
 			
 			_api.session.insertMultipleSymptoms({session:$rootScope.session.id, present:present, absent:absent}).execute(function(resp){
 
-				if(resp.next && resp.outcome.probability < 0.85){
+				if(resp.next && resp.outcome.probability < 0.90){
 					$scope.symptom = {value:null};
 					$rootScope.session = resp;
 
@@ -246,9 +260,11 @@ angular.module("controllers", []).
 							$rootScope.progress = p;
 						}
 						else{
-							$rootScope.progress += 7;
+							$rootScope.progress += 5;
 						}
 					}
+
+					$rootScope.outcome = Math.round(p)
 					
 					$scope.session = $rootScope.session;
 					$scope.$apply();

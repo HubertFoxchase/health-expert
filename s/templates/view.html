@@ -1,51 +1,54 @@
-<md-content md-scroll-y flex>
-	<div layout="row" layout-align="end center" style="margin-bottom: 10px; padding-right:5px">
- 		<md-button class="md-raised button-med" style="margin-right:20px" ng-href="#/grid">Cancel</md-button>
- 		<md-button class="md-raised button-med" style="margin-right:20px" ng-click="delete()">Delete</md-button>
- 		<md-button class="md-raised button-med" style="margin-right:20px" ng-click="update()">Update Diagnosis</md-button>
- 		<md-button class="md-raised button-med" ng-click="reviewed()">Mark Reviewed</md-button>
+	<div layout="row">
+		<h3>Session Details</h3>
+		<span flex></span>
+		<div layout="row" layout-align="end center">
+	 		<md-button class="md-raised" ng-href="#/grid">Cancel</md-button>
+	 		<md-button class="md-raised" ng-click="delete()">Delete</md-button>
+	 		<md-button class="md-raised" ng-click="update()">Update Diagnosis &nbsp;</md-button>
+	 		<md-button class="md-raised" ng-click="reviewed()">Mark Reviewed &nbsp;</md-button>
+		</div>
 	</div>
-	<div layout="row" class="md-whiteframe session-card">
- 		<div class="md-tile-content patient-tile" layout="column" layout-align="start start" >
-	 		<div layout="row" class="item line">
- 				<h3>Patient</h3>
+	
+	<div layout="row" class="session-detials">
+ 		<div flex layout="column" layout-padding class="md-whiteframe-z1 patient-tile inset-2">
+			<h3>Patient</h3>
+ 			<md-divider></md-divider>
+ 			<div layout="row" class="item">
+ 				<div class="dd">Reference</div>
+ 				<div class="dt">{{item.patient.ref}}</div>
  			</div>
  			<div layout="row" class="item">
- 				<div class="dd" flex>Reference</div>
- 				<div class="dt" flex>{{item.patient.ref}}</div>
+ 				<div class="dd">Age</div>
+ 				<div class="dt">{{item.patient.age}}</div>
  			</div>
  			<div layout="row" class="item">
- 				<div class="dd" flex>Age</div>
- 				<div class="dt" flex>{{item.patient.age}}</div>
- 			</div>
- 			<div layout="row" class="item">
- 				<div class="dd" flex>Gender</div>
- 				<div class="dt" flex>{{item.patient.gender}}</div>
+ 				<div class="dd">Gender</div>
+ 				<div class="dt">{{item.patient.gender}}</div>
  			</div>
  			<div layout="row" class="item" >
- 				<div class="dd" flex ng-show="item.state == '1'">Session</div>
- 				<div class="dt" flex ng-show="item.state == '1'">In progress</div>
- 				<div class="dd" flex ng-show="item.state == '2'">Completed</div>
- 				<div class="dt" flex ng-show="item.state == '2'">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
+ 				<div class="dd" ng-show="item.state == '1'">Session</div>
+ 				<div class="dt" ng-show="item.state == '1'">In progress</div>
+ 				<div class="dd" ng-show="item.state == '2'">Completed</div>
+ 				<div class="dt" ng-show="item.state == '2'">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
  			</div> 			
  		</div>		
- 		<div class="md-tile-content patient-tile" flex layout="column" layout-align="start start" >
-	 			<div layout="row" class="item line">
- 			<h3>Symptoms</h3>
- 			</div>
- 			<div layout="row" class="item" ng-repeat="symptom in item.symptoms.items | filter: { value: 'present' }">
+ 		
+ 		<div flex layout-padding layout="column" class="md-whiteframe-z1 patient-tile inset-2">
+			<h3>Symptoms</h3>
+ 			<md-divider></md-divider>
+ 			<div layout="row" layout-align="space-betweeen space-betweeen" class="item" ng-repeat="symptom in item.symptoms.items | filter: { value: 'present' }">
  				<div class="dd" flex>{{symptom.name}}</div>
- 				<div class="dt" flex>{{symptom.value}}</div>
+ 				<div class="dt" style="width: 70px">{{symptom.value}}</div>
  			</div>
  		</div>		
- 		<div class="md-tile-content patient-tile" flex layout="column" layout-align="start start" >
-	 			<div layout="row" class="item line">
- 			<h3>Outcome</h3>
-			</div>
+
+ 		<div flex layout-padding layout="column" class="md-whiteframe-z1 patient-tile inset-2">
+			<h3>Diagnosis</h3>
+ 			<md-divider></md-divider>
  			<div layout="row" class="item" ng-repeat="outcome in item.outcome.full">
  				<div class="dd" flex>{{outcome.name}}</div>
  				<div class="dt" flex>{{outcome.probability*100 | number:1}}%</div>
  			</div>
- 		</div>		
-	</div>	
-</md-content>
+ 		</div>
+ 				
+	</div>

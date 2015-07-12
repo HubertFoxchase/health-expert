@@ -1,36 +1,35 @@
-<md-content md-scroll-y flex>
-	<md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-lg="3" md-cols="4" md-row-height="300px" md-gutter="16px">
-	 	<md-grid-tile class="session-card" ng-click="showDetail(event, item)" ng-repeat="item in sessions">
-	 		<div class="md-tile-content patient-tile" flex layout="column" layout-align="start start" >
-	 			<div layout="row" class="item line">
-		 			<h3>{{item.patient.ref}}</h3><span flex></span><span am-time-ago="item.updated"></span>
-				</div>
-	 			<div layout="row" class="item">
-	 				<div class="dd" flex="33">Age</div>
-	 				<div class="dt" flex="66">{{item.patient.age}}</div>
-	 			</div>
-	 			<div layout="row" class="item">
-	 				<div class="dd" flex="33">Gender</div>
-	 				<div class="dt" flex="66">{{item.patient.gender}}</div>
-	 			</div>
-	 			<div layout="row" class="item">
-	 				<div class="dd" flex="33">Outcome</div>
-	 				<div class="dt" flex="66">{{item.outcome.name}}</div>
-	 			</div>
-	 			<div layout="row" class="item">
-	 				<div class="dd" flex="33">Probability</div>
-	 				<div class="dt" flex="66">{{item.outcome.probability*100 | number:1}}%</div>
-	 			</div>
-	 			<div layout="row" class="item" ng-show="item.state == '1'">
-	 				<div class="dd" flex="33">Status</div>
-	 				<div class="dt" flex="66">In progress</div>
-	 			</div>
-	 			<div layout="row" class="item" ng-show="item.state == '2'">
-	 				<div class="dd" flex="33">Completed</div>
-	 				<div class="dt" flex="66">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
-	 			</div>
-	 		</div>
+	<h3>Dashboard</h3>
+	<md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-lg="2" md-cols="3" md-row-height="280px" md-gutter="20px">
+	 	<md-grid-tile class="md-whiteframe-z1 patient-tile" md-ink-ripple layout-align="start start" ng-click="showDetail(event, item)" ng-repeat="item in sessions" style="outline:none">
+	 		<div layout="column" layout-padding flex class="inset-2">
+		 			<div layout="row" class="item">
+		 				<div class="dd">Patient</div>
+		 				<div class="dt">{{item.patient.ref}}</div>
+		 			</div>
+		 			<div layout="row" class="item">
+		 				<div class="dd">Age</div>
+		 				<div class="dt">{{item.patient.age}}</div>
+		 			</div>
+		 			<div layout="row" class="item">
+		 				<div class="dd">Gender</div>
+		 				<div class="dt">{{item.patient.gender}}</div>
+		 			</div>
+		 			<div layout="row" class="item">
+		 				<div class="dd">Diagnosis</div>
+		 				<div class="dt">{{item.outcome.name}}</div>
+		 			</div>
+		 			<div layout="row" class="item">
+		 				<div class="dd">Confidence</div>
+		 				<div class="dt">{{item.outcome.probability*100 | number:1}}%</div>
+		 			</div>
+		 			<div layout="row" class="item" ng-show="item.state == '1'">
+		 				<div class="dd">Status</div>
+		 				<div class="dt">In progress (<span am-time-ago="item.updated"></span>)</div>
+		 			</div>
+		 			<div layout="row" class="item" ng-show="item.state == '2'">
+		 				<div class="dd">Completed</div>
+		 				<div class="dt">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
+		 			</div>
+		 	</div>		
 		</md-grid-tile>			
 	</md-grid-list>
-</md-content>
-	
