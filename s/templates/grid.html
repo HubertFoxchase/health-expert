@@ -1,35 +1,50 @@
+<div layout="row" style="padding-right: 10px; padding-bottom: 5px">
 	<h3>Dashboard</h3>
-	<md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-lg="2" md-cols="3" md-row-height="280px" md-gutter="20px">
-	 	<md-grid-tile class="md-whiteframe-z1 patient-tile" md-ink-ripple layout-align="start start" ng-click="showDetail(event, item)" ng-repeat="item in sessions" style="outline:none">
-	 		<div layout="column" layout-padding flex class="inset-2">
-		 			<div layout="row" class="item">
-		 				<div class="dd">Patient</div>
-		 				<div class="dt">{{item.patient.ref}}</div>
-		 			</div>
-		 			<div layout="row" class="item">
-		 				<div class="dd">Age</div>
-		 				<div class="dt">{{item.patient.age}}</div>
-		 			</div>
-		 			<div layout="row" class="item">
-		 				<div class="dd">Gender</div>
-		 				<div class="dt">{{item.patient.gender}}</div>
-		 			</div>
-		 			<div layout="row" class="item">
-		 				<div class="dd">Diagnosis</div>
-		 				<div class="dt">{{item.outcome.name}}</div>
-		 			</div>
-		 			<div layout="row" class="item">
-		 				<div class="dd">Confidence</div>
-		 				<div class="dt">{{item.outcome.probability*100 | number:1}}%</div>
-		 			</div>
-		 			<div layout="row" class="item" ng-show="item.state == '1'">
-		 				<div class="dd">Status</div>
-		 				<div class="dt">In progress (<span am-time-ago="item.updated"></span>)</div>
-		 			</div>
-		 			<div layout="row" class="item" ng-show="item.state == '2'">
-		 				<div class="dd">Completed</div>
-		 				<div class="dt">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
-		 			</div>
-		 	</div>		
-		</md-grid-tile>			
-	</md-grid-list>
+	<span flex></span>
+	<div layout="row" layout-align="end center" ng-show="selected.length > 0">
+ 		<md-button class="md-raised" ng-click="clearSelected()">Cancel</md-button>
+ 		<md-button class="md-raised" ng-click="deleteSelected()">Delete</md-button>
+ 		<md-button class="md-raised" ng-click="updateSelected()">Update Diagnosis &nbsp;</md-button>
+ 		<md-button class="md-raised" ng-click="markSelected()">Mark Reviewed &nbsp;</md-button>
+	</div>
+</div>
+
+<div layout="row" layout-align="start start" layout-wrap style="margin-top: 5px">
+ 	<div flex="33" flex-sm="100" flex-md="50" flex-lg="50" layout-align="start start" ng-click="showDetail($event, item)" ng-repeat="item in sessions" style="outline:none">
+ 		<div layout="column" layout-padding flex class="patient-tile md-whiteframe-z1" style="position:relative" ng-class="exists(item.id, selected) ? 'selected' : ''">
+
+	        	<md-button class="md-icon-button select-btn" md-no-ink ng-click="toggle(item.id, selected, $event)" aria-label="Back">
+	            	<ng-md-icon icon="{{exists(item.id, selected) ? 'check_circle' : 'radio_button_off'}}"></ng-md-icon>
+	          	</md-button> 				
+
+	 			<div layout="row" class="item">
+	 				<div class="dd">Patient</div>
+	 				<div class="dt">{{item.patient.ref}}</div>
+	 			</div>
+	 			<div layout="row" class="item">
+	 				<div class="dd">Age</div>
+	 				<div class="dt">{{item.patient.age}}</div>
+	 			</div>
+	 			<div layout="row" class="item">
+	 				<div class="dd">Gender</div>
+	 				<div class="dt">{{item.patient.gender}}</div>
+	 			</div>
+	 			<div layout="row" class="item">
+	 				<div class="dd">Diagnosis</div>
+	 				<div class="dt">{{item.outcome.name}}</div>
+	 			</div>
+	 			<div layout="row" class="item">
+	 				<div class="dd">Confidence</div>
+	 				<div class="dt">{{item.outcome.probability*100 | number:1}}%</div>
+	 			</div>
+	 			<div layout="row" class="item" ng-show="item.state == '1'">
+	 				<div class="dd">Status</div>
+	 				<div class="dt">In progress (<span am-time-ago="item.updated"></span>)</div>
+	 			</div>
+	 			<div layout="row" class="item" ng-show="item.state == '2'">
+	 				<div class="dd">Completed</div>
+	 				<div class="dt">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
+	 			</div>
+	 	</div>		
+	</div>			
+</div>

@@ -47,15 +47,10 @@ md-toolbar h1 {
 }
 
 .patient-tile  {
+	margin-right:16px;
+	margin-bottom:16px;
 	background-color: #fff;
-}
-
-.session-detials .patient-tile {
-	margin-right: 16px;
-}
-
-.session-detials .patient-tile:last-child {
-	margin-right: 0px;
+	padding:16px;
 }
 
 .session-detials .patient-tile h3{
@@ -80,6 +75,27 @@ md-toolbar h1 {
 .inset-2 {
 	padding:16px;
 }
+
+.patient-tile.selected {
+	transform : scale(0.9, 0.9);
+}
+
+
+.patient-tile.selected .select-btn{
+	fill:#aaa;
+}
+
+.select-btn {
+	fill:#eee;
+	position:absolute; 
+	top:10px; 
+	right:10px;
+}
+
+.select-btn:hover {
+	fill:#aaa;
+}
+
 
 
 /*
