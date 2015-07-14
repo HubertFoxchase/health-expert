@@ -257,7 +257,11 @@ class SessionApi(remote.Service):
         #return query.filter(Session.state == int(SessionState.ACTIVE))
         
         _isValidUser()
-        return query.filter(Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED)])).order(Session.state, -Session.created, Session.key)
+        
+        date = datetime.datetime.today()
+        
+        return query.filter(ndb.AND(Session.created > date - datetime.timedelta(hours=1), 
+                                    Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED)]))).order(Session.state, -Session.created, Session.key)
 
     @Session.method(path='session/{id}', 
                       http_method='GET',

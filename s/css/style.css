@@ -19,13 +19,23 @@
 }
 
 
-md-list.menu a {
-	cursor: pointer;
-}
 
 md-list.menu a md-item-content {
 	position: relative;
+	margin-bottom: 5px;
 }
+
+md-list.menu a:hover md-item-content {
+	background-color: #eee;
+}
+
+
+md-list.menu a {
+	color: #333;
+	fill: #333;
+	text-decoration: none;
+}
+
 
 md-toolbar:not(.md-hue-1), .md-fab {
   fill: #fff;
@@ -77,7 +87,8 @@ md-toolbar h1 {
 }
 
 .patient-tile.selected {
-	transform : scale(0.9, 0.9);
+	transform : scale(0.95, 0.95);
+	background-color: #eee;
 }
 
 
@@ -96,6 +107,23 @@ md-toolbar h1 {
 	fill:#aaa;
 }
 
+md-toolbar {
+	fill:#fff;
+}
+
+md-menu-item>.md-button ng-md-icon {
+  margin: auto 16px auto 0;
+}
+
+ng-md-icon {
+  margin: auto;
+  background-repeat: no-repeat no-repeat;
+  display: inline-block;
+  vertical-align: middle;
+  fill: currentColor;
+  height: 24px;
+  width: 24px;
+}
 
 
 /*

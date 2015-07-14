@@ -63,7 +63,24 @@ angular.module("controllers", []).
 	    
 	    $scope.exists = function (item, list) {
 	        return list.indexOf(item) > -1;
-	    };	    
+	    };	 
+	    
+	    $scope.clearSelected = function(){
+		    $scope.selected = [];
+	    }
+
+	    $scope.deleteSelected = function(){
+		    //$scope.selected = [];
+	    }
+	    
+	    $scope.markSelected = function(){
+		    //$scope.selected = [];
+	    }
+	    
+	    $scope.updateSelected = function(){
+		    //$scope.selected = [];
+	    }
+	    
 	    
 		if($rootScope.gridItems){
 			$scope.sessions	= $rootScope.gridItems;
@@ -91,6 +108,10 @@ angular.module("controllers", []).
 			});
 		}
 
+		$rootScope.$on('refresh', function(){
+			loadSession();
+		})		
+		
 		if($rootScope.item){
 			$scope.item	= $rootScope.item;
 		}

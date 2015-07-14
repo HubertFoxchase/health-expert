@@ -10,7 +10,7 @@
 </div>
 
 <div layout="row" layout-align="start start" layout-wrap style="margin-top: 5px">
- 	<div flex="33" flex-sm="100" flex-md="50" flex-lg="50" layout-align="start start" ng-click="showDetail($event, item)" ng-repeat="item in sessions" style="outline:none">
+ 	<div flex="33" flex-sm="100" flex-md="50" flex-lg="50" layout-align="start start" ng-click="showDetail(item, $event)" ng-repeat="item in sessions" style="outline:none">
  		<div layout="column" layout-padding flex class="patient-tile md-whiteframe-z1" style="position:relative" ng-class="exists(item.id, selected) ? 'selected' : ''">
 
 	        	<md-button class="md-icon-button select-btn" md-no-ink ng-click="toggle(item.id, selected, $event)" aria-label="Back">

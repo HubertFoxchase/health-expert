@@ -20,12 +20,26 @@
 			<div class="md-toolbar-tools">
 				<h1>Click4Care</h1>
 				<span flex></span>
-			    <md-button class="md-primary md-raised md-hue-1" ng-click="end()" ng-show="$root.session.state == 1">
-			      End session
-			    </md-button>			
-			    <md-button class="md-primary md-raised md-hue-1 toolbar-button" ng-click="start()" ng-show="!$root.session.state || $root.session.state > 1">
-			      New session
-			    </md-button>			
+		        <md-menu md-position-mode="target-right target">
+		          
+		          <md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu()">
+		            <ng-md-icon icon="more_vert"></ng-md-icon>
+		          </md-button>
+		          
+		          <md-menu-content width="2">
+		            <md-menu-item ng-show="$root.session.state == 1">
+		              <md-button ng-click="end()" >
+		                <p>End session</p>
+		              </md-button>
+		            </md-menu-item>
+		            <md-menu-item ng-show="!$root.session.state || $root.session.state > 1">
+		              <md-button ng-click="start()" >
+		                <p>New session</p>
+		              </md-button>
+		            </md-menu-item>
+		          </md-menu-content>
+		          
+		        </md-menu>				
 			</div>
 		</md-toolbar>
 
@@ -49,6 +63,9 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-animate.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-aria.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.js"></script>
+	
+	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.5.0/angular-material-icons.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/SVG-Morpheus/0.1.8/svg-morpheus.js"></script>
 
 	<script src="/c/js/app.js"></script>
 	<script src="/c/js/values.js"></script>
