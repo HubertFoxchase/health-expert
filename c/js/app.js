@@ -8,6 +8,14 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'controllers', 'ser
 .config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
 	$routeProvider
+		.when('/list', {
+			templateUrl: 'templates/list.html',
+			controller: 'PatientCtrl',
+			resolve : { init: ['$api', function($api) {
+		          	return $api.load();
+	        	}]
+			}
+		})
 		.when('/start', {
 			templateUrl: 'templates/start.html',
 			controller: 'StartCtrl',
@@ -97,7 +105,7 @@ function($routeProvider, $locationProvider) {
 			}
 		})
 	    .otherwise({
-	          redirectTo: '/start'
+	          redirectTo: '/list'
 	    });		
 
     //$locationProvider.html5Mode({enabled: true,requireBase:false});

@@ -39,3 +39,27 @@ md-checkbox .md-label span{
 md-toolbar {
 	fill:#fff;
 }
+
+.table-row {
+	padding: 5px 0px;
+	border-bottom: 1px solid #eee;
+	background-color: #fff;
+	cursor: pointer;
+	outline: none;
+}
+
+.table-header {
+	padding: 5px 0px;
+	border-bottom: 1px solid #eee;
+	background-color: #EEEEEE;
+	font-weight: bold;
+}
+
+.table-row > div, .table-header > div{
+	line-height: 30px;
+	padding-top: 5px;
+}
+
+.table-header div:first-child, .table-row div:first-child {
+	padding-left: 10px;
+}

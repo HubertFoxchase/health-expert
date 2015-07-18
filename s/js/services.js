@@ -59,7 +59,6 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
     
     return {
     	load : function() {
-    		
     		if(_api) {
 	            deferred.resolve(_api);
     		}
