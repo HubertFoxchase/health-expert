@@ -2,13 +2,13 @@
 
 angular.module('services', []).
 
-factory('$api',  ['$q', 'config', function ($q, config) {
+factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootScope) {
 
 	var deferred = $q.defer();;
 	var _api = null;
 	
-    var clientId = config.clientId,
-        scopes = config.scope;
+    var clientId = $config.clientId,
+        scopes = $config.scope;
     
 	var checkAuth = function() {
 	    gapi.auth.authorize({ 
@@ -21,6 +21,7 @@ factory('$api',  ['$q', 'config', function ($q, config) {
 	
 	var handleAuthResult = function(authResult) {
 	    if (authResult && !authResult.error) {
+	    	$rootScope.user = {emial:authResult.email};
         	gapi.load('client', {'callback': clientReady});
 	    } 
 	    else {
@@ -43,18 +44,29 @@ factory('$api',  ['$q', 'config', function ($q, config) {
     var apiReady = function() {
         if (gapi.client.c4c) {
         	_api = gapi.client.c4c;
-            deferred.resolve(_api);
+
+        	// get organisation
+			_api.user.getByEmail({email:$rootScope.user.email}).execute(function(resp){
+				$rootScope.user = resp.items[0];
+				$rootScope.organisation = $rootScope.user.organisation;
+	            deferred.resolve(_api);
+			});        	
         } 
         else {
             deferred.reject('api load error');
         }
-    }      
+    }     
     
     return {
     	load : function() {
-    	    gapi.load('auth', {'callback': checkAuth});
-
-            return deferred.promise;
+    		
+    		if(_api) {
+	            deferred.resolve(_api);
+    		}
+    		else {
+	    	    gapi.load('auth', {'callback': checkAuth});
+	            return deferred.promise;
+    		}
     	},
     	
     	handleAuthClick : function (event) {

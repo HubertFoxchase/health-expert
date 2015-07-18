@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'angularMoment', 'controllers', 'services', 'directives'])
-.value('config', {
+.value('$config', {
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
-      scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ]
+      scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ],
+      userRoles    : ["Doctor", "Nurse", "Reception", "Support", "Other"]
 })
 .constant('angularMomentConfig', {
     preprocess: 'utc', // optional
@@ -13,8 +14,8 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'angularMoment', 'c
   function($routeProvider, $locationProvider) {
     $routeProvider
       .when('/session/:id', {
-        templateUrl: 'templates/view.html',
-        controller: 'SessionCtrl',
+        templateUrl: 'templates/sessionDetail.html',
+        controller: 'SessionDetailCtrl',
         controllerAs: 'session',
 		resolve : { init: ['$api', function($api) {
           	return $api.load();
@@ -34,15 +35,60 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'angularMoment', 'c
           	return $api.load();
 	    	}]
 		}
-      }).
-	  otherwise({
+      })
+      .when('/history', {
+          templateUrl: 'templates/history.html',
+          controller: 'HistoryCtrl',
+          controllerAs: 'history',
+  		resolve : { init: ['$api', function($api) {
+            	return $api.load();
+  	    	}]
+  		}
+      })
+      .when('/account', {
+          templateUrl: 'templates/account.html',
+          controller: 'AccountCtrl',
+          controllerAs: 'account',
+	  		resolve : { init: ['$api', function($api) {
+	            	return $api.load();
+	  	    	}]
+	  		}
+      })
+      .when('/user/:id', {
+          templateUrl: 'templates/userDetail.html',
+          controller: 'UserDetailCtrl',
+          controllerAs: 'userdetail',
+	  		resolve : { init: ['$api', function($api) {
+	            	return $api.load();
+	  	    	}]
+	  		}
+      })
+      .when('/patients', {
+          templateUrl: 'templates/patients.html',
+          controller: 'PatientsCtrl',
+          controllerAs: 'patients',
+	  		resolve : { init: ['$api', function($api) {
+	            	return $api.load();
+	  	    	}]
+	  		}
+      })
+      .when('/patient/:id', {
+          templateUrl: 'templates/patientDetail.html',
+          controller: 'PatientDetailCtrl',
+          controllerAs: 'patientdetail',
+	  		resolve : { init: ['$api', function($api) {
+	            	return $api.load();
+	  	    	}]
+	  		}
+      })
+      .otherwise({
 	          redirectTo: '/grid'
 	  });
 
     //$locationProvider.html5Mode({enabled: true,requireBase:false});
 }])
 .run(["$rootScope", "$location", 
-      function ($rootScope, $location) {
+    function ($rootScope, $location) {
     	$rootScope.$on('$routeChangeSuccess', function(){
     		ga('send', 'pageview', $location.path());
     });

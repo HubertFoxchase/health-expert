@@ -14,25 +14,32 @@ from api2_messages import PatientResposeMessage
 
 class Organisation(EndpointsModel):
     
-    _message_fields_schema = ('id', 'name', 'created',)
+    _message_fields_schema = ('id', 'name', 'apikey', 'created',)
     
     name = ndb.StringProperty()
+    apikey = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     
-class UserRole(messages.Enum):
+class UserType(messages.Enum):
     ADMIN = 1
     NORMAL = 2
 
+class UserRole(messages.Enum):
+    DOCTOR = 1
+    NURSE = 2
+    RECEPTIONIST = 3
+    SUPPORT = 4
+    OTHER = 5
+
 class User(EndpointsModel):
     
-    _message_fields_schema = ('id', 'email', 'name', 'type', 'organisation', 'created')
+    _message_fields_schema = ('id', 'email', 'name', 'type', 'role', 'organisation', 'organisation_id', 'created')
 
     email = ndb.StringProperty()
     name = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     type = ndb.IntegerProperty()
-
-    _organisationId = None
+    role = ndb.IntegerProperty()
 
     organisation_ref = ndb.KeyProperty(kind=Organisation)
 
@@ -40,24 +47,26 @@ class User(EndpointsModel):
         if not isinstance(value, (int, long)):
             raise endpoints.BadRequestException('Organisation id must be an integer.')
         
-        if ndb.Key(Organisation, value) is None:
-            raise endpoints.NotFoundException('Organisation %s does not exist.' % value)        
-
-        self._organisationId = value
         self.organisation_ref = ndb.Key(Organisation, value)
 
-    @EndpointsAliasProperty(setter=OrganisationId, property_type=messages.IntegerField)
-    def organisation(self):
+        if self.organisation_ref is None:
+            raise endpoints.NotFoundException('Organisation %s does not exist.' % value)        
 
+    @EndpointsAliasProperty(setter=OrganisationId, property_type=messages.IntegerField)
+    def organisation_id(self):
         return self.organisation_ref.integer_id()   
+
+    @EndpointsAliasProperty(property_type=Organisation.ProtoModel())
+    def organisation(self):
+        if self.organisation_ref is not None:
+            return self.organisation_ref.get()   
+
 
 
 class Patient(EndpointsModel):
     
-    _message_fields_schema = ('id', 'ref', 'organisation', 'gender', 'age')
+    _message_fields_schema = ('id', 'ref', 'gender', 'age', 'organisation', 'organisation_id', )
     
-    _organisationId = None
-
     ref = ndb.StringProperty()
     gender = ndb.StringProperty()
     age = ndb.IntegerProperty()
@@ -68,16 +77,19 @@ class Patient(EndpointsModel):
         if not isinstance(value, (int, long)):
             raise endpoints.BadRequestException('Organisation id must be an integer.')
         
-        if ndb.Key(Organisation, value) is None:
-            raise endpoints.NotFoundException('Organisation %s does not exist.' % value)        
-
-        self._organisationId = value
         self.organisation_ref = ndb.Key(Organisation, value)
 
-    @EndpointsAliasProperty(setter=OrganisationId, property_type=messages.IntegerField)
-    def organisation(self):
+        if self.organisation_ref is None:
+            raise endpoints.NotFoundException('Organisation %s does not exist.' % value)        
 
+    @EndpointsAliasProperty(setter=OrganisationId, property_type=messages.IntegerField)
+    def organisation_id(self):
         return self.organisation_ref.integer_id()   
+
+    @EndpointsAliasProperty(property_type=Organisation.ProtoModel())
+    def organisation(self):
+        if self.organisation_ref is not None:
+            return self.organisation_ref.get() 
     
 
 '''    
@@ -135,7 +147,7 @@ class SessionState(messages.Enum):
 
 class Session(EndpointsModel):
     
-    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'state', 'symptoms', 'outcome', 'next', 'patient', 'patient_id')    
+    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'state', 'symptoms', 'outcome', 'next', 'patient', 'organisation', 'patient_id')    
     
     _patientId = None
     _symptomId = None
@@ -151,6 +163,8 @@ class Session(EndpointsModel):
     symptoms = ndb.LocalStructuredProperty(Symptoms)
     next = ndb.LocalStructuredProperty(Question)
     outcome = ndb.LocalStructuredProperty(Outcome)
+    
+    organisation = ndb.IntegerProperty()
     
     patient = ndb.LocalStructuredProperty(Patient)
 

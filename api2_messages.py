@@ -7,6 +7,11 @@ Created on 6 Mar 2015
 from protorpc import messages
 
 #users
+class OrganisationResponseMessage(messages.Message):
+    id = messages.StringField(1)
+    name = messages.StringField(2)
+    apikey = messages.StringField(3)
+
 class SymptomRequestMessage(messages.Message):
     id = messages.StringField(1)
     name = messages.StringField(2)

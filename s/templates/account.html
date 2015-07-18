@@ -1,0 +1,65 @@
+<div layout="row" class="session-tools">
+	<h3>Organisation</h3>
+	<span flex></span>
+</div>
+
+<div layout="column" class="md-whiteframe-z1">
+	<div layout="column" flex>
+		
+		<div layout="row" class="table-header">
+		    <div flex="5"></div>
+		    <div flex>Name</div>
+		    <div flex>Account Type</div>
+		    <div flex>Key</div>
+		</div>
+
+		<div layout="row" class="table-row">
+		    <div flex="5"></div>
+		    <div flex>{{$root.organisation.name}}</div>
+		    <div flex>Trial</div>
+		    <div flex>{{$root.organisation.apikey}}</div>
+		</div>
+	</div>
+</div>
+
+<div style="height: 50px"></div>
+
+<div layout="row" class="session-tools">
+	<h3>Users</h3>
+	<span flex></span>
+	<div layout="row" layout-align="end center" ng-show="selected.length > 0">
+ 		<md-button class="md-raised" ng-click="clearSelected()">Cancel</md-button>
+ 		<md-button class="md-raised" ng-click="deleteSelected()">Delete</md-button>
+	</div>
+	<div layout="row" layout-align="end center" ng-hide="selected.length > 0">
+ 		<md-button class="md-raised md-primary md-accent" ng-href="#/user/0">New User</md-button>
+	</div>
+</div>
+
+<div layout="column" class="md-whiteframe-z1">
+	<div layout="column" flex>
+		
+		<div layout="row" class="table-header">
+		    <div flex="5"></div>
+		    <div flex>Name</div>
+		    <div flex>Email</div>
+		    <div flex>Role</div>
+		</div>
+
+		<div class="table-row" layout="row" layout-align="center center" ng-hide="users">
+			<div flex="20">Loading ...</div>
+		</div>
+		
+		<div layout="row" ng-repeat="user in users" 
+						  class="table-row" 
+						  ng-class="exists(user.id, selected) ? 'selected' : ''" 
+						  ng-click="showDetail(user, $event)">
+		    <div flex="5" layout="row" layout-align="center start"  class="checkbox-container">
+		    	<md-checkbox ng-click="toggle(user.id, selected, $event)" ng-checked="exists(user.id, selected)" aria-label="{{user.id}}"></md-checkbox>
+		    </div>
+		    <div flex>{{user.name}}</div>
+		    <div flex>{{user.email}}</div>
+		    <div flex><span user-role="user.role"></span></div>
+		</div>
+	</div>
+</div>

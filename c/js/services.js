@@ -2,13 +2,13 @@
 
 angular.module('services', []).
 
-factory('$api',  ['$q', 'config', function ($q, config) {
+factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootScope) {
 
 	var deferred = $q.defer();;
 	var _api = null;
 	
-    var clientId = config.clientId,
-        scopes = config.scope;
+    var clientId = $config.clientId,
+        scopes = $config.scope;
     
 	var checkAuth = function() {
 	    gapi.auth.authorize({ 
@@ -42,13 +42,18 @@ factory('$api',  ['$q', 'config', function ($q, config) {
     var apiReady = function() {
         if (gapi.client.c4c) {
         	_api = gapi.client.c4c;
-            deferred.resolve(_api);
+
+        	// get organisation
+			_api.organisation.list().execute(function(resp){
+				$rootScope.organisation = resp.items[0];
+	            deferred.resolve(_api);
+			});        	
         } 
         else {
             deferred.reject('api load error');
         }
     }      
-    
+
     return {
     	load : function() {
     	    gapi.load('auth', {'callback': checkAuth});

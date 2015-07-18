@@ -18,7 +18,10 @@ from api2_models import *
 from api2_messages import OutcomeRequestMessage
 import infermedica_api
 import informedica_api_old
+import string
+import random
 from string import lower
+
 
 WEB_CLIENT_ID = '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com'
 ANDROID_CLIENT_ID = 'replace this with your Android client ID'
@@ -51,6 +54,7 @@ class AdminApi(remote.Service):
                     name='insert')   
     def OrganisationInsert(self, model):
         _isAdminUser()
+        model.apikey = _idDenerator()
         model.put()
         return model
 
@@ -65,7 +69,7 @@ class AdminApi(remote.Service):
             raise endpoints.NotFoundException('Organisation not found.')        
         return model
 
-    @Organisation.query_method(path='organisation', 
+    @Organisation.query_method(path='organisations', 
                       http_method='GET',
                       name='list')   
     def OrganisationList(self, query):
@@ -85,25 +89,51 @@ class AdminApi(remote.Service):
 @c4c_api.api_class(resource_name='user')
 class UserApi(remote.Service):
     
-    @User.method(request_fields=('name', 'organisation'),
-                    response_fields=('id','email', 'name', 'created', 'organisation'),
-                    path='user', 
-                    http_method='POST',
-                    name='insert')   
+    @User.method(response_fields=('id','email', 'name', 'role', 'created', 'organisation'),
+                 path='user/{id}', 
+                 http_method='GET',
+                 name='get')   
+    def UserGet(self, model):
+        _isValidUser()
+        
+        logging.debug(model)
+        
+        if not model.from_datastore:
+            raise endpoints.NotFoundException('User not found.')
+        return model     
+
+    @User.query_method(query_fields=('email',),
+                       collection_fields=('id','email', 'name', 'role', 'created', 'organisation'),
+                       path='user', 
+                       http_method='GET',
+                       name='getByEmail',
+                       limit_default=1)   
+    def UserGetByEmail(self, query):
+        _isValidUser()
+        
+        logging.debug(query)
+        
+        return query 
+    
+    @User.method(request_fields=('name', 'email', 'role', 'organisation_id'),
+                 response_fields=('id','email', 'name', 'role', 'created', 'organisation'),
+                 path='user', 
+                 http_method='POST',
+                 name='insert')   
     def UserInsert(self, model):
         _isAdminUser()
 
-        current_user = endpoints.get_current_user()
+        #current_user = endpoints.get_current_user()
         
-        if current_user is None:
-            raise endpoints.UnauthorizedException('Invalid token.')
+        #if current_user is None:
+        #    raise endpoints.UnauthorizedException('Invalid token.')
         
-        model.email = current_user.email().lower()
-        
+        #model.email = current_user.email().lower()
+        model.type = int(UserType.NORMAL)
         model.put()
         return model
     
-    @User.method(request_fields=('name', 'type', 'email'),
+    @User.method(request_fields=('name', 'role', 'email'),
                       path='user/{id}', 
                       http_method='POST',
                       name='update')   
@@ -114,9 +144,11 @@ class UserApi(remote.Service):
             raise endpoints.NotFoundException('User not found.')
         return model       
 
-    @User.query_method(path='user', 
-                      http_method='GET',
-                      name='list')   
+    @User.query_method(query_fields=('organisation_id',),
+                       collection_fields=('id','email', 'name', 'role', 'created', 'organisation'),
+                       path='users', 
+                       http_method='GET',
+                       name='list')   
     def UserList(self, query):
         _isAdminUser()
         return query
@@ -125,8 +157,8 @@ class UserApi(remote.Service):
 @c4c_api.api_class(resource_name='patient')
 class PatientApi(remote.Service):
    
-    @Patient.method(request_fields=('ref','organisation', 'age', 'gender'),
-                    response_fields=('id', 'ref', 'organisation', 'age', 'gender'),
+    @Patient.method(request_fields=('ref', 'age', 'gender', 'organisation_id', ),
+                    response_fields=('id', 'ref', 'age', 'gender', 'organisation', ),
                     path='patient', 
                     http_method='POST',
                     name='insert')   
@@ -136,16 +168,22 @@ class PatientApi(remote.Service):
         model.put()
         return model
 
-    @Patient.query_method(path='patients', 
-                      http_method='GET',
-                      name='list')   
+    @Patient.query_method(query_fields=('organisation_id',),
+                          collection_fields=('id', 'ref', 'age', 'gender', 'organisation', ),
+                          path='patients', 
+                          http_method='GET',
+                          name='list')   
     def PatientList(self, query):
         _isValidUser()
+        
+        logging.debug(query)
+        
         return query
 
     @Patient.method(path='patient/{id}', 
-                      http_method='GET',
-                      name='get')   
+                    response_fields=('id', 'ref', 'age', 'gender', 'organisation', ),
+                    http_method='GET',
+                    name='get')   
     def PatientGet(self, model):
         _isValidUser()
         
@@ -153,10 +191,11 @@ class PatientApi(remote.Service):
             raise endpoints.NotFoundException('Patient not found.')
         return model        
 
-    @Patient.method(request_fields=('ref', 'organisation', 'age', 'gender'),
-                      path='patient/{id}', 
-                      http_method='POST',
-                      name='update')   
+    @Patient.method(request_fields=('ref', 'age', 'gender'),
+                    response_fields=('id', 'ref', 'age', 'gender', 'organisation', ),
+                    path='patient/{id}', 
+                    http_method='POST',
+                    name='update')   
     def PatientUpdate(self, model):
         _isValidUser()
         model.put()        
@@ -166,8 +205,8 @@ class PatientApi(remote.Service):
 
 
     @Patient.method(path='patient/{id}', 
-                      http_method='DELETE',
-                      name='delete')   
+                    http_method='DELETE',
+                    name='delete')   
     def PatientDelete(self, model):
         _isValidUser()
         model.key.delete()
@@ -175,9 +214,10 @@ class PatientApi(remote.Service):
             raise endpoints.NotFoundException('Patient not found.')
         return model        
 
-    @Patient.query_method(path='patients/deleteAll', 
-                      http_method='GET',
-                      name='deleteAll')   
+    @Patient.query_method(query_fields=('organisation_id',),
+                          path='patients/deleteAll', 
+                          http_method='GET',
+                          name='deleteAll')   
     def PatientDeleteAll(self, query):
         _isValidUser()
         
@@ -229,37 +269,45 @@ class SessionApi(remote.Service):
             cat.append(Symptom(id=c['id'], name=c['name'], value=''))
         
         session.next = Question(label=label, description=description, type=type, symptoms=cat)
+
+        logging.debug(patient)
+
+        session.organisation = patient.organisation_ref.integer_id()
         
         session.put()
         return session.ToMessage()
 
-    @Session.query_method(path='sessions/list', 
-                      http_method='GET',
-                      name='list')   
+    @Session.query_method(query_fields=('organisation',),
+#                          response_fields=('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
+                          path='sessions/list', 
+                          http_method='GET',
+                          name='list')   
     def SessionList(self, query):
         _isValidUser()
+        logging.debug(query)
         return query.filter(Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED), int(SessionState.REVIEWED)])).order(-Session.created, Session.key)
 
-    @Session.query_method(path='sessions/listAll', 
-                      http_method='GET',
-                      name='listAll',
-                      limit_default = 99)   
+    @Session.query_method(query_fields=('organisation',),
+#                          response_fields=('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
+                          path='sessions/listAll', 
+                          http_method='GET',
+                          name='listAll',
+                          limit_default = 99)   
     def SessionListAll(self, query):
         _isValidUser()
+        logging.debug(query)
         return query.order(-Session.created)
 
     
-    @Session.query_method(path='sessions/listActive', 
-                      http_method='GET',
-                      name='listActive',
-                      limit_default = 99)   
+    @Session.query_method(query_fields=('organisation',),
+#                          response_fields=('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
+                          path='sessions/listActive', 
+                          http_method='GET',
+                          name='listActive',
+                          limit_default = 99)   
     def SessionListActive(self, query):
-        #return query.filter(Session.state == int(SessionState.ACTIVE))
-        
         _isValidUser()
-        
         date = datetime.datetime.today()
-        
         return query.filter(ndb.AND(Session.created > date - datetime.timedelta(hours=1), 
                                     Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED)]))).order(Session.state, -Session.created, Session.key)
 
@@ -451,5 +499,7 @@ def _isAdminUser():
     else:
         return True
 
+def _idDenerator(size=10, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
 
 app = endpoints.api_server([c4c_api], restricted=False)    

@@ -1,0 +1,40 @@
+<div layout="row" class="session-tools">
+	<h3 ng-show="user.id">Edit User</h3>
+	<h3 ng-hide="user.id">New User</h3>
+</div>
+
+<div layout="row">
+	<form name="userForm" flex="50" layout-padding class="md-whiteframe-z1 user-form">
+		<md-input-container> 
+			<label>Name</label> 
+			<input md-maxlength="30" required name="name" ng-model="user.name">
+			<div ng-messages="userForm.name.$error" ng-show="userForm.name.$touched && userForm.name.$invalid">
+				<div ng-message="required">This is required.</div>
+			</div>
+		</md-input-container>
+		<md-input-container> 
+			<label>Email</label> 
+			<input required name="email" ng-model="user.email">
+			<div ng-messages="userForm.email.$error" ng-show="userForm.email.$touched && userForm.email.$invalid">
+				<div ng-message="required">This is required.</div>
+			</div>
+		</md-input-container>
+		<md-input-container>
+			<fieldset class="radio-btn">
+				<legend>User Role</legend>
+				<md-radio-group ng-model="user.role" aria-label="User Role"> 
+					<md-radio-button value="1">Doctor</md-radio-button> 
+					<md-radio-button value="2">Nurse</md-radio-button> 
+					<md-radio-button value="3">Support</md-radio-button>
+					<md-radio-button value="4">Other</md-radio-button> 
+				</md-radio-group> 
+			</fieldset>
+		</md-input-container>
+	</form>
+	<span flex></span>
+</div>
+
+<div layout="row"  layout="row" class="form-tools" layout-align="start center">
+		<md-button class="md-raised md-accent" ng-click="save(user)" ng-disabled="!userForm.$valid" >Save</md-button>
+		<md-button md-no-ink class="md-primary" ng-href="#/account">Cancel</md-button>
+</div>

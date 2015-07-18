@@ -1,15 +1,15 @@
-	<div layout="row" style="padding-right: 10px; padding-bottom: 5px">
+	<div layout="row" class="session-tools">
 		<h3>Session Details</h3>
 		<span flex></span>
 		<div layout="row" layout-align="end center">
-	 		<md-button class="md-raised" ng-href="#/grid">Cancel</md-button>
+	 		<md-button class="md-raised" ng-click="back()">Cancel</md-button>
 	 		<md-button class="md-raised" ng-click="delete()">Delete</md-button>
-	 		<md-button class="md-raised" ng-click="update()">Update Diagnosis &nbsp;</md-button>
-	 		<md-button class="md-raised" ng-click="reviewed()">Mark Reviewed &nbsp;</md-button>
+	 		<md-button class="md-raised" ng-click="update()">Update Diagnosis</md-button>
+	 		<md-button class="md-raised" ng-click="reviewed()">Mark Reviewed</md-button>
 		</div>
 	</div>
 	
-	<div layout="row" class="session-detials">
+	<div layout="row" class="session-detials" style="margin-right: -15px">
  		<div flex layout="column" layout-padding class="md-whiteframe-z1 patient-tile">
 			<h3>Patient</h3>
  			<md-divider></md-divider>

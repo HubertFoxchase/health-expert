@@ -21,8 +21,8 @@
 		<div layout="row" layout-padding layout-align="space-between center" class="user-box">
 			<user-avatar></user-avatar>
 			<div flex>
-				<h4>Dr. Paul Alan</h4>
-				<span style="font-size: 85%">Sunnyview Family Practice</span>
+				<h4>{{$root.user.name}}</h4>
+				<span style="font-size: 85%">{{$root.organisation.name}}</span>
 			</div>
 		</div>
 		<md-divider></md-divider> 
@@ -47,15 +47,25 @@
 					</md-item-content>
 				</a> 
 			</md-item> 
-			<md-divider style="margin-top:8px"></md-divider> 
-			<md-subheader>Management</md-subheader> 
 			<md-item> 
-				<a  ng-href="#/users">
+				<a ng-href="#/patients">
 					<md-item-content md-ink-ripple layout="row"	layout-align="start center">
 						<div class="inset">
 							<ng-md-icon icon="group"></ng-md-icon>
 						</div>
-						<div class="inset">Users</div>
+						<div class="inset">Patients</div>
+					</md-item-content>
+				</a> 
+			</md-item> 
+			<md-divider style="margin-top:8px"></md-divider> 
+			<md-subheader>Management</md-subheader> 
+			<md-item> 
+				<a  ng-href="#/account">
+					<md-item-content md-ink-ripple layout="row"	layout-align="start center">
+						<div class="inset">
+							<ng-md-icon icon="account_circle"></ng-md-icon>
+						</div>
+						<div class="inset">Account</div>
 					</md-item-content>
 				</a> 
 			</md-item> 
@@ -117,7 +127,7 @@
 		</md-toolbar>
 		
 		<md-content flex md-scroll-y class="bg-grey">
-			<div ng-view layout="column" layout-fill layout-padding style="padding:10px 5px 10px 20px">
+			<div ng-view layout="column" layout-fill layout-padding style="padding:10px 20px">
 			
 			</div>
 		</md-content>

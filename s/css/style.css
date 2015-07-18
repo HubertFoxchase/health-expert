@@ -56,19 +56,17 @@ md-toolbar h1 {
 	background-color: #252833;	
 }
 
-.patient-tile  {
-	margin-right:16px;
-	margin-bottom:16px;
-	background-color: #fff;
-	padding:16px;
-}
-
 .session-detials .patient-tile h3{
 	margin: 0px 0px 16px 0px;
 }
 
 .session-detials .patient-tile md-divider{
 	margin-bottom: 16px;
+}
+
+.session-tools{
+	padding-bottom: 5px; 
+	margin-right: -5px	
 }
 
 .item {
@@ -86,25 +84,46 @@ md-toolbar h1 {
 	padding:16px;
 }
 
-.patient-tile.selected {
-	transform : scale(0.95, 0.95);
+.patient-tile-container {
+	outline: none;
+}
+
+.patient-tile-container.selected {
 	background-color: #eee;
 }
 
+.patient-tile-container.selected .patient-tile{
+	transform : scale(0.90, 0.90);
+	margin: 0; 
+}
 
-.patient-tile.selected .select-btn{
-	fill:#aaa;
+.patient-tile  {
+	position: relative;;
+	margin-right:16px;
+	margin-bottom:16px;
+	background-color: #fff;
+	padding:16px;
+}
+
+.patient-tile-container.selected .patient-tile .select-btn{
+	fill:#999;
+	visibility: visible;
+}
+
+.patient-tile-container:hover  .patient-tile .select-btn{
+	visibility:visible;
 }
 
 .select-btn {
-	fill:#eee;
+	visibility:hidden;
+	fill:#ccc;
 	position:absolute; 
 	top:10px; 
 	right:10px;
 }
 
 .select-btn:hover {
-	fill:#aaa;
+	fill:#888;
 }
 
 md-toolbar {
@@ -120,11 +139,62 @@ ng-md-icon {
   background-repeat: no-repeat no-repeat;
   display: inline-block;
   vertical-align: middle;
-  fill: currentColor;
   height: 24px;
   width: 24px;
 }
 
+.table-row {
+	padding: 5px 0px;
+	border-bottom: 1px solid #eee;
+	background-color: #fff;
+	cursor: pointer;
+	outline: none;
+}
+
+.table-row:hover {
+	background-color: #E1F5FE;
+}
+
+.table-row.selected {
+	background-color: #E1F5FE;
+}
+
+
+.table-header {
+	padding: 5px 0px;
+	border-bottom: 1px solid #eee;
+	background-color: #EEEEEE;
+	font-weight: bold;
+}
+
+.table-row > div, .table-header > div{
+	line-height: 30px;
+	padding-top: 5px;
+}
+
+.table-row > div.checkbox-container, .table-header > div.checkbox-container {
+	padding-top: 5px;	
+}
+
+.user-form {
+	background-color: #fff;
+	padding: 20px 30px 0px 30px;	
+}
+
+.user-form fieldset.radio-btn {
+	margin-top: 20px;
+	width: 200px;
+	border: 1px solid #aaa;
+	border-radius: 5px;	
+}
+
+.user-form fieldset.radio-btn legend{
+	color: #999;
+}
+
+.form-tools {
+	margin-left: -8px;
+}
 
 /*
 old

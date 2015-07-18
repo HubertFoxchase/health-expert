@@ -1,11 +1,9 @@
 'use strict';
 
 angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'controllers', 'services', 'values'])
-.value('config', {
+.value('$config', {
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
-      scope        : [ 
-                      'https://www.googleapis.com/auth/userinfo.email' 
-                     ]
+      scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ]
 })
 .config(['$routeProvider', '$locationProvider',
 function($routeProvider, $locationProvider) {
@@ -105,7 +103,7 @@ function($routeProvider, $locationProvider) {
     //$locationProvider.html5Mode({enabled: true,requireBase:false});
 }])
 .run(["$rootScope", "$location", 
-      function ($rootScope, $location) {
+    function ($rootScope, $location) {
     	$rootScope.$on('$routeChangeSuccess', function(){
     		ga('send', 'pageview', $location.path());
     });
