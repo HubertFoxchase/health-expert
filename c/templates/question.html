@@ -1,8 +1,8 @@
 <div layout="row">
 	<span flex></span>
 	<div flex-md="60" flex-gt-md="40" flex-sm="85"  layout="column" layout-align="space-between left" ng-show="session.next.type=='group_multiple'">
-		<div layout="row" layout-padding>
-			<h3>{{session.next.label}}</h3>
+		<div layout="column" layout-padding>
+			<h3>{{step}}. {{session.next.label}}</h3>
 			<p class="explainer">You can select multiple items</p>
 		</div>
 		<md-checkbox ng-repeat="cat in session.next.symptoms" ng-model="cat.value" ng-true-value="'present'" ng-false-value="'absent'">
@@ -17,7 +17,7 @@
 	</div>   
 	<div flex-md="60" flex-gt-md="40" flex-sm="85" layout="column" layout-align="space-between left" ng-show="session.next.type=='single'">
 		<div layout="row" layout-padding>
-			<h3>{{session.next.label}}</h3>
+			<h3>{{step}}. {{session.next.label}}</h3>
 		</div>
 
 		<div class="inset"></div>
@@ -35,7 +35,7 @@
 	</div>   
 	<div flex-md="60" flex-gt-md="40" flex-sm="85" layout="column" layout-align="space-between left" ng-show="session.next.type=='group_single'">
 		<div layout="row" layout-padding>
-			<h3>{{session.next.label}}</h3>
+			<h3>{{step}}. {{session.next.label}}</h3>
 		</div>
 		
 		<md-radio-group ng-model="s">
@@ -54,7 +54,7 @@
 	</div> 	   
 	<div flex-md="60" flex-gt-md="40" flex-sm="85" layout="column" layout-align="space-between center" ng-show="session.next.type=='numeric'">
 		<div layout="row" layout-padding>
-			<h3>{{session.next.label}}</h3>
+			<h3>{{step}}. {{session.next.label}}</h3>
 		</div>
 		
 	    <md-input-container class="form-item-med">

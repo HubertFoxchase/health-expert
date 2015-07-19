@@ -49,7 +49,6 @@ angular.module("controllers", []).
 					$rootScope.patient = null;
 					$rootScope.progress = 0;
 					$rootScope.outcome = null;
-					
 					location.hash = "/list";
 				}
 			);
@@ -106,7 +105,7 @@ angular.module("controllers", []).
 	controller("StartCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", "$mdDialog", "groupsOfSymptoms", function($scope, $rootScope, $routeParams, $api, $location, $mdDialog, groupsOfSymptoms){
 		
 		var _api = $api.get();
-		
+
 		if(!$rootScope.patient){
 			$rootScope.patient = {id:$routeParams.patient};
 		}
@@ -223,9 +222,10 @@ angular.module("controllers", []).
 		console.log("question");
 		
 		var _api = $api.get();
-		
+
 		if($rootScope.session){
 			$scope.session = $rootScope.session;
+			$scope.step = 1;
 			
 			document.getElementById("main").style.visibility = "visible";
 			document.getElementById("progress").style.display = "none";
@@ -254,6 +254,7 @@ angular.module("controllers", []).
 				}
 				
 				$scope.session = $rootScope.session;
+				$scope.step = 1;
 				$scope.$apply();
 			});
 		}
@@ -291,6 +292,7 @@ angular.module("controllers", []).
 					$rootScope.outcome = Math.round(p)
 					
 					$scope.session = $rootScope.session;
+					$scope.step++;
 					$scope.$apply();
 				}
 				else {
