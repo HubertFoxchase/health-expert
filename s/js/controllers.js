@@ -318,7 +318,7 @@ angular.module("controllers", []).
 		document.getElementById("progress").style.display = "none";
 		
 	}]).
-	controller("PatientsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', function($scope, $rootScope, $routeParams, $api, $config){
+	controller("PatientsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
 		
 		var _api = $api.get();
 		$scope.selected = [];
@@ -333,7 +333,7 @@ angular.module("controllers", []).
 		loadPatients();
 		
 		$scope.showDetail = function(itemData, $event) {
-			$rootScope.item = itemData;
+			$rootScope.patient = itemData;
 	    	$location.path("/patient/" + itemData.id);
 	    };		
 
@@ -387,29 +387,48 @@ angular.module("controllers", []).
 		var _api = $api.get();
 
 		$rootScope.showBackBtn = true;
+		$rootScope.backLocation = "/patients";
 		
 		var loadPatient = function(){
 			_api.patient.get({id:$routeParams.id}).execute(function(resp){
-				$scope.item = resp;
+				$scope.patient = resp;
 				$scope.$apply()
 			});
 		}
-
-		loadPatinet();
+		
+		if($rootScope.patient){
+			$scope.patient = $rootScope.patient;
+		}
+		else if($routeParams.id && $routeParams.id != "0") {
+			loadPatient();
+		}
+		else {
+			$scope.patient = {
+					id : 0,
+					organisation_id : $rootScope.organisation.id
+			}
+		}
 		
 		$scope.back = function(){
 			$location.path("/patients"); 
 		}
 		
-		$scope.delete = function(id){
-			_api.patient.deleted({id:$routeParams.id}).execute(function(resp){
-		    	location.hash = "/patinets";
-			});
-		}
-
-		$scope.update = function(id){
-			_api.patient.update({id:$routeParams.id}).execute(function(resp){
-			});
+		$scope.save = function(patient){
+			
+			if(patient.id && patient.id != "0"){
+				_api.patient.update(patient).execute(function(resp){
+					if(resp){
+						$scope.back();
+					}
+				});
+			}
+			else {
+				_api.patient.insert(patient).execute(function(resp){
+					if(resp){
+						$scope.back();
+					}
+				});
+			}
 		}		
 		
 		document.getElementById("left").style.visibility = "visible";
