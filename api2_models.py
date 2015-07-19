@@ -177,7 +177,8 @@ class Session(EndpointsModel):
 
     @EndpointsAliasProperty(setter=OrganisationId, property_type=messages.IntegerField)
     def organisation_id(self):
-        return self.organisation_ref.integer_id()   
+        if self.organisation_ref is not None:
+            return self.organisation_ref.integer_id()   
 
 
     patient = ndb.LocalStructuredProperty(Patient)
@@ -197,7 +198,8 @@ class Session(EndpointsModel):
 
     @EndpointsAliasProperty(setter=PatientId, property_type=messages.IntegerField)
     def patient_id(self):
-        return self.patient_ref.integer_id()   
+        if self.patient_ref is not None:
+            return self.patient_ref.integer_id()   
 
     
     
