@@ -118,14 +118,14 @@ angular.module("controllers", []).
 		$scope.delete = function(id){
 			_api.session.markDeleted({id:$routeParams.id}).execute(function(resp){
 				$rootScope.gridItems = null;
-		    	location.hash = "/grid";
+				$scope.back();
 			});
 		}
 
 		$scope.reviewed = function(id){
 			_api.session.markReviewed({id:$routeParams.id}).execute(function(resp){
 				$rootScope.gridItems = null;
-		    	location.hash = "/grid";
+				$scope.back();
 			});
 		}		
 		

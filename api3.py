@@ -209,6 +209,9 @@ class PatientApi(remote.Service):
                     name='delete')   
     def PatientDelete(self, model):
         _isValidUser()
+        
+        #Session.query().iter(keys_only=True)
+        
         model.key.delete()
         if not model.from_datastore:
             raise endpoints.NotFoundException('Patient not found.')
@@ -237,7 +240,7 @@ class SessionApi(remote.Service):
         _isValidUser()
 
         patient = ndb.Key(Patient, request.patient).get()
-        session = Session(patient = patient, symptoms = Symptoms())
+        session = Session(patient = patient, patient_ref = patient.key, organisation_ref = patient.organisation_ref, symptoms = Symptoms())
         
         inf_api = infermedica_api.API(app_id=APP_ID, app_key=APP_KEY)
         r = infermedica_api.Diagnosis(sex=patient.gender, age=patient.age)
@@ -270,14 +273,10 @@ class SessionApi(remote.Service):
         
         session.next = Question(label=label, description=description, type=type, symptoms=cat)
 
-        logging.debug(patient)
-
-        session.organisation = patient.organisation_ref.integer_id()
-        
         session.put()
         return session.ToMessage()
 
-    @Session.query_method(query_fields=('organisation',),
+    @Session.query_method(query_fields=('organisation_id',),
 #                          response_fields=('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
                           path='sessions/list', 
                           http_method='GET',
@@ -287,7 +286,7 @@ class SessionApi(remote.Service):
         logging.debug(query)
         return query.filter(Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED), int(SessionState.REVIEWED)])).order(-Session.created, Session.key)
 
-    @Session.query_method(query_fields=('organisation',),
+    @Session.query_method(query_fields=('organisation_id',),
 #                          response_fields=('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
                           path='sessions/listAll', 
                           http_method='GET',
@@ -299,7 +298,7 @@ class SessionApi(remote.Service):
         return query.order(-Session.created)
 
     
-    @Session.query_method(query_fields=('organisation',),
+    @Session.query_method(query_fields=('organisation_id',),
 #                          response_fields=('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
                           path='sessions/listActive', 
                           http_method='GET',

@@ -147,7 +147,7 @@ class SessionState(messages.Enum):
 
 class Session(EndpointsModel):
     
-    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'state', 'symptoms', 'outcome', 'next', 'patient', 'organisation', 'patient_id')    
+    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'state', 'symptoms', 'outcome', 'next', 'patient', 'patient_id', 'organisation_id', )    
     
     _patientId = None
     _symptomId = None
@@ -164,10 +164,43 @@ class Session(EndpointsModel):
     next = ndb.LocalStructuredProperty(Question)
     outcome = ndb.LocalStructuredProperty(Outcome)
     
-    organisation = ndb.IntegerProperty()
-    
-    patient = ndb.LocalStructuredProperty(Patient)
+    organisation_ref = ndb.KeyProperty(kind=Organisation)
 
+    def OrganisationId(self, value):
+        if not isinstance(value, (int, long)):
+            raise endpoints.BadRequestException('Organisation id must be an integer.')
+        
+        self.organisation_ref = ndb.Key(Organisation, value)
+
+        if self.organisation_ref is None:
+            raise endpoints.NotFoundException('Organisation %s does not exist.' % value)        
+
+    @EndpointsAliasProperty(setter=OrganisationId, property_type=messages.IntegerField)
+    def organisation_id(self):
+        return self.organisation_ref.integer_id()   
+
+
+    patient = ndb.LocalStructuredProperty(Patient)
+    patient_ref = ndb.KeyProperty(kind=Patient)
+
+    def PatientId(self, value):
+        if not isinstance(value, (int, long)):
+            raise endpoints.BadRequestException('Patient id must be an integer.')
+        
+        self.patient_ref = ndb.Key(Patient, value)
+
+        if self.patient_ref is None:
+            raise endpoints.NotFoundException('Patient %s does not exist.' % value)        
+
+        self.patient = self.patient_ref.get()
+        #self.organisation_ref = self.patient.organisation_ref
+
+    @EndpointsAliasProperty(setter=PatientId, property_type=messages.IntegerField)
+    def patient_id(self):
+        return self.patient_ref.integer_id()   
+
+    
+    
     def symptom_idSetter(self, value):
         self._symptomId = value
     
@@ -175,22 +208,6 @@ class Session(EndpointsModel):
     def symptom_id(self):
         return self._symptomId
 
-    def PatientId(self, value):
-        if not isinstance(value, (int, long)):
-            raise endpoints.BadRequestException('Patient id must be an integer.')
-        
-        patient_key = ndb.Key(Patient, value)
-        
-        if patient_key is None:
-            raise endpoints.NotFoundException('Patient %s does not exist.' % value)        
-
-        self._patientId = value
-        self.patient = patient_key.get()
-
-    @EndpointsAliasProperty(setter=PatientId, property_type=messages.IntegerField)
-    def patient_id(self):
-        pass  
-    
     @classmethod
     def add_symptom(cls, message):
         
