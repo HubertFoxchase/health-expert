@@ -58,7 +58,7 @@ class AdminApi(remote.Service):
         model.put()
         return model
 
-    @Organisation.method(request_fields=('name',),
+    @Organisation.method(request_fields=('name', 'active'),
                     path='organisation/{id}', 
                     http_method='POST',
                     name='update')   
@@ -74,7 +74,7 @@ class AdminApi(remote.Service):
                       name='list')   
     def OrganisationList(self, query):
         _isAdminUser()
-        return query
+        return query.filter(Organisation.active == True)
 
     @Organisation.method(path='organisation/{id}', 
                       http_method='GET',
@@ -89,7 +89,7 @@ class AdminApi(remote.Service):
 @c4c_api.api_class(resource_name='user')
 class UserApi(remote.Service):
     
-    @User.method(response_fields=('id','email', 'name', 'role', 'created', 'organisation'),
+    @User.method(response_fields=('id','email', 'name', 'role', 'created', 'updated', 'organisation', 'active'),
                  path='user/{id}', 
                  http_method='GET',
                  name='get')   
@@ -103,7 +103,7 @@ class UserApi(remote.Service):
         return model     
 
     @User.query_method(query_fields=('email',),
-                       collection_fields=('id','email', 'name', 'role', 'created', 'organisation'),
+                       collection_fields=('id','email', 'name', 'role', 'created', 'updated', 'organisation'),
                        path='user', 
                        http_method='GET',
                        name='getByEmail',
@@ -111,9 +111,7 @@ class UserApi(remote.Service):
     def UserGetByEmail(self, query):
         _isValidUser()
         
-        logging.debug(query)
-        
-        return query 
+        return query.filter(User.active == True) 
     
     @User.method(request_fields=('name', 'email', 'role', 'organisation_id'),
                  response_fields=('id','email', 'name', 'role', 'created', 'organisation'),
@@ -133,7 +131,7 @@ class UserApi(remote.Service):
         model.put()
         return model
     
-    @User.method(request_fields=('name', 'role', 'email'),
+    @User.method(request_fields=('name', 'role', 'email', 'active'),
                       path='user/{id}', 
                       http_method='POST',
                       name='update')   
@@ -145,7 +143,7 @@ class UserApi(remote.Service):
         return model       
 
     @User.query_method(query_fields=('organisation_id',),
-                       collection_fields=('id','email', 'name', 'role', 'created', 'organisation'),
+                       collection_fields=('id','email', 'name', 'role', 'created', 'organisation', 'active'),
                        path='users', 
                        http_method='GET',
                        name='list')   
@@ -169,16 +167,14 @@ class PatientApi(remote.Service):
         return model
 
     @Patient.query_method(query_fields=('organisation_id',),
-                          collection_fields=('id', 'ref', 'age', 'gender', 'organisation', ),
+                          collection_fields=('id', 'ref', 'age', 'gender', 'organisation', 'created', 'active'),
                           path='patients', 
                           http_method='GET',
                           name='list')   
     def PatientList(self, query):
         _isValidUser()
         
-        logging.debug(query)
-        
-        return query
+        return query.filter(Patient.active == True)
 
     @Patient.method(path='patient/{id}', 
                     response_fields=('id', 'ref', 'age', 'gender', 'organisation', ),
@@ -203,29 +199,59 @@ class PatientApi(remote.Service):
             raise endpoints.NotFoundException('Patient not found.')
         return model        
 
-
     @Patient.method(path='patient/{id}', 
                     http_method='DELETE',
                     name='delete')   
     def PatientDelete(self, model):
         _isValidUser()
         
-        #Session.query().iter(keys_only=True)
+        model.active = False
+        model.put_async()
         
-        model.key.delete()
+        query = Session.query(Session.patient_ref == model.key)
+        
+        @ndb.tasklet
+        def callback(msg):
+            msg.active = False
+            session = yield msg.put_async()
+            raise ndb.Return(session)
+        
+        outputs = query.map(callback)        
+
         if not model.from_datastore:
             raise endpoints.NotFoundException('Patient not found.')
         return model        
 
-    @Patient.query_method(query_fields=('organisation_id',),
-                          path='patients/deleteAll', 
-                          http_method='GET',
-                          name='deleteAll')   
-    def PatientDeleteAll(self, query):
+    @endpoints.method(api2_messages.IdListMessage,
+                      message_types.VoidMessage,
+                      path='patients/deleteByIdList', 
+                      http_method='GET',
+                      name='deleteByIdList')   
+    def PatientDeleteByIds(self, request):
         _isValidUser()
         
-        ndb.delete_multi(query.iter(keys_only=True))
-        return query         
+        ids = [ndb.Key(Patient, patient_id) for patient_id in request.ids]
+
+        patients = ndb.get_multi(ids)
+
+        logging.debug(patients)
+
+        for p in patients :
+            p.active = False
+        
+        ndb.put_multi_async(patients)
+        
+        query = Session.query(Session.patient_ref.IN(ids))
+        
+        @ndb.tasklet
+        def callback(msg):
+            msg.active = False
+            session = yield msg.put_async()
+            raise ndb.Return(session)
+        
+        outputs = query.map(callback)         
+        
+        return message_types.VoidMessage()         
 
 @c4c_api.api_class(resource_name='session')
 class SessionApi(remote.Service):
@@ -277,45 +303,35 @@ class SessionApi(remote.Service):
         return session.ToMessage()
 
     @Session.query_method(query_fields=('organisation_id',),
-#                          response_fields=('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
+                          collection_fields =('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
                           path='sessions/list', 
                           http_method='GET',
                           name='list')   
     def SessionList(self, query):
         _isValidUser()
-        logging.debug(query)
-        return query.filter(Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED), int(SessionState.REVIEWED)])).order(-Session.created, Session.key)
-
-    @Session.query_method(query_fields=('organisation_id',),
-#                          response_fields=('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
-                          path='sessions/listAll', 
-                          http_method='GET',
-                          name='listAll',
-                          limit_default = 99)   
-    def SessionListAll(self, query):
-        _isValidUser()
-        logging.debug(query)
-        return query.order(-Session.created)
-
+        
+        return query.filter(Session.active == True).order(-Session.created, Session.key)
     
     @Session.query_method(query_fields=('organisation_id',),
-#                          response_fields=('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
+                          collection_fields =('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
                           path='sessions/listActive', 
                           http_method='GET',
                           name='listActive',
                           limit_default = 99)   
     def SessionListActive(self, query):
         _isValidUser()
+        
         date = datetime.datetime.today()
-        return query.filter(ndb.AND(Session.created > date - datetime.timedelta(hours=1), 
-                                    Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED)]))).order(Session.state, -Session.created, Session.key)
+        return query.filter(ndb.AND(Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED)]),
+                                    Session.created > date - datetime.timedelta(hours=1), 
+                                    Session.active == True)).order(Session.state, -Session.created, Session.key)
 
     @Session.method(path='session/{id}', 
                       http_method='GET',
                       name='get')   
     def SessionGet(self, model):
-        
         _isValidUser()
+
         if not model.from_datastore:
             raise endpoints.NotFoundException('Session not found.')
         return model        
@@ -326,51 +342,56 @@ class SessionApi(remote.Service):
                       name='end')   
     def SessionEnd(self, model):
         _isValidUser()
+        
         model.state = int(SessionState.ENDED)
         model.ended = datetime.datetime.now()
-        model.put()        
+                
         if not model.from_datastore:
             raise endpoints.NotFoundException('Session not found.')
         return model        
-
 
     @Session.method(path='session/delete/{id}', 
                       http_method='GET',
                       name='delete')   
-    def SessionDelete(self, model):
+    def SessionDeleted(self, model):
         _isValidUser()
-        model.key.delete()
-        if not model.from_datastore:
-            raise endpoints.NotFoundException('Session not found.')
-        return model        
-
-    @Session.method(path='session/markDeleted/{id}', 
-                      http_method='GET',
-                      name='markDeleted')   
-    def SessionMarkDeleted(self, model):
-        _isValidUser()
-        model.state = int(SessionState.DELETED)
+        
+        model.active = False
         model.put()        
+
         if not model.from_datastore:
             raise endpoints.NotFoundException('Session not found.')
         return model  
 
-    @Session.query_method(path='sessions/deleteAll', 
+
+    @endpoints.method(api2_messages.IdListMessage,
+                      message_types.VoidMessage,
+                      path='sessions/deleteByIdList', 
                       http_method='GET',
-                      name='deleteAll')   
-    def SessionDeleteAll(self, query):
+                      name='deleteByIdList')   
+    def SessionDeleteByIdList(self, request):
         _isValidUser()
         
-        ndb.delete_multi(query.iter(keys_only=True))
-        return query 
+        ids = [ndb.Key(Session, session_id) for session_id in request.ids]
+
+        session = ndb.get_multi(ids)
+
+        for s in session :
+            s.active = False
+        
+        ndb.put_multi_async(session)
+        
+        return message_types.VoidMessage() 
 
     @Session.method(path='session/markReviewed/{id}', 
-                      http_method='GET',
-                      name='markReviewed')   
+                    http_method='GET',
+                    name='markReviewed')   
     def SessionMarkReviewed(self, model):
         _isValidUser()
+        
         model.state = int(SessionState.REVIEWED)
         model.put()        
+        
         if not model.from_datastore:
             raise endpoints.NotFoundException('Session not found.')
         return model  
@@ -455,6 +476,29 @@ class SessionApi(remote.Service):
 
         session = Session.add_outcome(request)
         return session.ToMessage()
+
+    #Admin methods
+
+    @Session.method(path='session/erase/{id}', 
+                      http_method='GET',
+                      name='erase')   
+    def SessionErase(self, model):
+        _isAdminUser()
+        
+        model.key.delete()
+        if not model.from_datastore:
+            raise endpoints.NotFoundException('Session not found.')
+        return model        
+
+
+    @Session.query_method(path='sessions/eraseAll', 
+                          http_method='GET',
+                          name='eraseAll')   
+    def SessionEraseAll(self, query):
+        _isAdminUser()
+        
+        ndb.delete_multi(query.iter(keys_only=True))
+        return query 
 
 
 def _lookupName(lookupId, lookupList):

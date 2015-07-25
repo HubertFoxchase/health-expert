@@ -11,6 +11,7 @@ class OrganisationResponseMessage(messages.Message):
     id = messages.StringField(1)
     name = messages.StringField(2)
     apikey = messages.StringField(3)
+    created = messages.StringField(4)
 
 class SymptomRequestMessage(messages.Message):
     id = messages.StringField(1)
@@ -34,6 +35,8 @@ class PatientResposeMessage(messages.Message):
     gender = messages.StringField(3)
     age = messages.IntegerField(4)
     organisation = messages.IntegerField(5)
+    created = messages.StringField(6)
+    updated = messages.StringField(7)
 
 class QuestionsResponseMessage(messages.Message):
     label = messages.StringField(1)
@@ -60,9 +63,12 @@ class SessionNewRequestInsertMessage(messages.Message):
 class SessionResponseMessage(messages.Message):
     patient = messages.IntegerField(1)
     created = messages.StringField(2)
-    ended = messages.StringField(3)
-    state = messages.IntegerField(4)
-    sysmptoms = messages.MessageField(SymptomResponseMessage, 5, repeated=True)    
-    next = messages.MessageField(QuestionsResponseMessage, 6)    
-    outcome = messages.MessageField(OutcomeResposeMessage, 7)   
+    updated = messages.StringField(3)
+    ended = messages.StringField(4)
+    state = messages.IntegerField(5)
+    sysmptoms = messages.MessageField(SymptomResponseMessage, 6, repeated=True)    
+    next = messages.MessageField(QuestionsResponseMessage, 7)    
+    outcome = messages.MessageField(OutcomeResposeMessage, 8)   
     
+class IdListMessage(messages.Message):
+        ids = messages.IntegerField(1, repeated=True)

@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="css/animation.css">
 
 </head>
-<body layout="column" ng-controller="AppCtrl">
+<body layout="column" ng-controller="AppCtrl" ng-class="$root.readyClass">
 
 	<div id="loading">
 		<p>Launching Click4Care ...</p>
 	    <md-progress-circular id="progress" class="md-accent" md-mode="indeterminate"></md-progress-circular>
 	</div>
 
-	<div layout="column" layout-fill style="visibility:hidden" id="main">
+	<div layout="column" layout-fill id="main">
 	
 		<md-toolbar layout="row" class="md-default-theme">
 			<div class="md-toolbar-tools">

@@ -23,6 +23,27 @@ indexes:
 
 - kind: Session
   properties:
+  - name: active
+  - name: created
+    direction: desc
+
+- kind: Session
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: state
+  - name: created
+    direction: desc
+
+- kind: Session
+  properties:
+  - name: active
+  - name: state
+  - name: created
+    direction: desc
+
+- kind: Session
+  properties:
   - name: organisation
   - name: state
   - name: created

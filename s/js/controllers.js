@@ -84,16 +84,15 @@ angular.module("controllers", []).
 		    //$scope.selected = [];
 	    }
 	    
-		document.getElementById("left").style.visibility = "visible";
-		document.getElementById("main").style.visibility = "visible";
-		document.getElementById("progress").style.display = "none";
-		
+	    $rootScope.readyClass = "app-ready";
 	}]).	
 	controller("SessionDetailCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
 		
 		var _api = $api.get();
 
 		$rootScope.showBackBtn = true;
+		
+		$scope.symptomFilter = 'present';
 		
 		var loadSession = function(){
 			_api.session.get({id:$routeParams.id}).execute(function(resp){
@@ -128,11 +127,9 @@ angular.module("controllers", []).
 				$scope.back();
 			});
 		}		
-		
-		document.getElementById("left").style.visibility = "visible";
-		document.getElementById("main").style.visibility = "visible";
-		document.getElementById("progress").style.display = "none";
-		
+
+		$rootScope.readyClass = "app-ready";
+	
 	}]).
 	controller("HistoryCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
 		
@@ -192,8 +189,11 @@ angular.module("controllers", []).
 		    $scope.selected = [];
 	    }
 
-	    $scope.deleteSelected = function(){
-		    //$scope.selected = [];
+	    $scope.deleteSelected = function(selected){
+			_api.session.markDeleted({id:$routeParams.id}).execute(function(resp){
+				//$rootScope.gridItems = null;
+				//$scope.back();
+			});	    	
 	    }
 	    
 	    $scope.markSelected = function(){
@@ -204,9 +204,7 @@ angular.module("controllers", []).
 		    //$scope.selected = [];
 	    }		
 		
-		document.getElementById("left").style.visibility = "visible";
-		document.getElementById("main").style.visibility = "visible";
-		document.getElementById("progress").style.display = "none";
+	    $rootScope.readyClass = "app-ready";
 		
 	}]).
 	controller("AccountCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
@@ -266,9 +264,7 @@ angular.module("controllers", []).
 		    $scope.selected = [];
 	    }
 
-		document.getElementById("left").style.visibility = "visible";
-		document.getElementById("main").style.visibility = "visible";
-		document.getElementById("progress").style.display = "none";
+	    $rootScope.readyClass = "app-ready";
 		
 	}]).
 	controller("UserDetailCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
@@ -313,14 +309,13 @@ angular.module("controllers", []).
 			}
 		}		
 		
-		document.getElementById("left").style.visibility = "visible";
-		document.getElementById("main").style.visibility = "visible";
-		document.getElementById("progress").style.display = "none";
+	    $rootScope.readyClass = "app-ready";
 		
 	}]).
 	controller("PatientsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
 		
 		var _api = $api.get();
+		$rootScope.showBackBtn = false;
 		$scope.selected = [];
 
 		var loadPatients = function(){
@@ -341,9 +336,20 @@ angular.module("controllers", []).
 	    	$location.path("/patient/0");
 		}
 
-		$scope.delete = function(id){
-			_api.patient.deleted({id:id}).execute(function(resp){
-				loadPatients();
+		$scope.deleteSelected = function(selected){
+			_api.patient.deleteByIdList({ids:selected}).execute(function(resp){
+				if(resp) {
+					var list = $scope.patients;
+			    	angular.forEach(selected, function(value, key) {
+			    		for(i=0;i<list.length;i++){
+			    			if(list[i].id == value){
+						        list.splice(i, 1);
+						        break;
+			    			}
+			    		}
+			    	});
+					$scope.$apply()
+				}
 			});
 		}
 		
@@ -377,9 +383,7 @@ angular.module("controllers", []).
 		    $scope.selected = [];
 	    }
 
-		document.getElementById("left").style.visibility = "visible";
-		document.getElementById("main").style.visibility = "visible";
-		document.getElementById("progress").style.display = "none";
+	    $rootScope.readyClass = "app-ready";
 
 	}]).
 	controller("PatientDetailCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
@@ -431,11 +435,9 @@ angular.module("controllers", []).
 			}
 		}		
 		
-		document.getElementById("left").style.visibility = "visible";
-		document.getElementById("main").style.visibility = "visible";
-		document.getElementById("progress").style.display = "none";
+	    $rootScope.readyClass = "app-ready";
 		
-	}])
+	}]);
 	
 	
 	

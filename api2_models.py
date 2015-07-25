@@ -3,6 +3,7 @@ Created on 5 Mar 2015
 
 @author: Michael Lisovski
 '''
+import logging
 import endpoints
 import datetime
 import api2_messages
@@ -19,6 +20,8 @@ class Organisation(EndpointsModel):
     name = ndb.StringProperty()
     apikey = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
+    updated = ndb.DateTimeProperty(auto_now=True)
+    active = ndb.BooleanProperty(default = True)
     
 class UserType(messages.Enum):
     ADMIN = 1
@@ -37,9 +40,11 @@ class User(EndpointsModel):
 
     email = ndb.StringProperty()
     name = ndb.StringProperty()
-    created = ndb.DateTimeProperty(auto_now_add=True)
     type = ndb.IntegerProperty()
     role = ndb.IntegerProperty()
+    created = ndb.DateTimeProperty(auto_now_add=True)
+    updated = ndb.DateTimeProperty(auto_now=True)
+    active = ndb.BooleanProperty(default = True)
 
     organisation_ref = ndb.KeyProperty(kind=Organisation)
 
@@ -65,11 +70,15 @@ class User(EndpointsModel):
 
 class Patient(EndpointsModel):
     
-    _message_fields_schema = ('id', 'ref', 'gender', 'age', 'organisation', 'organisation_id', )
+    _message_fields_schema = ('id', 'ref', 'gender', 'dob', 'age', 'organisation', 'organisation_id', )
     
     ref = ndb.StringProperty()
     gender = ndb.StringProperty()
     age = ndb.IntegerProperty()
+    dob = ndb.DateProperty()
+    created = ndb.DateTimeProperty(auto_now_add=True)
+    updated = ndb.DateTimeProperty(auto_now=True)
+    active = ndb.BooleanProperty(default = True)
     
     organisation_ref = ndb.KeyProperty(kind=Organisation)
 
@@ -163,6 +172,7 @@ class Session(EndpointsModel):
     symptoms = ndb.LocalStructuredProperty(Symptoms)
     next = ndb.LocalStructuredProperty(Question)
     outcome = ndb.LocalStructuredProperty(Outcome)
+    active = ndb.BooleanProperty(default = True)
     
     organisation_ref = ndb.KeyProperty(kind=Organisation)
 
@@ -194,6 +204,7 @@ class Session(EndpointsModel):
             raise endpoints.NotFoundException('Patient %s does not exist.' % value)        
 
         self.patient = self.patient_ref.get()
+        logging.debug("calling patient")
         #self.organisation_ref = self.patient.organisation_ref
 
     @EndpointsAliasProperty(setter=PatientId, property_type=messages.IntegerField)

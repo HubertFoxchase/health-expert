@@ -2,6 +2,14 @@
 	visibility: hidden;
 }
 
+body.app-ready #progress {
+	display: none;
+}
+
+body.app-ready #main, body.app-ready #left {
+	visibility: visible;
+}
+
 .user-avatar {
   border-radius: 99%;
 }
@@ -79,6 +87,11 @@ md-toolbar h1 {
 	min-width: 100px;
 	padding-right: 8px;
 }
+
+.item.absent {
+	opacity: 0.5;
+}
+
 
 .inset-2 {
 	padding:16px;
@@ -174,6 +187,7 @@ ng-md-icon {
 
 .table-row > div.checkbox-container, .table-header > div.checkbox-container {
 	padding-top: 5px;	
+	min-width: 48px;
 }
 
 .user-form {

@@ -34,9 +34,15 @@
  		</div>		
  		
  		<div flex layout-padding layout="column" class="md-whiteframe-z1 patient-tile inset-2">
-			<h3>Symptoms</h3>
+ 			<div layout="row" layout-align="space-between center ">
+				<h3>Symptoms</h3>
+				<span flex></span>
+				<md-checkbox ng-model="symptomFilter" ng-false-value="'present'" ng-true-value="''" aria-label="Show absent">
+          			Include absent
+        		</md-checkbox>
+			</div>
  			<md-divider></md-divider>
- 			<div layout="row" layout-align="space-betweeen space-betweeen" class="item" ng-repeat="symptom in item.symptoms.items | filter: { value: 'present' }">
+ 			<div layout="row" layout-align="space-betweeen space-betweeen" class="item" ng-class="symptom.value" ng-repeat="symptom in item.symptoms.items | filter: { value: symptomFilter }">
  				<div class="dd" flex>{{symptom.name}}</div>
  				<div class="dt" style="width: 70px">{{symptom.value}}</div>
  			</div>

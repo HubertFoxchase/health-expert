@@ -98,8 +98,7 @@ angular.module("controllers", []).
 			location.hash = "/" + patient.id + "/reason";
 	    };
 	    
-		document.getElementById("main").style.visibility = "visible";
-		document.getElementById("progress").style.display = "none";
+	    $rootScope.readyClass = "app-ready";
 		
 	}]).
 	controller("StartCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", "$mdDialog", "groupsOfSymptoms", function($scope, $rootScope, $routeParams, $api, $location, $mdDialog, groupsOfSymptoms){
@@ -212,9 +211,7 @@ angular.module("controllers", []).
 			}
 		}		
 
-		document.getElementById("main").style.visibility = "visible";
-		document.getElementById("progress").style.display = "none";
-
+	    $rootScope.readyClass = "app-ready";
 	}]).	
 	
 	controller("QuestionsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", function($scope, $rootScope, $routeParams, $api, $location){
@@ -227,9 +224,7 @@ angular.module("controllers", []).
 			$scope.session = $rootScope.session;
 			$scope.step = 1;
 			
-			document.getElementById("main").style.visibility = "visible";
-			document.getElementById("progress").style.display = "none";
-			
+		    $rootScope.readyClass = "app-ready";
 		}
 		else {
 			_api.session.get({id:$routeParams.session}).execute(function(resp){
@@ -237,8 +232,7 @@ angular.module("controllers", []).
 				$rootScope.patient = resp.patient;
 				$rootScope.progress = 25; //this is a recovered session, we can set progress to 25%
 
-				document.getElementById("main").style.visibility = "visible";
-				document.getElementById("progress").style.display = "none";
+			    $rootScope.readyClass = "app-ready";
 				
 				if(resp.outcome){
 					var p = resp.outcome.probability * 100;
