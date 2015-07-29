@@ -75,3 +75,60 @@ md-toolbar {
 .table-header div:first-child, .table-row div:first-child {
 	padding-left: 10px;
 }
+
+.key-pad > div {
+    width: 320px;
+    padding: 5px;
+}
+
+.key-pad > div .md-fab {
+	width:80px;
+	height: 80px;
+	font-size: 42px;
+	font-weight: 200;
+}
+
+
+.key-pad .input {
+    width: 100px;
+    height: 30px;
+    border: 2px solid #999;
+    padding: 5px;
+    text-align: center;
+    border-radius: 5px;
+    font-size: 30px;
+}
+
+.key-pad .input.error {
+    border-color: red;
+    animation: shake .5s linear;
+}
+
+ @keyframes shake {
+    8%, 41% {
+        transform: translateX(-10px);
+    }
+    25%, 58% {
+        transform: translateX(10px);
+    }
+    75% {
+        transform: translateX(-5px);
+    }
+    92% {
+        transform: translateX(5px);
+    }
+    0%, 100% {
+        transform: translateX(0);
+    }
+}
+
+
+.key-pad .btn {
+	text-align: center;
+}
+
+.key-pad .btn a{
+	text-decoration: none;
+	color: #666;
+	font-weight: 400;
+}

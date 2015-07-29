@@ -38,13 +38,15 @@
 				<h3>Symptoms</h3>
 				<span flex></span>
 				<md-checkbox ng-model="symptomFilter" ng-false-value="'present'" ng-true-value="''" aria-label="Show absent">
-          			Include absent
+          			show all
         		</md-checkbox>
 			</div>
  			<md-divider></md-divider>
- 			<div layout="row" layout-align="space-betweeen space-betweeen" class="item" ng-class="symptom.value" ng-repeat="symptom in item.symptoms.items | filter: { value: symptomFilter }">
- 				<div class="dd" flex>{{symptom.name}}</div>
- 				<div class="dt" style="width: 70px">{{symptom.value}}</div>
+ 			<div layout="row" layout-align="space-betweeen space-betweeen" 
+ 				 class="item" ng-class="{'absent' : symptom.value == 'absent', 'indent' : symptom.parent}"  
+ 				 ng-click="showDetails(symptom.id)"
+ 				 ng-repeat="symptom in item.symptoms.items | filter: { value: symptomFilter }">
+ 				<div class="dd" flex ng-class="{'info' : !symptom.parent}">{{symptom.name}}</div>
  			</div>
  		</div>		
 
@@ -53,7 +55,9 @@
  			<md-divider></md-divider>
  			<div layout="row" class="item" ng-repeat="outcome in item.outcome.full">
  				<div class="dd" flex>{{outcome.name}}</div>
- 				<div class="dt" flex>{{outcome.probability*100 | number:1}}%</div>
+ 				<div class="dt" flex>
+ 					<div class="bar-chart" style="width: {{outcome.probability*100 | number:1}}%">{{outcome.probability*100 | number:1}}%</div>
+ 				</div>
  			</div>
  		</div>
  				

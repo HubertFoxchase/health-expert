@@ -4,7 +4,8 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'angularMoment', 'c
 .value('$config', {
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
       scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ],
-      userRoles    : ["Doctor", "Nurse", "Reception", "Support", "Other"]
+      userRoles    : ["Doctor", "Nurse", "Reception", "Support", "Other"],
+      observationsJson : "js/observations.js"
 })
 .constant('angularMomentConfig', {
     preprocess: 'utc', // optional
@@ -40,7 +41,7 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'angularMoment', 'c
           templateUrl: 'templates/history.html',
           controller: 'HistoryCtrl',
           controllerAs: 'history',
-  		resolve : { init: ['$api', function($api) {
+  		  resolve : { init: ['$api', function($api) {
             	return $api.load();
   	    	}]
   		}
@@ -49,6 +50,15 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'angularMoment', 'c
           templateUrl: 'templates/account.html',
           controller: 'AccountCtrl',
           controllerAs: 'account',
+	  	  resolve : { init: ['$api', function($api) {
+	            	return $api.load();
+	  	    	}]
+	  		}
+      })
+      .when('/settings', {
+          templateUrl: 'templates/settings.html',
+          controller: 'AccountCtrl',
+          controllerAs: 'settings',
 	  		resolve : { init: ['$api', function($api) {
 	            	return $api.load();
 	  	    	}]
@@ -92,4 +102,6 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'angularMoment', 'c
     	$rootScope.$on('$routeChangeSuccess', function(){
     		ga('send', 'pageview', $location.path());
     });
+    
+    console.log(Date.now());
 }]);

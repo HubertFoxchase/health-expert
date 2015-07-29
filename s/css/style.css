@@ -90,8 +90,20 @@ md-toolbar h1 {
 
 .item.absent {
 	opacity: 0.5;
+	text-decoration: line-through;
 }
 
+.item.indent .dd{
+	padding-left: 1em;
+	font-size: 90%;
+	color: #666;
+}
+
+.item .dt .bar-chart {
+	background-color: #B3E5FC;
+	text-align: right;
+	padding: 0px 2px;
+}
 
 .inset-2 {
 	padding:16px;

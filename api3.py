@@ -336,15 +336,16 @@ class SessionApi(remote.Service):
             raise endpoints.NotFoundException('Session not found.')
         return model        
 
-    @Session.method(request_fields=('id',),
-                    path='session/end/{id}', 
-                      http_method='POST',
+    @Session.method(path='session/end/{id}', 
+                      http_method='GET',
                       name='end')   
     def SessionEnd(self, model):
         _isValidUser()
         
         model.state = int(SessionState.ENDED)
         model.ended = datetime.datetime.now()
+        
+        model.put()
                 
         if not model.from_datastore:
             raise endpoints.NotFoundException('Session not found.')
@@ -353,7 +354,7 @@ class SessionApi(remote.Service):
     @Session.method(path='session/delete/{id}', 
                       http_method='GET',
                       name='delete')   
-    def SessionDeleted(self, model):
+    def SessionDelete(self, model):
         _isValidUser()
         
         model.active = False

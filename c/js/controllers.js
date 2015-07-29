@@ -19,7 +19,7 @@ angular.module("controllers", []).
 	        });
 	    }
 
-		$scope.start = function ($event) {
+		$scope.start1 = function ($event) {
 	        $mdDialog.show({
 	          targetEvent: $event,
 	          template:
@@ -37,6 +37,47 @@ angular.module("controllers", []).
 	            controller: 'AppCtrl'
 	        });
 	    }
+		
+		var pin = "";
+		$scope.display = "";
+		$scope.pinError = false;
+		
+		$scope.pinpadKeyPress = function(num){
+			pin = pin + "" + num;
+			$scope.display += "*";
+			$scope.pinError = false;
+		}
+
+		$scope.pinpadClear = function(num){
+			pin = "";
+			$scope.display = "";
+			$scope.pinError = false;
+		}
+
+		$scope.pinpadCheck = function(){
+			if(pin == "1234"){
+				$scope.newSession();
+			}
+			else {
+				pin = "";
+				$scope.display = "";				
+				$scope.pinError = true;
+			}
+		}
+		
+		$scope.start = function ($event) {
+			
+			pin = "";
+			$scope.display = "";
+			$scope.pinError = false;
+			
+	        $mdDialog.show({
+	          targetEvent: $event,
+	          templateUrl: 'templates/pinpad.html',
+	          parent: angular.element(document.body),
+	          controller: 'AppCtrl'
+	        });
+	    }		
 		
 		$scope.closeDialog = function(){
 			$mdDialog.hide();

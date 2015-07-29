@@ -3,9 +3,7 @@
 	<span flex></span>
 	<div layout="row" layout-align="end center" ng-show="selected.length > 0">
  		<md-button class="md-raised" ng-click="clearSelected()">Cancel</md-button>
- 		<md-button class="md-raised" ng-click="deleteSelected()">Delete</md-button>
- 		<md-button class="md-raised" ng-click="updateSelected()">Update Diagnosis</md-button>
- 		<md-button class="md-raised" ng-click="markSelected()">Mark Reviewed</md-button>
+ 		<md-button class="md-raised" ng-click="deleteSelected(selected)">Delete</md-button>
 	</div>
 </div>
 
@@ -36,7 +34,7 @@
 		    <div flex="5" layout="row" layout-align="center start"  class="checkbox-container">
 		    	<md-checkbox ng-click="toggle(item.id, selected, $event)" ng-checked="exists(item.id, selected)" aria-label="{{item.patient.ref}}"></md-checkbox>
 		    </div>
-		    <div flex="15">{{item.patient.ref}}</div>
+		    <div flex="10">{{item.patient.ref}}</div>
 		    <div flex="10">{{item.patient.gender}}</div>
 		    <div flex="10">{{item.patient.age}}</div>
 		    <div flex="30">{{item.outcome.name}}</div>
@@ -45,7 +43,7 @@
 		    	<span ng-show="item.state == '1'">In progress</span>
 			 	<span ng-show="item.state == '2'">Completed</span>
 		    </div>
-		    <div flex="10">
+		    <div flex="15">
 		    	<span ng-show="item.state == '1'"><span am-time-ago="item.updated"></span></span>
 			 	<span ng-show="item.state == '2'">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</span>
 		    </div>

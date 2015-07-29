@@ -72,9 +72,22 @@ angular.module("controllers", []).
 		    $scope.selected = [];
 	    }
 
-	    $scope.deleteSelected = function(){
-		    //$scope.selected = [];
-	    }
+		$scope.deleteSelected = function(selected){
+			_api.session.deleteByIdList({ids:selected}).execute(function(resp){
+				if(resp) {
+					var list = $scope.sessions;
+			    	angular.forEach(selected, function(value, key) {
+			    		for(i=0;i<list.length;i++){
+			    			if(list[i].id == value){
+						        list.splice(i, 1);
+						        break;
+			    			}
+			    		}
+			    	});
+					$scope.$apply()
+				}
+			});
+		}
 	    
 	    $scope.markSelected = function(){
 		    //$scope.selected = [];
@@ -86,7 +99,7 @@ angular.module("controllers", []).
 	    
 	    $rootScope.readyClass = "app-ready";
 	}]).	
-	controller("SessionDetailCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
+	controller("SessionDetailCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', '$observations', function($scope, $rootScope, $routeParams, $api, $location, $observations){
 		
 		var _api = $api.get();
 
@@ -97,6 +110,11 @@ angular.module("controllers", []).
 		var loadSession = function(){
 			_api.session.get({id:$routeParams.id}).execute(function(resp){
 				$scope.item = resp;
+				
+				angular.forEach($scope.item.symptoms.items, function(val){
+					val.parent = $observations.getParent(val.id, true)
+				});
+				
 				$scope.$apply()
 			});
 		}
@@ -105,7 +123,13 @@ angular.module("controllers", []).
 		
 		$rootScope.$on('refresh', function(){
 			loadSession();
-		})		
+		});
+		
+		$scope.indent = function(id){
+			if($observations.hasParent(id)){
+				return "indented";
+			}
+		}
 		
 		$scope.back = function(){
 			if($rootScope.backLocation)
@@ -115,7 +139,7 @@ angular.module("controllers", []).
 		}
 		
 		$scope.delete = function(id){
-			_api.session.markDeleted({id:$routeParams.id}).execute(function(resp){
+			_api.session.delete({id:$routeParams.id}).execute(function(resp){
 				$rootScope.gridItems = null;
 				$scope.back();
 			});
@@ -189,12 +213,22 @@ angular.module("controllers", []).
 		    $scope.selected = [];
 	    }
 
-	    $scope.deleteSelected = function(selected){
-			_api.session.markDeleted({id:$routeParams.id}).execute(function(resp){
-				//$rootScope.gridItems = null;
-				//$scope.back();
-			});	    	
-	    }
+		$scope.deleteSelected = function(selected){
+			_api.session.deleteByIdList({ids:selected}).execute(function(resp){
+				if(resp) {
+					var list = $scope.sessions;
+			    	angular.forEach(selected, function(value, key) {
+			    		for(i=0;i<list.length;i++){
+			    			if(list[i].id == value){
+						        list.splice(i, 1);
+						        break;
+			    			}
+			    		}
+			    	});
+					$scope.$apply()
+				}
+			});
+		}
 	    
 	    $scope.markSelected = function(){
 		    //$scope.selected = [];
