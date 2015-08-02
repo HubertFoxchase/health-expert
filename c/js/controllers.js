@@ -254,10 +254,16 @@ angular.module("controllers", []).
 
 	    $rootScope.readyClass = "app-ready";
 	}]).	
+
+	controller("EndCtrl", ['$scope', '$rootScope',  "$location", function($scope, $rootScope, $location){
+
+		$rootScope.progress = 100;
+	    $rootScope.readyClass = "app-ready";
+		
+	}]).
+	
 	
 	controller("QuestionsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", function($scope, $rootScope, $routeParams, $api, $location){
-		
-		console.log("question");
 		
 		var _api = $api.get();
 
@@ -334,7 +340,7 @@ angular.module("controllers", []).
 					
 					_api.session.end({id:$rootScope.session.id}).execute(function(resp){
 						$rootScope.session = resp
-						$rootScope.progress = 100;
+						//$rootScope.progress = 100;
 						location.hash = "/" + resp.id + "/end";
 					});
 				}

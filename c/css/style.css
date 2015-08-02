@@ -77,14 +77,14 @@ md-toolbar {
 }
 
 .key-pad > div {
-    width: 320px;
-    padding: 5px;
+    width: 290px;
+    padding: 4px;
 }
 
 .key-pad > div .md-fab {
-	width:80px;
-	height: 80px;
-	font-size: 42px;
+	width:70px;
+	height: 70px;
+	font-size: 38px;
 	font-weight: 200;
 }
 

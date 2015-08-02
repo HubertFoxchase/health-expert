@@ -1,3 +1,7 @@
+body {
+	font-size: 15px;
+}
+
 #main, #left {
 	visibility: hidden;
 }
@@ -8,6 +12,12 @@ body.app-ready #progress {
 
 body.app-ready #main, body.app-ready #left {
 	visibility: visible;
+}
+
+md-sidenav.md-locked-open {
+    width: 254px;
+    min-width: 254px;
+    max-width: 254px;
 }
 
 .user-avatar {
@@ -30,7 +40,8 @@ body.app-ready #main, body.app-ready #left {
 
 md-list.menu a md-item-content {
 	position: relative;
-	margin-bottom: 5px;
+	padding-left: 10px;
+	/*margin-bottom: 5px;*/
 }
 
 md-list.menu a:hover md-item-content {
@@ -104,6 +115,11 @@ md-toolbar h1 {
 	text-align: right;
 	padding: 0px 2px;
 }
+
+.inset {
+	padding:8px;
+}
+
 
 .inset-2 {
 	padding:16px;

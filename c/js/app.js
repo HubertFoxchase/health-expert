@@ -5,8 +5,17 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'controllers', 'ser
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
       scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ]
 })
-.config(['$routeProvider', '$locationProvider',
-function($routeProvider, $locationProvider) {
+.config(function($mdThemingProvider) {
+
+})
+.config(['$routeProvider', '$locationProvider', '$mdThemingProvider',
+function($routeProvider, $locationProvider, $mdThemingProvider) {
+	
+	$mdThemingProvider
+		.theme('default')
+		.primaryPalette('indigo')
+	    .accentPalette('pink');	
+	
 	$routeProvider
 		.when('/list', {
 			templateUrl: 'templates/list.html',
@@ -82,7 +91,7 @@ function($routeProvider, $locationProvider) {
 		})	
 		.when('/:session/end', {
 			templateUrl: 'templates/end.html',
-			controller: 'QuestionsCtrl',
+			controller: 'EndCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
 	        	}]
