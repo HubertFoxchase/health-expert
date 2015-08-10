@@ -303,7 +303,7 @@ class SessionApi(remote.Service):
         return session.ToMessage()
 
     @Session.query_method(query_fields=('organisation_id',),
-                          collection_fields =('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
+                          collection_fields =('id', 'created', 'ended', 'updated', 'status', 'outcome', 'patient'),
                           path='sessions/list', 
                           http_method='GET',
                           name='list')   
@@ -313,7 +313,7 @@ class SessionApi(remote.Service):
         return query.filter(Session.active == True).order(-Session.created, Session.key)
     
     @Session.query_method(query_fields=('organisation_id',),
-                          collection_fields =('id', 'created', 'ended', 'updated', 'state', 'outcome', 'patient'),
+                          collection_fields =('id', 'created', 'ended', 'updated', 'status', 'outcome', 'patient'),
                           path='sessions/listActive', 
                           http_method='GET',
                           name='listActive',
@@ -322,16 +322,16 @@ class SessionApi(remote.Service):
         _isValidUser()
         
         date = datetime.datetime.today()
-        return query.filter(ndb.AND(Session.state.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED)]),
+        return query.filter(ndb.AND(Session.status.IN([int(SessionState.IN_PROGRESS), int(SessionState.ENDED)]),
                                     Session.created > date - datetime.timedelta(hours=1), 
-                                    Session.active == True)).order(Session.state, -Session.created, Session.key)
+                                    Session.active == True)).order(Session.status, -Session.created, Session.key)
 
     @Session.method(path='session/{id}', 
                       http_method='GET',
                       name='get')   
     def SessionGet(self, model):
         _isValidUser()
-
+        
         if not model.from_datastore:
             raise endpoints.NotFoundException('Session not found.')
         return model        
@@ -342,7 +342,7 @@ class SessionApi(remote.Service):
     def SessionEnd(self, model):
         _isValidUser()
         
-        model.state = int(SessionState.ENDED)
+        model.status = int(SessionState.ENDED)
         model.ended = datetime.datetime.now()
         
         model.put()
@@ -390,7 +390,7 @@ class SessionApi(remote.Service):
     def SessionMarkReviewed(self, model):
         _isValidUser()
         
-        model.state = int(SessionState.REVIEWED)
+        model.status = int(SessionState.REVIEWED)
         model.put()        
         
         if not model.from_datastore:

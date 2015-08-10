@@ -1,0 +1,25 @@
+<div layout="row">
+	<span flex></span>
+	<div flex-md="70" flex-gt-md="60" flex-sm="90" layout="column" layout-align="space-between center">
+		<h3>What is the reason for your visit?</h3>
+	   	<md-button layout-fill class="md-raised c4c-large-button" ng-click="gotoSymptoms()">
+	    	<div layout="row" layout-align="center space-between">
+		    	<span flex>Not feeling well</span>
+	    		<ng-md-icon icon="chevron_right" size="50" style="fill:#888; width:35px"></ng-md-icon>
+	    	</div>
+	   	</md-button>
+	   	<md-button layout-fill class="md-raised c4c-large-button" ng-href="#/{{$root.patient.id}}/end">
+	    	<div layout="row" layout-align="center space-between">
+		    	<span flex>Test results</span>
+	    		<ng-md-icon icon="chevron_right" size="50" style="fill:#888; width:35px"></ng-md-icon>
+	    	</div>
+	   	</md-button>
+	   	<md-button layout-fill class="md-raised c4c-large-button" ng-href="#/{{$root.patient.id}}/end">
+	    	<div layout="row" layout-align="center space-between">
+		    	<span flex>Planned procedure</span>
+	    		<ng-md-icon icon="chevron_right" size="50" style="fill:#888; width:35px"></ng-md-icon>
+	    	</div>
+	   	</md-button>
+	</div>      
+	<span flex></span>
+</div>

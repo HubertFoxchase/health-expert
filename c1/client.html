@@ -1,0 +1,87 @@
+<html ng-app="c4c">
+<head>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animation.css">
+
+</head>
+<body layout="column" ng-controller="AppCtrl" ng-class="$root.readyClass">
+
+	<div id="loading">
+		<p>Launching Click4Care ...</p>
+	    <md-progress-circular id="progress" class="md-accent" md-mode="indeterminate"></md-progress-circular>
+	</div>
+
+	<div layout="column" layout-fill id="main">
+	
+		<md-toolbar layout="column" class="c4c-toolbar md-whiteframe-z3">
+			<div layout="row">
+				<div class="md-toolbar-tools">
+					<h1>Click4Care</h1>
+					<span flex></span>
+			        <md-menu md-position-mode="target-right target">
+			          
+			          <md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu()" style="fill:#888;">
+			            <ng-md-icon icon="more_vert"></ng-md-icon>
+			          </md-button>
+			          
+			          <md-menu-content width="2">
+			            <md-menu-item ng-show="$root.session.state == 1">
+			              <md-button ng-click="end()" >
+			                <p>End session</p>
+			              </md-button>
+			            </md-menu-item>
+			            <md-menu-item ng-show="!$root.session.state || $root.session.state > 1">
+			              <md-button ng-click="start()" >
+			                <p>New session</p>
+			              </md-button>
+			            </md-menu-item>
+			          </md-menu-content>
+			          
+			        </md-menu>				
+				</div>
+			</div>
+			<div>
+				<md-progress-linear md-mode="determinate" value="{{$root.progress}}"></md-progress-linear>	
+			</div>
+		</md-toolbar>
+
+		<md-content flex style="background-color:#f1f1f1">
+			<div ng-view layout="column" layout-padding>
+
+			</div>
+		</md-content>
+
+		<div class="attribution">This demo is powered by <a target="_blank" href="http://www.infermedica.com">Infermedica</a> diagnostic engine</div>
+	</div>
+
+	<script src="//apis.google.com/js/client.js"></script>
+	
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-route.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-aria.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.js"></script>
+	
+	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.5.0/angular-material-icons.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/SVG-Morpheus/0.1.8/svg-morpheus.js"></script>
+
+	<script src="js/app.js"></script>
+	<script src="js/values.js"></script>
+	<script src="js/controllers.js"></script>
+	<script src="js/services.js"></script>
+	
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	
+	  ga('create', 'UA-60113800-2', 'auto');
+	  ga('send', 'pageview');
+	
+	</script>	
+</body>
+</html>

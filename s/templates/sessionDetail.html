@@ -26,10 +26,10 @@
  				<div class="dt">{{item.patient.gender}}</div>
  			</div>
  			<div layout="row" class="item" >
- 				<div class="dd" ng-show="item.state == '1'">Session</div>
- 				<div class="dt" ng-show="item.state == '1'">In progress (<span am-time-ago="item.updated"></span>)</div>
- 				<div class="dd" ng-show="item.state == '2'">Completed</div>
- 				<div class="dt" ng-show="item.state == '2'">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
+ 				<div class="dd" ng-show="item.status == '1'">Session</div>
+ 				<div class="dt" ng-show="item.status == '1'">In progress (<span am-time-ago="item.updated"></span>)</div>
+ 				<div class="dd" ng-show="item.status == '2'">Completed</div>
+ 				<div class="dt" ng-show="item.status == '2'">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
  			</div> 			
  		</div>		
  		

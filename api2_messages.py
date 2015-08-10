@@ -65,7 +65,7 @@ class SessionResponseMessage(messages.Message):
     created = messages.StringField(2)
     updated = messages.StringField(3)
     ended = messages.StringField(4)
-    state = messages.IntegerField(5)
+    status = messages.IntegerField(5)
     sysmptoms = messages.MessageField(SymptomResponseMessage, 6, repeated=True)    
     next = messages.MessageField(QuestionsResponseMessage, 7)    
     outcome = messages.MessageField(OutcomeResposeMessage, 8)   

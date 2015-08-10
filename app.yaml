@@ -15,6 +15,9 @@ handlers:
 - url: /s
   static_dir: s
 
+- url: /c1
+  static_dir: c1
+
 - url: /c
   static_dir: c
 

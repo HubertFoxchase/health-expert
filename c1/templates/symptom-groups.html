@@ -1,0 +1,75 @@
+<div layout="column" layout-margin>
+
+	<div layout="row" flex layout-padding layout-align="space-between start" class="md-whiteframe-z2" style="background: #fff;">
+	
+		<md-chips flex ng-model="selectedSymptoms" md-autocomplete-snap md-require-match
+					style="background: #fff">
+	      <md-autocomplete
+	          md-min-length = "2"
+	          md-delay = "1000"
+	          md-menu-class = "c4c-autocomplete"
+	      	  md-selected-item-change="null" 
+	      	  md-search-text-change="null"
+	          md-selected-item="selectedSymptom"
+	          md-search-text="searchText"
+	          md-items="item in querySearch(searchText)"
+	          md-item-text="item.name"
+	          placeholder="+ add symptopm">
+	        <span md-highlight-text="searchText">{{item.name}}</span>
+	      </md-autocomplete>
+
+	      <md-chip-template>
+	        <span>
+	          <strong>{{$chip.name}}</strong>
+	        </span>
+	      </md-chip-template>
+		</md-chips>
+	<!-- 
+	    <md-chips ng-model="ctrl.selectedVegetables" md-autocomplete-snap md-require-match>
+	      <md-autocomplete
+	          md-selected-item="ctrl.selectedItem"
+	          md-search-text="ctrl.searchText"
+	          md-items="item in ctrl.querySearch(ctrl.searchText)"
+	          md-item-text="item.name"
+	          placeholder="+symptopms">
+	        <span md-highlight-text="ctrl.searchText">{{item.name}} :: {{item.type}}</span>
+	      </md-autocomplete>
+	      <md-chip-template>
+	        <span>
+	          <strong>{{$chip.name}}</strong>
+	        </span>
+	      </md-chip-template>
+	    </md-chips>
+	-->	    		
+	   	<md-button flex="10" class="md-raised md-accent" ng-click="newSession(selectedSymptoms)" >
+	    	<div layout="row" layout-align="space-between start">
+		    	<span flex>Start</span>
+	    	</div>
+	   	</md-button>		
+	</div>
+	
+	<div layout="row" layout-align="start space-between" layout-padding>
+		
+		<div layout="column" flex="70" layout-align="start start" class="md-whiteframe-z2" style="background: #fff; margin-right: 20px">
+		
+			<h3 style="width:100%; text-align: center;">Symptom groups</h3>
+			<div>
+				<md-button ng-repeat="g in groupsOfSymptoms" class="md-raised" ng-class="{'md-accent' : group == g}" ng-click="setGroup(g)">
+		    		{{g.name}}
+		   		</md-button>
+	   		</div>
+			<h3 style="width:100%; text-align: center;">{{group.name}} symptoms</h3>
+			<div>
+				<md-button ng-repeat="s in group.symptoms" class="md-raised md-primary" ng-click="addSymptom(s)">
+			    	{{s.name}}
+			   	</md-button>
+		   	</div>
+		   	
+		</div>      
+		<div layout="column" flex layout-align="space-between center" class="md-whiteframe-z2"  style="background: #fff">
+			<h3>Body map</h3>
+			<img src="css/body.svg" height="400">
+		</div>      
+	</div>
+
+</div>

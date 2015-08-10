@@ -44,6 +44,13 @@ indexes:
 
 - kind: Session
   properties:
+  - name: active
+  - name: status
+  - name: created
+    direction: desc
+
+- kind: Session
+  properties:
   - name: organisation
   - name: state
   - name: created

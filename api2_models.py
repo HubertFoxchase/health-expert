@@ -156,7 +156,7 @@ class SessionState(messages.Enum):
 
 class Session(EndpointsModel):
     
-    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'state', 'symptoms', 'outcome', 'next', 'patient', 'patient_id', 'organisation_id', )    
+    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'status', 'symptoms', 'outcome', 'next', 'patient', 'patient_id', 'organisation_id', )    
     
     _patientId = None
     _symptomId = None
@@ -165,7 +165,7 @@ class Session(EndpointsModel):
     _patient = None
     _symptomsArray = None
     
-    state = ndb.IntegerProperty(default = int(SessionState.IN_PROGRESS))
+    status = ndb.IntegerProperty(default = int(SessionState.IN_PROGRESS))
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
     ended = ndb.DateTimeProperty()
@@ -204,7 +204,6 @@ class Session(EndpointsModel):
             raise endpoints.NotFoundException('Patient %s does not exist.' % value)        
 
         self.patient = self.patient_ref.get()
-        logging.debug("calling patient")
         #self.organisation_ref = self.patient.organisation_ref
 
     @EndpointsAliasProperty(setter=PatientId, property_type=messages.IntegerField)

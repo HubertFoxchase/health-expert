@@ -39,11 +39,11 @@
 	 				<div class="dd">Confidence</div>
 	 				<div class="dt">{{item.outcome.probability*100 | number:1}}%</div>
 	 			</div>
-	 			<div layout="row" class="item" ng-show="item.state == '1'">
+	 			<div layout="row" class="item" ng-show="item.status == '1'">
 	 				<div class="dd">Status</div>
 	 				<div class="dt">In progress (<span am-time-ago="item.updated"></span>)</div>
 	 			</div>
-	 			<div layout="row" class="item" ng-show="item.state == '2'">
+	 			<div layout="row" class="item" ng-show="item.status == '2'">
 	 				<div class="dd">Completed</div>
 	 				<div class="dt">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
 	 			</div>
