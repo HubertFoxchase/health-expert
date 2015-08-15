@@ -22,14 +22,6 @@ angular.module("values", [])
 	    	                {
 	    	                	name: 'Vomiting',
 	    	                	id: 's_305'
-	    	                },
-	    	                {
-	    	                	name: 'Flu-like',
-	    	                	id: ''
-	    	                },
-	    	                {
-	    	                	name: 'Cold-like',
-	    	                	id: ''
 	    	                }
 	     		]
 	     	},
@@ -148,25 +140,22 @@ angular.module("values", [])
 	        {
 	            name: 'Skin',
 	            symptoms: [
-   	                {
+  	                {
+	                    name: 'Skin lesions',
+	                    id: 's_241'
+	                },
+
+	                {
 	                    name: 'Itching skin',
-	                    id: ''
+	                    id: 's_254'
 	                },
-   	                {
-	                    name: 'Numbness',
-	                    id: ''
-	                },
-   	                {
+	                {
 	                    name: 'Rush',
-	                    id: ''
+	                    id: 's_417'
 	                },
    	                {
 	                    name: 'Red spots',
 	                    id: 's_234'
-	                },
-   	                {
-	                    name: 'Skin bumps',
-	                    id: ''
 	                },
 	                {
 	                    name: 'Red skin',
@@ -290,5 +279,133 @@ angular.module("values", [])
 	                
 	            ]
 	        }
+	    ]
+)
+.value(
+		'body', 
+	    [
+	     	{
+	     		name: 'Head',
+	     		parts : [
+	     		         {
+	     		        	 name : "Head",
+	     		        	 symptoms : [
+     		       	                {
+	     		   	                    name: 'Headache',
+	     		   	                    id: 's_21'
+	     		   	                },
+     		       	                {
+	     		   	                    name: 'Head drop',
+	     		   	                    id: 's_191'
+	     		   	                },
+     		       	                {
+	     		   	                    name: 'Head tremors',
+	     		   	                    id: 's_85'
+	     		   	                },	     	
+	     		   	         ]
+	     		         },
+	     		         {
+	     		        	 name : "Face",
+	     		        	 symptoms : [
+     		       	                {
+	     		   	                    name: 'Numbness or muscle spasms',
+	     		   	                    id: 's_82'
+	     		   	                },
+     		       	                {
+	     		   	                    name: 'Facial pain',
+	     		   	                    id: 's_478'
+	     		   	                }
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Eyes",
+	     		        	 symptoms : [
+     		       	                {
+	     		   	                    name: 'Red eye',
+	     		   	                    id: 's_492'
+	     		   	                },
+     		       	                {
+	     		   	                    name: 'Scratched eyes',
+	     		   	                    id: 's_498'
+	     		   	                }
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Ears",
+	     		        	 symptoms : [
+	     		    	            {
+	     		   	                    name: 'Earache',
+	     		   	                    id: 's_47'
+	     		   	                }
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Nose",
+	     		        	 symptoms : [
+     		    	                {
+	     		   	                    name: 'Blocked nose',
+	     		   	                    id: 's_331'
+	     		   	                }
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Mouth",
+	     		        	 symptoms : [
+     		       	                {
+	     		   	                    name: 'Blisters or sores',
+	     		   	                    id: 's_694'
+	     		   	                },
+     		       	                {
+	     		   	                    name: 'Dry mouth',
+	     		   	                    id: 's_247'
+	     		   	                },
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Throat",
+	     		        	 symptoms : [
+     		    	                {
+	     		   	                    name: 'Cough',
+	     		   	                    id: 's_102'
+	     		   	                },
+	     		   	                {
+	     		   	                    name: 'Dry cough',
+	     		   	                    id: 's_102'
+	     		   	                },	                
+	     		   	                {
+	     		   	                    name: 'Chesty cough',
+	     		   	                    id: 's_104'
+	     		   	                },	                
+	     		   	                {
+	     		   	                    name: 'Sore throat',
+	     		   	                    id: 's_20'
+	     		   	                },
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Jaw",
+	     		        	 symptoms : [
+ 	     		   	                {
+	     		   	                    name: 'Jaw pain',
+	     		   	                    id: 's_430'
+	     		   	                },
+ 	     		   	                {
+	     		   	                    name: 'Jaw locking',
+	     		   	                    id: 's_428'
+	     		   	                }
+ 	     		   	           
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Neck",
+	     		        	 symptoms : [
+     		    					{
+	     		   					    name: 'Swollen Neck',
+	     		   					    id: 's_363'
+	     		   					}
+	     		        	 ]
+	     		         }
+	     		]
+	     	}
 	    ]
 )

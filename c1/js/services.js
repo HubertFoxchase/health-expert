@@ -25,6 +25,7 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 	    } 
 	    else {
 	        deferred.reject('authentication error');
+	        $rootScope.requireAuth = true;
 	    }
 	};    
 	

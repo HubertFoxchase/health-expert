@@ -175,3 +175,44 @@ md-progress-linear:not([md-mode=indeterminate]) .md-container {
 .c4c-autocomplete li .highlight {
 	color:red;
 }
+
+.c4c-body-container h3 {
+	width:100%; 
+	text-align: center;
+}
+
+.c4c-body-container.closed .c4c-symptoms-selector {
+	display: none
+}
+
+.c4c-symptopms-container{
+	background: #fff; 
+	margin-right: 20px;
+	position: relative;
+}
+
+.c4c-symptopms-container h3{
+	width:100%; 
+	text-align: center;
+	outline: none;
+}
+
+
+.c4c-symptopms-container.closed * {
+	display: none;
+}
+
+.c4c-symptopms-container.closed h3.c4c-symptoms-header {
+   display: inline-block;
+   white-space: nowrap;
+ 
+   transform: translate(0,100%) rotate(-90deg);
+   transform-origin: 0 0;
+   
+   position: absolute;
+   top:70%;
+   left:30%;
+   
+   cursor: pointer;
+   
+}

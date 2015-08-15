@@ -117,6 +117,10 @@ angular.module("controllers", []).
 			);
 		}
 		
+		$scope.login = function(){
+			$api.handleAuthClick();
+		}
+		
 	}]).
 	controller("PatientCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", "$mdDialog", function($scope, $rootScope, $routeParams, $api, $location, $mdDialog){
 
@@ -142,7 +146,7 @@ angular.module("controllers", []).
 	    $rootScope.readyClass = "app-ready";
 		
 	}]).
-	controller("StartCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", "$mdDialog", "groupsOfSymptoms", "$http", "$config", function($scope, $rootScope, $routeParams, $api, $location, $mdDialog, groupsOfSymptoms, $http, $config){
+	controller("StartCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", "$mdDialog", "groupsOfSymptoms", "body", "$http", "$config", function($scope, $rootScope, $routeParams, $api, $location, $mdDialog, groupsOfSymptoms, body, $http, $config){
 		
 		var _api = $api.get();
 
@@ -181,23 +185,22 @@ angular.module("controllers", []).
 			$rootScope.progress = 25;
 		}
 		
-		$scope.symptomsByGroupName = function(name){
+		$scope.findByName = function(obj, name){
 			var group;
-			for(var i = 0; i < groupsOfSymptoms.length; i++){
-				group = groupsOfSymptoms[i];
+			for(var i = 0; i < obj.length; i++){
+				group = obj[i];
 				if(group.name == name){
 					return group;
 				}
 			}
 			return null;
 		}
-		
-		$scope.setGroup = function(g){
-			$scope.group = g;
+
+		$scope.setSymptomsGroup = function(g){
+			$scope.symptomsGroup = g;
 		}
 
 		$scope.addSymptom = function(s){
-			
 			for(var i = 0; i < $scope.selectedSymptoms.length; i++){
 				if($scope.selectedSymptoms[i].id == s.id){
 					return;
@@ -206,13 +209,28 @@ angular.module("controllers", []).
 			$scope.selectedSymptoms.push(s);
 		}
 		
-		$scope.groupsOfSymptoms = groupsOfSymptoms;
-		
-		$scope.group = $scope.symptomsByGroupName("Common");
+		$scope.selectBodyPart = function(name){
+			$scope.bodyView = true;
+			$scope.symptomsLocation = $scope.findByName($scope.bodyParts, name);
+			$scope.symptomsGroup = $scope.symptomsLocation.parts[0];
+		}
 
+		$scope.showSymptomsSelector = function(){
+			$scope.bodyView = false;
+			$scope.symptomsGroup = $scope.findByName(groupsOfSymptoms, "Common");
+		}
+
+		//initial state
+		$scope.groupsOfSymptoms = groupsOfSymptoms;
+		$scope.bodyParts = body;
 		$scope.selectedSymptoms = [];
 		
+		$scope.showSymptomsSelector();
+		//initial state ends
+		
+		//autocomplete
 		$scope.selectedSymptom = null;
+		
 		$scope.searchText = null;
 		
 		$scope.querySearch = function(query){
@@ -228,11 +246,8 @@ angular.module("controllers", []).
 				return [];
 			}
 		}
+		//autocomplete - ends
 
-		if($routeParams.groupId) {
-			$scope.initialSymptoms = groupsOfSymptoms[$routeParams.groupId];
-		}
-		
 		$scope.start = function(ref){
 			console.log("start");
 			_api.patient.insert({ref:ref, organisation_id:$rootScope.organisation.id}).execute(function(resp){
@@ -296,6 +311,21 @@ angular.module("controllers", []).
 			        });					
 			}
 
+			var showNoSymptomsWarning = function() {
+				$mdDialog.show({
+		          template:
+			            '<md-dialog>' +
+			            '  <md-dialog-content><h3>No symptoms selected</h3><p>Please select at least one symptom to start the assessment.</p></md-dialog-content>' +
+			            '  <div class="md-actions" layout="row">' +
+			            '    <md-button ng-click="closeDialog()">' +
+			            '      Close' +
+			            '    </md-button>' +
+			            '  </div>' +
+			            '</md-dialog>',
+			            controller: 'AppCtrl'
+			        });					
+			}			
+			
 			var s = [];
 
 			if(angular.isArray(symptoms) && symptoms.length > 0){
@@ -306,6 +336,10 @@ angular.module("controllers", []).
 			else if (angular.isString(symptoms) && symptoms != ""){
 				s = [symptoms];
 			}			
+			else if(angular.isArray(symptoms) && symptoms.length == 0){
+				showNoSymptomsWarning();
+				return;
+			}
 			else {
 				showError();
 				return;
@@ -327,6 +361,8 @@ angular.module("controllers", []).
 		}		
 
 	    $rootScope.readyClass = "app-ready";
+	    
+	    $scope.bodyView = false;
 	}]).	
 
 	controller("EndCtrl", ['$scope', '$rootScope',  "$location", function($scope, $rootScope, $location){
