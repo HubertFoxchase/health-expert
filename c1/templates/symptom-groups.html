@@ -1,6 +1,6 @@
-<div layout="column" layout-margin>
+<div layout="column" layout-fill layout-align="start space-between">
 
-	<div layout="row" flex layout-padding layout-align="space-between start" class="md-whiteframe-z1" style="background: #fff;">
+	<div layout="row" layout-margin layout-padding layout-align="space-between start" class="md-whiteframe-z1" style="background: #fff; height:90px">
 	
 		<md-chips flex ng-model="selectedSymptoms" md-autocomplete-snap md-require-match style="background: #fff">
 	      <md-autocomplete
@@ -32,7 +32,7 @@
 	   	</md-button>		
 	</div>
 	
-	<div layout="row" layout-align="start space-between" layout-padding>
+	<div layout="row" flex layout-align="start space-between" layout-padding>
 		
 		<div layout="column" flex="{{bodyView ? '' : 80}}" 
 							 layout-align="start start" 
@@ -45,7 +45,7 @@
 		    		{{g.name}}
 		   		</md-button>
 	   		</div>
-			<h3 style="margin-top: 20px">{{symptomsGroup.name}} symptoms</h3>
+			<h3 style="margin-top: 50px">{{symptomsGroup.name}} symptoms</h3>
 			<div>
 				<md-button ng-repeat="s in symptomsGroup.symptoms" class="md-raised md-primary" ng-click="addSymptom(s)">
 			    	{{s.name}}
@@ -65,7 +65,7 @@
 			    		{{l.name}}
 			   		</md-button>
 		   		</div>
-				<h3 style="margin-top: 20px">{{symptomsGroup.name}} symptoms</h3>
+				<h3 style="margin-top: 50px">{{symptomsGroup.name}} symptoms</h3>
 				<div>
 					<md-button ng-repeat="s in symptomsGroup.symptoms" class="md-raised md-primary" ng-click="addSymptom(s)">
 				    	{{s.name}}
