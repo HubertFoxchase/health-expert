@@ -165,7 +165,7 @@ class Session(EndpointsModel):
     _patient = None
     _symptomsArray = None
     
-    status = ndb.IntegerProperty(default = int(SessionState.IN_PROGRESS))
+    status = ndb.IntegerProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
     ended = ndb.DateTimeProperty()

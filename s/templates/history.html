@@ -40,12 +40,12 @@
 		    <div flex="30">{{item.outcome.name}}</div>
 		    <div flex="10">{{item.outcome.probability*100 | number:1}}%</div>
 		    <div flex="10">
-		    	<span ng-show="item.state == '1'">In progress</span>
-			 	<span ng-show="item.state == '2'">Completed</span>
+		    	<span ng-show="item.status == '1'">In progress</span>
+			 	<span ng-show="item.status == '2'">Completed</span>
 		    </div>
 		    <div flex="15">
-		    	<span ng-show="item.state == '1'"><span am-time-ago="item.updated"></span></span>
-			 	<span ng-show="item.state == '2'">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</span>
+		    	<span ng-show="item.status == '1'"><span am-time-ago="item.updated"></span></span>
+			 	<span ng-show="item.status == '2'">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</span>
 		    </div>
 		</div>
 	</div>

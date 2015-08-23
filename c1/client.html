@@ -1,14 +1,16 @@
 <html ng-app="c4c">
 <head>
+	<title>Click4Care App</title>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, minimal-ui">
     <meta name="apple-mobile-web-app-capable" content="yes">
+	<link rel="apple-touch-icon" href="css/img/c4c-logotype-simple-3.png">    
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css">
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/animation.css">
 
 </head>
-<body layout="column" ng-controller="AppCtrl" ng-class="$root.readyClass">
+<body layout="column" ng-controller="AppCtrl" ng-class="$root.readyClass" ontouchmove="{event.preventDefault()}">
 
 	<div id="loading">
 		<p ng-hide="$root.requireAuth">Launching Click4Care ...</p>
@@ -21,7 +23,7 @@
 		<md-toolbar layout="column" class="c4c-toolbar md-whiteframe-z3">
 			<div layout="row">
 				<div class="md-toolbar-tools">
-					<h1>Click4Care</h1>
+					<h1 class="logotype" title="Click4Care"></h1>
 					<span flex></span>
 			        <md-menu md-position-mode="target-right target">
 			          
@@ -50,8 +52,8 @@
 			</div>
 		</md-toolbar>
 
-		<md-content flex style="background-color:#f1f1f1; height:calc(100% - 110px);">
-			<div ng-view layout="column" layout-padding>
+		<md-content flex class="c4c-app-background">
+			<div ng-view layout="column" layout-padding class="c4c-pages">
 
 			</div>
 		</md-content>

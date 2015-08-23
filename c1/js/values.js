@@ -406,6 +406,23 @@ angular.module("values", [])
 	     		        	 ]
 	     		         }
 	     		]
+	     	},
+	     	{
+	     		name : "Chest",
+	     		parts : []
+	     	},
+	     	{
+	     		name : "Abdomen",
+	     		parts : []
+	     	},
+	     	{
+	     		name : "Legs",
+	     		parts : []
+	     	},
+	     	{
+	     		name : "Arms",
+	     		parts : []
 	     	}
+	     	
 	    ]
 )

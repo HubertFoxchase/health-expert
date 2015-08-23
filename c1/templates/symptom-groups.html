@@ -41,13 +41,13 @@
 		
 			<h3 ng-click="showSymptomsSelector()" class="c4c-symptoms-header">General Symptom Groups</h3>
 			<div>
-				<md-button ng-repeat="g in groupsOfSymptoms" class="md-raised" ng-class="{'md-accent' : symptomsGroup == g}" ng-click="setSymptomsGroup(g)">
+				<md-button ng-repeat="g in groupsOfSymptoms" class="md-raised" ng-class="{'md-primary' : symptomsGroup == g}" ng-click="setSymptomsGroup(g)">
 		    		{{g.name}}
 		   		</md-button>
 	   		</div>
 			<h3 style="margin-top: 50px">{{symptomsGroup.name}} symptoms</h3>
 			<div>
-				<md-button ng-repeat="s in symptomsGroup.symptoms" class="md-raised md-primary" ng-click="addSymptom(s)">
+				<md-button ng-repeat="s in symptomsGroup.symptoms" class="md-raised md-hue-1" ng-click="addSymptom(s)">
 			    	{{s.name}}
 			   	</md-button>
 		   	</div>
@@ -61,13 +61,13 @@
 			<div layout="column" flex="70" layout-align="start start" class="c4c-symptoms-selector">
 				<h3>{{symptomsLocation.name}}</h3>
 				<div>
-					<md-button ng-repeat="l in symptomsLocation.parts" class="md-raised" ng-class="{'md-accent' : symptomsGroup == l}" ng-click="setSymptomsGroup(l)">
+					<md-button ng-repeat="l in symptomsLocation.parts" class="md-raised" ng-class="{'md-primary' : symptomsGroup == l}" ng-click="setSymptomsGroup(l)">
 			    		{{l.name}}
 			   		</md-button>
 		   		</div>
-				<h3 style="margin-top: 50px">{{symptomsGroup.name}} symptoms</h3>
+				<h3 style="margin-top: 50px" ng-show="symptomsGroup.name">{{symptomsGroup.name}} symptoms</h3>
 				<div>
-					<md-button ng-repeat="s in symptomsGroup.symptoms" class="md-raised md-primary" ng-click="addSymptom(s)">
+					<md-button ng-repeat="s in symptomsGroup.symptoms" class="md-raised md-hue-1" ng-click="addSymptom(s)">
 				    	{{s.name}}
 				   	</md-button>
 			   	</div>
@@ -75,7 +75,15 @@
 
 			<div layout="column" flex class="c4c-body-map" layout-align="start center" layout-padding>
 				<h3>Body map</h3>
-				<img src="css/body.svg" height="400" ng-click="selectBodyPart('Head')">
+				<div class="c4c-body-map-assembly">
+					<img src="css/img/body_head.svg" width="41" height="50" id="head" ng-click="selectBodyPart('Head')">
+					<img src="css/img/body_chest.svg" width="64" height="83" id="chest" ng-click="selectBodyPart('Chest')">
+					<img src="css/img/body_center.svg" width="77" height="85" id="abdomen" ng-click="selectBodyPart('Abdomen')">
+					<img src="css/img/body_legs.svg" width="79" height="153" id="legs" ng-click="selectBodyPart('Legs')">
+					<img src="css/img/body_arm_left.svg" width="48" height="156" id="left-arm" ng-click="selectBodyPart('Arms')">
+					<img src="css/img/body_arm_right.svg" width="48" height="156" id="right-arm" ng-click="selectBodyPart('Arms')">
+				
+				</div>
 			</div>
 		</div>      
 	</div>

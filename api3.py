@@ -239,7 +239,7 @@ class PatientApi(remote.Service):
         for p in patients :
             p.active = False
         
-        ndb.put_multi_async(patients)
+        ndb.put_multi(patients)
         
         query = Session.query(Session.patient_ref.IN(ids))
         
@@ -298,7 +298,8 @@ class SessionApi(remote.Service):
             cat.append(Symptom(id=c['id'], name=c['name'], value=''))
         
         session.next = Question(label=label, description=description, type=type, symptoms=cat)
-
+        session.status = int(SessionState.IN_PROGRESS) 
+        
         session.put()
         return session.ToMessage()
 
@@ -376,11 +377,15 @@ class SessionApi(remote.Service):
         ids = [ndb.Key(Session, session_id) for session_id in request.ids]
 
         session = ndb.get_multi(ids)
+        
+        logging.debug(session)
 
         for s in session :
             s.active = False
+
+        logging.debug(session)
         
-        ndb.put_multi_async(session)
+        ndb.put_multi(session)
         
         return message_types.VoidMessage() 
 
