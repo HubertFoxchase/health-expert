@@ -1,0 +1,151 @@
+<html ng-app="c4c">
+<head>
+<title>{% block title %}Login to Click4Care{% endblock %}</title>
+<meta name="viewport" content="width=device-width, height=device-height, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css">
+<link rel="stylesheet" href="/s/css/style.css">
+<link rel="stylesheet" href="/s/css/animation.css">
+
+</head>
+<body layout="row" ng-controller="AppCtrl" ng-class="{'app-ready' : $root.ready}" class="c4c-app-background">
+
+	<div layout="column" flex layout-align="start center" role="main" id="main">
+	
+	    {% block maincontent %}
+	
+	    {% endblock %}	
+
+	</div>
+
+	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
+	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-animate.min.js"></script>
+	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-aria.min.js"></script>
+	<script	src="//ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.js"></script>
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.5.0/angular-material-icons.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/SVG-Morpheus/0.1.8/svg-morpheus.js"></script>
+
+	<script type="text/javascript">
+		angular
+		.module('c4c', ['ngMaterial'])
+		.config(['$mdThemingProvider', function($mdThemingProvider) {
+				
+				$mdThemingProvider.definePalette('c4cPalette', {
+				    '50': 'ffebee',
+				    '100': 'bbdefb',
+				    '200': 'ef9a9a',
+				    '300': 'e57373',
+				    '400': 'ef5350',
+				    '500': '2196f3',
+				    '600': 'e53935',
+				    '700': '1976d2',
+				    '800': 'c62828',
+				    '900': 'b71c1c',
+				    'A100': 'ec407a',
+				    'A200': 'c2185b',
+				    'A400': '880e4f',
+				    'A700': 'd50000',
+				    'contrastDefaultColor': 'light',    // whether, by default, text (contrast)
+				                                        // on this palette should be dark or light
+				    'contrastDarkColors': ['50', '100', //hues which contrast should be 'dark' by default
+				     '200', '300', '400', 'A100'],
+				    'contrastLightColors': undefined    // could also specify this if default was 'dark'
+				});
+				
+				$mdThemingProvider
+					.theme('default')
+					.primaryPalette('c4cPalette')
+				    .accentPalette('c4cPalette');	
+
+		}])
+		.controller('AppCtrl', function($scope, $rootScope, $http, $httpParamSerializer) {
+			  $scope.user = {
+			    email: '((email))',
+			    password: '',
+			    remember: '((remember))' == 'True'
+			  };
+			  
+		      $scope.login = function() {
+				// Posting data to php file
+				$http({
+					method  : 'POST',
+					url     : '/auth/ajax/login',
+					data    : $httpParamSerializer($scope.user), //forms user object
+					headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+				 })
+				 .success(function(data) {
+				    if(data.success) {
+				      	// Showing errors.
+						window.location.href = "/#/grid";
+				    } 
+				    else {
+				    	$scope.error = true;
+				    }
+				 });
+		      };			  
+
+		      $scope.forgot = function() {
+				// Posting data to php file
+				$http({
+					method  : 'POST',
+					url     : '/auth/ajax/forgot',
+					data    : $httpParamSerializer($scope.user), //forms user object
+					headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+				 })
+				 .success(function(data) {
+				    if(data.success) {
+				    	$scope.success = true;
+				    	$scope.link = data.verification;
+				    	$scope.error = false;
+				    } 
+				    else {
+				    	$scope.success = false;
+				    	$scope.error = true;
+				    	$scope.link = null;
+				    }
+				 });
+			  };
+			  
+		      $scope.reset = function() {
+					// Posting data to php file
+				$http({
+					method  : 'POST',
+					url     : '/auth/ajax/password',
+					data    : $httpParamSerializer($scope.user), //forms user object
+					headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+				 })
+				 .success(function(data) {
+				    if(data.success) {
+				    	$scope.success = true;
+				    	$scope.error = false;
+				    } 
+				    else {
+				    	$scope.success = false;
+				    	$scope.error = true;
+				    }
+				 });
+			  };			  
+		      
+			  $rootScope.ready = true;
+		});
+	</script>
+
+	<script>
+		(function(i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r;
+			i[r] = i[r] || function() {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date();
+			a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m)
+		})(window, document, 'script',
+				'//www.google-analytics.com/analytics.js', 'ga');
+
+		ga('create', 'UA-60113800-2', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>

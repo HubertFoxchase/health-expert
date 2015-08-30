@@ -141,7 +141,6 @@ md-toolbar {
 	background:#f7f7f7 url('img/app_backround@x2.png') no-repeat bottom left / 100%;
 	height:calc(100% - 110px);	
 	overflow: hidden;
-	
 }
 
 .c4c-large-button {

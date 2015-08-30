@@ -17,7 +17,7 @@
 
 """A BasicModel resource.
 
-This module defines a BasicModel to hold the main information of the model
+This module defines a BasicModel to hold the main_old information of the model
 resource in BigML. It becomes the starting point for the Model class, that
 is used for local predictions.
 

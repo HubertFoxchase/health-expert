@@ -1,0 +1,48 @@
+
+{% extends "base.html" %}
+
+{% block title %}Forgot password{% endblock %}
+
+{% block maincontent %}
+
+		<h1 title="Click4Care" class="c4c-login-logotype">
+		  	<img src="/s/css/img/C4C-logotype-full.svg">
+		</h1>
+
+		<md-content layout-padding class="md-whiteframe-z1 c4c-login" >
+		
+	      <p ng-hide="success">Forgot your password? Enter your email to request password reset link.</p>
+
+	      <p ng-show="success">Click <a href="{{link}}">here</a> to reset your password.</p>
+
+	      <br>
+	      
+	      <p class="login-error" ng-show="error">Sorry, we don't recongise this email address.</p>	      
+					
+		  <form name="forgetForm" ng-submit="forgot()">
+		    
+		    <md-input-container md-no-float>
+		      <input type="text"
+		      		 required 
+		      		 name="email" 
+		      		 ng-model="user.email" 
+		      		 placeholder="Email address">
+		      <div ng-messages="forgetForm.email.$error" ng-show="forgetForm.email.$touched && forgetForm.email.$invalid">
+		        <div ng-message="required">This is required.</div>
+		      </div>
+		    </md-input-container>
+		    
+		    <md-input-container>
+		      <md-button type="submit" class="md-raised md-accent c4c-submit-btn">submit</md-button>
+		    </md-input-container>
+
+		    <md-input-container style="padding-bottom:0px; text-align:center">
+				<a href="/auth/login" style="text-decoration: none; font-weight: 300">Sign in</a>
+		    </md-input-container>
+		    
+		  </form>
+		  
+		</md-content>
+
+
+{% endblock %}

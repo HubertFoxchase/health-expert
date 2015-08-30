@@ -11,22 +11,23 @@ handlers:
 
 - url: /_ah/spi/.*
   script: api3.app
+  secure: always
 
 - url: /s
   static_dir: s
+  secure: always
 
 - url: /c1
   static_dir: c1
+  secure: always
 
 - url: /c
   static_dir: c
-
-- url: /app
-  static_dir: app
+  secure: always  
 
 - url: .*
   script: main.app
-
+  secure: always
 
 libraries:
 - name: webapp2
@@ -36,4 +37,6 @@ libraries:
 - name: endpoints
   version: 1.0
 - name: ssl
-  version: latest    
+  version: latest
+- name: jinja2
+  version: latest      

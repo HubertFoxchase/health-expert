@@ -27,7 +27,7 @@ DEFAULT_PROTOCOL = 'https'
 # Base Domain
 BIGML_DOMAIN = os.environ.get('BIGML_DOMAIN', DEFAULT_DOMAIN)
 
-# Protocol for main server
+# Protocol for main_old server
 BIGML_PROTOCOL = os.environ.get('BIGML_PROTOCOL',
                                 DEFAULT_PROTOCOL)
 

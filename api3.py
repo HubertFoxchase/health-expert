@@ -15,12 +15,20 @@ from protorpc import remote, message_types
 from protorpc import message_types
 from api2_models import *
 
-from api2_messages import OutcomeRequestMessage
 import infermedica_api
-import informedica_api_old
 import string
 import random
-from string import lower
+import os
+
+import webapp2
+import webapp2_extras
+from webapp2_extras import auth
+from webapp2_extras import sessions
+from webapp2_extras import securecookie
+from webapp2_extras.sessions import SessionDict
+
+import Cookie
+
 
 
 WEB_CLIENT_ID = '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com'
@@ -32,8 +40,17 @@ ANDROID_AUDIENCE = WEB_CLIENT_ID
 APP_ID = "b2bc2e86"
 APP_KEY = "92d49a8b4302920c299e038041049741"
 
-RAISE_UNAUTHORISED = False
+RAISE_UNAUTHORISED = True
 
+TOKEN_CONFIG = {
+    'token_max_age': 86400 * 7 * 3,
+    'token_new_age': 86400,
+    'token_cache_age': 3600,
+}
+
+SESSION_ATTRIBUTES = ['user_id', 'remember', 'token', 'token_ts', 'cache_ts', 'email', 'type']
+
+SESSION_SECRET_KEY = 'YOUR_SECRET_KEY'
 
 c4c_api = endpoints.api(name='c4c', 
                version='v1',
@@ -41,12 +58,13 @@ c4c_api = endpoints.api(name='c4c',
                                    OTHER_CLIENT_ID, 
                                    endpoints.API_EXPLORER_CLIENT_ID],
                audiences=[ANDROID_AUDIENCE],
-               scopes=[endpoints.EMAIL_SCOPE])
+               scopes=[endpoints.EMAIL_SCOPE],
+               auth=endpoints.api_config.ApiAuth(allow_cookie_auth=True))
 
 
 @c4c_api.api_class(resource_name='organisation')
 class AdminApi(remote.Service):
-   
+
     @Organisation.method(request_fields=('name',),
                     response_fields=('id', 'name', 'created',),
                     path='organisation', 
@@ -74,12 +92,14 @@ class AdminApi(remote.Service):
                       name='list')   
     def OrganisationList(self, query):
         _isAdminUser()
+        
         return query.filter(Organisation.active == True)
 
     @Organisation.method(path='organisation/{id}', 
                       http_method='GET',
                       name='get')   
     def OrganisationGet(self, model):
+        _isValidUser()
         
         if not model.from_datastore:
             raise endpoints.NotFoundException('Organisation not found.')
@@ -95,8 +115,6 @@ class UserApi(remote.Service):
                  name='get')   
     def UserGet(self, model):
         _isValidUser()
-        
-        logging.debug(model)
         
         if not model.from_datastore:
             raise endpoints.NotFoundException('User not found.')
@@ -126,7 +144,7 @@ class UserApi(remote.Service):
         #if current_user is None:
         #    raise endpoints.UnauthorizedException('Invalid token.')
         
-        #model.email = current_user.email().lower()
+        model.email = model.email.lower()
         model.type = int(UserType.NORMAL)
         model.put()
         return model
@@ -137,6 +155,8 @@ class UserApi(remote.Service):
                       name='update')   
     def UserUpdate(self, model):
         _isAdminUser()
+        
+        model.email = model.email.lower()        
         model.put()        
         if not model.from_datastore:
             raise endpoints.NotFoundException('User not found.')
@@ -148,7 +168,7 @@ class UserApi(remote.Service):
                        http_method='GET',
                        name='list')   
     def UserList(self, query):
-        _isAdminUser()
+        _isValidUser()
         return query
 
 
@@ -234,8 +254,6 @@ class PatientApi(remote.Service):
 
         patients = ndb.get_multi(ids)
 
-        logging.debug(patients)
-
         for p in patients :
             p.active = False
         
@@ -280,8 +298,6 @@ class SessionApi(remote.Service):
                 if observation is not None :
                     symptom = Symptom(id=sp, name=observation.name, value='present')
                     session.symptoms.items.append(symptom)
-
-        logging.debug(session.symptoms.items)
 
         for symptom in session.symptoms.items:
             r.add_observation(symptom.id, symptom.value)
@@ -506,6 +522,117 @@ class SessionApi(remote.Service):
         ndb.delete_multi(query.iter(keys_only=True))
         return query 
 
+class MyAuth():
+    
+    user = None
+    token = None
+    userType = None
+    email = None
+    organisation_ref = None
+    
+
+    @classmethod
+    def get_user_from_cookie(cls):
+        
+        serializer = securecookie.SecureCookieSerializer(SESSION_SECRET_KEY)
+        
+        cookie_string = os.environ.get('HTTP_COOKIE')
+        cookie = Cookie.SimpleCookie()
+        cookie.load(cookie_string)
+        
+        session_name = cookie['auth'].value
+        session_name_data = serializer.deserialize('auth', session_name)
+        session_dict = SessionDict(cls, data=session_name_data, new=False)
+        
+        logging.debug(session_dict)
+
+        if session_dict:
+            session_final = dict(zip(SESSION_ATTRIBUTES, session_dict.get('_user')))
+            _user, _token = cls.validate_token(session_final.get('user_id'), 
+                                               session_final.get('token'),
+                                               token_ts=session_final.get('token_ts'))
+            cls.user = _user
+            cls.token = _token
+            cls.userType = session_final.get('type')
+            cls.email = session_final.get('email')
+            
+            logging.debug(_token)
+
+    @classmethod
+    def user_to_dict(cls, user):
+        """Returns a dictionary based on a user object.
+
+        Extra attributes to be retrieved must be set in this module's
+        configuration.
+
+        :param user:
+            User object: an instance the custom user model.
+        :returns:
+            A dictionary with user data.
+        """
+        if not user:
+            return None
+
+        user_dict = dict((a, getattr(user, a)) for a in [])
+        user_dict['user_id'] = user.get_id()
+        return user_dict
+
+    @classmethod
+    def get_user_by_auth_token(cls, user_id, token):
+        """Returns a user dict based on user_id and auth token.
+
+        :param user_id:
+            User id.
+        :param token:
+            Authentication token.
+        :returns:
+            A tuple ``(user_dict, token_timestamp)``. Both values can be None.
+            The token timestamp will be None if the user is invalid or it
+            is valid but the token requires renewal.
+        """
+        user, ts = User.get_by_auth_token(user_id, token)
+        return cls.user_to_dict(user), ts
+
+    @classmethod
+    def validate_token(cls, user_id, token, token_ts=None):
+        """Validates a token.
+
+        Tokens are random strings used to authenticate temporarily. They are
+        used to validate sessions or service requests.
+
+        :param user_id:
+            User id.
+        :param token:
+            Token to be checked.
+        :param token_ts:
+            Optional token timestamp used to pre-validate the token age.
+        :returns:
+            A tuple ``(user_dict, token)``.
+        """
+        now = int(time.time())
+        delete = token_ts and ((now - token_ts) > TOKEN_CONFIG['token_max_age'])
+        create = False
+
+        if not delete:
+            # Try to fetch the user.
+            user, ts = cls.get_user_by_auth_token(user_id, token)
+            if user:
+                # Now validate the real timestamp.
+                delete = (now - ts) > TOKEN_CONFIG['token_max_age']
+                create = (now - ts) > TOKEN_CONFIG['token_new_age']
+
+        if delete or create or not user:
+            if delete or create:
+                # Delete token from db.
+                User.delete_auth_token(user_id, token)
+
+                if delete:
+                    user = None
+
+            token = None
+
+        return user, token
+
 
 def _lookupName(lookupId, lookupList):
     for item in lookupList :
@@ -517,7 +644,16 @@ def _lookupName(lookupId, lookupList):
 def _isValidUser():
     
     if RAISE_UNAUTHORISED:
-    
+        
+        a = MyAuth()
+        a.get_user_from_cookie()
+        
+        if not a.user :
+            raise endpoints.UnauthorizedException('Not authorised')
+        elif not a.token :
+            raise endpoints.UnauthorizedException('Invalid or expired token.')
+        
+'''    
         current_user = endpoints.get_current_user()
         
         if current_user is None:
@@ -527,28 +663,43 @@ def _isValidUser():
             
             if user is None:
                 raise endpoints.UnauthorizedException('Not authorised')
+'''
 
-    else:
-        return True
+        
 
 def _isAdminUser():
     
     if RAISE_UNAUTHORISED:
-    
+        
+        a = MyAuth()
+        a.get_user_from_cookie()
+        
+        logging.debug(a.user)
+        logging.debug(a.email)
+        logging.debug(a.userType)
+        
+        if not a.user :
+            raise endpoints.UnauthorizedException('Not authorised')
+        elif not a.token :
+            raise endpoints.UnauthorizedException('Invalid or expired token.')
+        elif int(a.userType) != int(UserType.ADMIN) :
+            raise endpoints.UnauthorizedException('Access denied')       
+
+'''
         current_user = endpoints.get_current_user()
         
         if current_user is None:
             raise endpoints.UnauthorizedException('Invalid token.')
         else :
-            user = User.query(ndb.AND(User.email == current_user.email().lower(), User.type == int(UserRole.ADMIN))).get()
+            user = User.query(ndb.AND(User.email == current_user.email().lower(), User.type == int(UserType.ADMIN))).get()
             
             if user is None:
                 raise endpoints.UnauthorizedException('Not authorised')
+'''
 
-    else:
-        return True
 
 def _idDenerator(size=10, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
+
 
 app = endpoints.api_server([c4c_api], restricted=False)    

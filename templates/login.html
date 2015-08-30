@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block maincontent %}
+
+		<h1 title="Click4Care" class="c4c-login-logotype">
+		  	<img src="/s/css/img/C4C-logotype-full.svg">
+		</h1>
+
+		<md-content layout-padding class="md-whiteframe-z1 c4c-login" >
+		
+	      <p class="login-error" ng-show="error">Invalid email or password.</p>
+					
+		  <form name="loginForm" ng-submit="login(user)">
+		    
+		    <md-input-container md-no-float>
+		      <input type="text"
+		      		 required 
+		      		 name="email" 
+		      		 ng-model="user.email" 
+		      		 placeholder="Email address" 
+		      		 value="((email))">
+		      <div ng-messages="loginForm.email.$error" ng-show="loginForm.email.$touched && loginForm.email.$invalid">
+		        <div ng-message="required">This is required.</div>
+		      </div>
+		    </md-input-container>
+		    
+		    <md-input-container md-no-float>
+		      <input type="password" 
+		      		 required 
+		      		 name="password" 
+		      		 ng-model="user.password" 
+		      		 placeholder="Password" 
+		      		 readonly onfocus="this.removeAttribute('readonly');">
+		      <div ng-messages="projectForm.password.$error" ng-show="loginForm.password.$touched && loginForm.password.$invalid">
+		        <div ng-message="required">This is required.</div>
+		      </div>
+		    </md-input-container>
+
+		    <md-input-container style="padding-bottom:15px">
+		        <md-checkbox md-no-ink aria-label="Remember me" ng-model="user.remember" class="md-primary c4c-checkbox">
+		          Remember me
+		        </md-checkbox>
+		        <input type="hidden" name="remember" value="{{user.remember}}">
+		    </md-input-container>
+
+		    <md-input-container>
+		      <md-button type="submit" class="md-raised md-accent c4c-submit-btn">sign in</md-button>
+		    </md-input-container>
+
+		    <md-input-container style="padding-bottom:0px; text-align:center">
+				<a href="/auth/forgot" style="text-decoration: none; font-weight: 300">Forgot password?</a>
+		    </md-input-container>
+		    
+		  </form>
+		  
+		</md-content>
+
+
+{% endblock %}
