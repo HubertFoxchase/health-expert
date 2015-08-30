@@ -1,13 +1,9 @@
 
-{% extends "base.html" %}
+{% extends "auth_base.html" %}
 
 {% block title %}Forgot password{% endblock %}
 
 {% block maincontent %}
-
-		<h1 title="Click4Care" class="c4c-login-logotype">
-		  	<img src="/s/css/img/C4C-logotype-full.svg">
-		</h1>
 
 		<md-content layout-padding class="md-whiteframe-z1 c4c-login" >
 		
@@ -17,9 +13,9 @@
 
 	      <br>
 	      
-	      <p class="login-error" ng-show="error">Sorry, we don't recongise this email address.</p>	      
+	      <p class="login-error" ng-show="error">Sorry, we don't recognise this email address.</p>	      
 					
-		  <form name="forgetForm" ng-submit="forgot()">
+		  <form ng-hide="success" name="forgotForm" novalidate ng-submit="forgotForm.$valid && forgot(user)">
 		    
 		    <md-input-container md-no-float>
 		      <input type="text"
@@ -27,17 +23,19 @@
 		      		 name="email" 
 		      		 ng-model="user.email" 
 		      		 placeholder="Email address">
-		      <div ng-messages="forgetForm.email.$error" ng-show="forgetForm.email.$touched && forgetForm.email.$invalid">
-		        <div ng-message="required">This is required.</div>
+		      <div ng-messages="forgotForm.email.$error" ng-show="validate || (forgotForm.email.$touched && forgotForm.email.$invalid)">
+		        <div ng-message="required">This is required</div>
 		      </div>
 		    </md-input-container>
 		    
-		    <md-input-container>
-		      <md-button type="submit" class="md-raised md-accent c4c-submit-btn">submit</md-button>
+		    <md-input-container style="margin-top:10px">
+		      <md-button type="submit" class="md-raised md-accent c4c-submit-btn" ng-click="validate=true">submit</md-button>
 		    </md-input-container>
 
-		    <md-input-container style="padding-bottom:0px; text-align:center">
-				<a href="/auth/login" style="text-decoration: none; font-weight: 300">Sign in</a>
+		    <md-input-container class="text-link" style="padding-bottom:0px;">
+		    	<p>
+					<a href="/auth/login">Sign in</a>
+				</p>
 		    </md-input-container>
 		    
 		  </form>

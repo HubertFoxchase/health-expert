@@ -44,16 +44,27 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
     var apiReady = function() {
         if (gapi.client.c4c) {
         	_api = gapi.client.c4c;
+        	
+        	console.log("API loaded: " + (Date.now() - start) + "ms");
 
-        	// get organisation
-			_api.user.getByEmail({email:$rootScope.user.email}).execute(function(resp){
-				$rootScope.user = resp.items[0];
-				$rootScope.organisation = $rootScope.user.organisation;
-	            deferred.resolve(_api);
+        	// get user and organisation
+			_api.user.me().execute(function(resp){
+				
+				if(!resp.error) {
+					$rootScope.user = resp;
+					$rootScope.organisation = $rootScope.user.organisation;
+
+		        	console.log("User info loaded: " + (Date.now() - start) + " ms");
+					
+					deferred.resolve(_api);
+				}
+				else {
+		            deferred.reject({code:resp.error.code, message:resp.error.message});
+				}
 			});        	
         } 
         else {
-            deferred.reject('api load error');
+            deferred.reject({code:500, message:'Unspecified API load error'});
         }
     }     
     
@@ -63,7 +74,11 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 	            deferred.resolve(_api);
     		}
     		else {
-	    	    gapi.load('auth', {'callback': checkAuth});
+	    	    //gapi.load('auth', {'callback': checkAuth});
+	        	
+    			console.log("Started loading API: " + (Date.now() - start) + " ms");
+
+	        	gapi.load('client', {'callback': clientReady});
 	            return deferred.promise;
     		}
     	},

@@ -1,6 +1,11 @@
 <html ng-app="c4c">
 <head>
 <meta name="viewport" content="width=device-width, height=device-height, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+
+<script>
+	var start = Date.now();
+</script>
+
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css">
 <link rel="stylesheet" href="/s/css/style.css">
 <link rel="stylesheet" href="/s/css/animation.css">
@@ -12,8 +17,10 @@
 		md-mode="indeterminate" style="position:absolute; top:50%;left:50%"></md-progress-circular>
 
 	<md-sidenav layout="column"	class="md-sidenav-left md-whiteframe-z2" id="left" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
-		<md-toolbar class="md-hue-2"> 
-			<h1>Click4Care</h1>
+		<md-toolbar style="background-color:#fff; border-bottom: 1px solid #ddd"> 
+			<h1 title="Click4Care" class="logotype">
+		  		<img src="/s/css/img/C4C-logotype-full.svg">
+			</h1>
 		</md-toolbar> 
 		<div layout="row" layout-padding layout-align="space-between center" class="user-box">
 			<user-avatar></user-avatar>
@@ -76,7 +83,16 @@
 					</md-item-content>
 				</a> 
 			</md-item> 
-		</md-list> 
+			<md-item> 
+				<a ng-href="/auth/logout">
+					<md-item-content md-ink-ripple layout="row"	layout-align="start center">
+						<div class="inset">
+							<ng-md-icon icon="logout"></ng-md-icon>
+						</div>
+						<div class="inset">Logout</div>
+					</md-item-content>
+				</a> 
+			</md-item> 		</md-list> 
 	</md-sidenav>
 	<div layout="column" class="relative" layout-fill role="main" id="main">
 
@@ -123,7 +139,7 @@
 	        </div>
 		</md-toolbar>
 		
-		<md-content flex md-scroll-y class="bg-grey">
+		<md-content flex md-scroll-y class="c4c-app-background">
 			<div ng-view layout="column" layout-fill layout-padding style="padding:10px 20px">
 			
 			</div>
@@ -142,6 +158,7 @@
 	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-route.min.js"></script>
 	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-animate.min.js"></script>
 	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-aria.min.js"></script>
+	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-messages.min.js"></script>    
 	<script	src="//ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.js"></script>
 
 	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.5.0/angular-material-icons.min.js"></script>
@@ -150,6 +167,10 @@
 	<script src="//cdn.jsdelivr.net/momentjs/2.10.3/moment.min.js"></script>
 	<script src="//cdn.jsdelivr.net/momentjs.timezone/0.4.0/moment-timezone-with-data.min.js"></script>
 	<script src="//cdn.jsdelivr.net/angular.moment/0.10.1/angular-moment.min.js"></script>
+
+	<script>
+    	console.log("Angular loaded: " + (Date.now() - start) + " ms");
+    </script>
 
 	<script src="/s/js/app.js"></script>
 	<script src="/s/js/controllers.js"></script>

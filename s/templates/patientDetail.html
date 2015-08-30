@@ -1,6 +1,6 @@
 <div layout="row" class="session-tools">
-	<h3 ng-show="patient.id">Edit Patient</h3>
-	<h3 ng-hide="patient.id">New Patient</h3>
+	<h3 ng-show="patient.id">Edit Patient Details</h3>
+	<h3 ng-hide="patient.id">New Patient Record</h3>
 </div>
 
 <div layout="row">
@@ -21,14 +21,16 @@
 			</div>
 		</md-input-container>
 
-		<md-input-container>
-			<fieldset class="radio-btn">
-				<legend>Gender</legend>
+		<md-input-container style="width:30%" layout="row" class="checkbox-holder">
+			<div flex>
+				<span class="label">Gender</span>
+			</div>
+			<div flex>
 				<md-radio-group ng-model="patient.gender" aria-label="Patient Gender"> 
 					<md-radio-button value="female">Female</md-radio-button> 
 					<md-radio-button value="male">Male</md-radio-button> 
 				</md-radio-group> 
-			</fieldset>
+			</div>
 		</md-input-container>
 
 	</form>

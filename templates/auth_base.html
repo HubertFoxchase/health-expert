@@ -1,6 +1,6 @@
 <html ng-app="c4c">
 <head>
-<title>{% block title %}Login to Click4Care{% endblock %}</title>
+<title>{% block title %}Login{% endblock %} - Click4Care</title>
 <meta name="viewport" content="width=device-width, height=device-height, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css">
@@ -12,6 +12,10 @@
 
 	<div layout="column" flex layout-align="start center" role="main" id="main">
 	
+		<h1 title="Click4Care" class="c4c-login-logotype">
+		  	<img src="/s/css/img/C4C-logotype-full.svg">
+		</h1>
+	
 	    {% block maincontent %}
 	
 	    {% endblock %}	
@@ -21,14 +25,28 @@
 	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
 	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-animate.min.js"></script>
 	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-aria.min.js"></script>
+	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-messages.min.js"></script>
 	<script	src="//ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.js"></script>
 
 	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.5.0/angular-material-icons.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/SVG-Morpheus/0.1.8/svg-morpheus.js"></script>
 
 	<script type="text/javascript">
+		location.searchToObject =  function() {
+			var pairs = this.search.slice(1).split('&');
+
+			var result = {};
+			pairs.forEach(function(pair) {
+			    pair = pair.split('=');
+			    result[pair[0]] = decodeURIComponent(pair[1] || '');
+			});
+			
+			return result;
+		}
+	
+	
 		angular
-		.module('c4c', ['ngMaterial'])
+		.module('c4c', ['ngMaterial', 'ngMessages'])
 		.config(['$mdThemingProvider', function($mdThemingProvider) {
 				
 				$mdThemingProvider.definePalette('c4cPalette', {
@@ -59,6 +77,30 @@
 				    .accentPalette('c4cPalette');	
 
 		}])
+		.directive('passwordMatch', [function () {
+		    return {
+		        restrict: 'A',
+		        scope:true,
+		        require: 'ngModel',
+		        link: function (scope, elem , attrs,control) {
+		            var checker = function () {
+		 
+		                //get the value of the first password
+		                var e1 = scope.$eval(attrs.ngModel); 
+		 
+		                //get the value of the other password  
+		                var e2 = scope.$eval(attrs.passwordMatch);
+		                return e1 == e2;
+		            };
+		            scope.$watch(checker, function (n) {
+		 
+		                //set the form control to valid if both 
+		                //passwords are the same, else invalid
+		                control.$setValidity("match", n);
+		            });
+		        }
+		    };
+		}])		
 		.controller('AppCtrl', function($scope, $rootScope, $http, $httpParamSerializer) {
 			  $scope.user = {
 			    email: '((email))',
@@ -66,6 +108,10 @@
 			    remember: '((remember))' == 'True'
 			  };
 			  
+		      var _redirect = location.searchToObject();
+		      	
+		      $scope.redirect = _redirect.url ? _redirect.url : "/"
+		    	  
 		      $scope.login = function() {
 				// Posting data to php file
 				$http({
@@ -76,8 +122,7 @@
 				 })
 				 .success(function(data) {
 				    if(data.success) {
-				      	// Showing errors.
-						window.location.href = "/#/grid";
+			      		location.href = $scope.redirect;
 				    } 
 				    else {
 				    	$scope.error = true;
@@ -126,7 +171,25 @@
 				    }
 				 });
 			  };			  
-		      
+
+		      $scope.password = function() {
+					// Posting data to php file
+				$http({
+					method  : 'POST',
+					url     : '/auth/ajax/password',
+					data    : $httpParamSerializer($scope.user), //forms user object
+					headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+				 })
+				 .success(function(data) {
+				    if(data.success) {
+				    	$scope.success = true;
+				    } 
+				    else {
+				    	$scope.success = false;
+				    }
+				 });
+			  };			  
+			  
 			  $rootScope.ready = true;
 		});
 	</script>

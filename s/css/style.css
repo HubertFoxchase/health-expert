@@ -20,6 +20,10 @@ md-sidenav.md-locked-open {
     max-width: 254px;
 }
 
+.logotype img {
+	width: 175px;
+}
+
 
 .user-avatar {
   border-radius: 99%;
@@ -36,8 +40,6 @@ md-sidenav.md-locked-open {
 .user-box span {
 	font-size: 85%;	
 }
-
-
 
 md-list.menu a md-item-content {
 	position: relative;
@@ -87,6 +89,11 @@ md-toolbar h1 {
 .session-tools{
 	padding-bottom: 5px; 
 	margin-right: -5px	
+}
+
+.session-tools h3{
+    font-size: 25;
+    font-weight: 300;
 }
 
 .item {
@@ -240,6 +247,17 @@ ng-md-icon {
 }
 
 
+.checkbox-holder {
+	margin-top: 10px;
+}
+
+.checkbox-holder .label{
+	border-bottom: 1px solid #ddd;
+    color: #ccc;
+    display: inline-block;
+    margin-top: 13px;
+    padding-bottom: 5px;
+}
 
 .c4c-app-background {
 	background:#f7f7f7 url('img/app_backround@x2.png') no-repeat bottom left / 100%;
@@ -285,3 +303,18 @@ ng-md-icon {
 .c4c-login > p {
 	margin-top: 0px;
 }
+
+.c4c-login md-input-container.text-link {
+	padding-bottom: 0;
+}
+
+.c4c-login md-input-container.text-link p {
+	margin: 0;
+	text-align: center;
+}
+
+.c4c-login md-input-container.text-link p a{
+	text-decoration: none; 
+	font-weight: 300;
+}
+

@@ -31,6 +31,7 @@ import Cookie
 
 
 
+
 WEB_CLIENT_ID = '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com'
 ANDROID_CLIENT_ID = 'replace this with your Android client ID'
 IOS_CLIENT_ID = 'replace this with your iOS client ID'
@@ -108,6 +109,19 @@ class AdminApi(remote.Service):
 
 @c4c_api.api_class(resource_name='user')
 class UserApi(remote.Service):
+
+
+    @endpoints.method(message_types.VoidMessage,
+                      User.ProtoModel(),
+                      path='me', 
+                      http_method='GET',
+                      name='me')   
+    def UserGetMe(self, request):
+        _u = _isValidUser()
+        
+        _user = User.get_by_id(_u['user_id'])
+
+        return _user.ToMessage()
     
     @User.method(response_fields=('id','email', 'name', 'role', 'created', 'updated', 'organisation', 'active'),
                  path='user/{id}', 
@@ -653,6 +667,8 @@ def _isValidUser():
         elif not a.token :
             raise endpoints.UnauthorizedException('Invalid or expired token.')
         
+        return a.user
+        
 '''    
         current_user = endpoints.get_current_user()
         
@@ -673,10 +689,6 @@ def _isAdminUser():
         
         a = MyAuth()
         a.get_user_from_cookie()
-        
-        logging.debug(a.user)
-        logging.debug(a.email)
-        logging.debug(a.userType)
         
         if not a.user :
             raise endpoints.UnauthorizedException('Not authorised')

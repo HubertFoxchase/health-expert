@@ -45,10 +45,18 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
         	_api = gapi.client.c4c;
 
         	// get organisation
-			_api.organisation.list().execute(function(resp){
-				$rootScope.organisation = resp.items[0];
-	            deferred.resolve(_api);
-			});        	
+			_api.user.me().execute(function(resp){
+				
+				if(!resp.error) {
+					$rootScope.user = resp;
+					$rootScope.organisation = $rootScope.user.organisation;
+
+					deferred.resolve(_api);
+				}
+				else {
+		            deferred.reject({code:500, message:'Unspecified API load error'});
+				}
+			});       	
         } 
         else {
             deferred.reject('api load error');

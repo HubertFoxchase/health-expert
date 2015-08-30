@@ -97,6 +97,8 @@ angular.module("controllers", []).
 		    //$scope.selected = [];
 	    }
 	    
+    	console.log("Grid page loaded: " + (Date.now() - start) + " ms");
+	    
 	    $rootScope.readyClass = "app-ready";
 	}]).	
 	controller("SessionDetailCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', '$observations', function($scope, $rootScope, $routeParams, $api, $location, $observations){

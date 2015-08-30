@@ -16,6 +16,7 @@ from webapp2_extras.auth import InvalidPasswordError
 import api2_models
 
 import json
+import urllib
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')),
@@ -34,7 +35,8 @@ def user_required(handler):
     def check_login(self, *args, **kwargs):
         auth = self.auth
         if not auth.get_user_by_session():
-            self.redirect(self.uri_for('login'), abort=True)
+            _params = {'url' : self.request.path_qs}
+            self.redirect(self.uri_for('login') + '?' + urllib.urlencode(_params), abort=True)
         else:
             return handler(self, *args, **kwargs)
 
@@ -127,11 +129,17 @@ class BaseHandler(webapp2.RequestHandler):
             self.session_store.save_sessions(self.response)
 
 
-class MainHandler(BaseHandler):
+class AppMainHandler(BaseHandler):
 
     @user_required
     def get(self):
         self.serve_static_file('channel.html')
+
+class ClientMainHandler(BaseHandler):
+
+    @user_required
+    def get(self):
+        self.serve_static_file('client.html')
 
 
 class AuthHomeHandler(BaseHandler):
@@ -304,6 +312,32 @@ class SetPasswordHandler(BaseHandler):
 
         self.display_message('Password updated')
 
+class SetPasswordHandlerAjax(BaseHandler):
+
+    @user_required
+    def post(self):
+        password = self.request.get('password1')
+        old_token = self.request.get('token')
+
+        if not password or password != self.request.get('password2'):
+            self._serve_page(False)
+            return
+
+        user = self.user
+        user.set_password(password)
+        user.put()
+
+        # remove signup token, we don't want users to come back with an old link
+        self.user_model.delete_signup_token(user.get_id(), old_token)
+
+        self._serve_page(True)
+        
+    def _serve_page(self, success=False):
+
+        self.response.headers['Content-Type'] = 'application/json'   
+        obj = {'success': success} 
+        self.response.out.write(json.dumps(obj))        
+
 
 class LoginHandler(BaseHandler):
 
@@ -356,11 +390,7 @@ class LoginHandlerAjax(BaseHandler):
     def _serve_page(self, success=False):
 
         self.response.headers['Content-Type'] = 'application/json'   
-        
-        obj = {
-            'success': success
-        } 
-        
+        obj = {'success': success} 
         self.response.out.write(json.dumps(obj))
 
 
@@ -391,11 +421,13 @@ config = {
 }
 
 app = webapp2.WSGIApplication([
-    webapp2.Route('/', MainHandler, name='home'),
+    webapp2.Route('/', AppMainHandler, name='home'),
+    webapp2.Route('/client', ClientMainHandler, name='client'),
     webapp2.Route('/auth', AuthHomeHandler, name='auth'),
     webapp2.Route('/auth/signup', SignupHandler),
     webapp2.Route('/auth/<type:v|p>/<user_id:\d+>-<signup_token:.+>', handler=VerificationHandler, name='verification'),
     webapp2.Route('/auth/password', SetPasswordHandler),
+    webapp2.Route('/auth/ajax/password', SetPasswordHandlerAjax),
     webapp2.Route('/auth/login', LoginHandler, name='login'),
     webapp2.Route('/auth/ajax/login', LoginHandlerAjax, name='ajax_login'),
     webapp2.Route('/auth/logout', LogoutHandler, name='logout'),

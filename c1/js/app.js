@@ -1,10 +1,10 @@
 'use strict';
 
-angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'controllers', 'services', 'values'])
+angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'ngMessages', 'controllers', 'services', 'values'])
 .value('$config', {
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
       scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ],
-      observationsJson : "js/observations.js"
+      observationsJson : "/c1/js/observations.js"
 })
 .config(['$routeProvider', '$locationProvider', '$mdThemingProvider',
 function($routeProvider, $locationProvider, $mdThemingProvider) {
@@ -15,7 +15,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	    '200': 'ef9a9a',
 	    '300': 'e57373',
 	    '400': 'ef5350',
-	    '500': '2196f3',
+	    '500': '0091de',
 	    '600': 'e53935',
 	    '700': '1976d2',
 	    '800': 'c62828',
@@ -38,7 +38,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	
 	$routeProvider
 		.when('/list', {
-			templateUrl: 'templates/list.html',
+			templateUrl: '/c1/templates/list.html',
 			controller: 'PatientCtrl',
 			resolve : { init: ['$api', function($api) {
 		          	return $api.load();
@@ -46,7 +46,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/start', {
-			templateUrl: 'templates/start.html',
+			templateUrl: '/c1/templates/start.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 		          	return $api.load();
@@ -54,7 +54,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/authorise', {
-			templateUrl: 'templates/authorise.html',
+			templateUrl: '/c1/templates/authorise.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -62,7 +62,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:patient/intro', {
-			templateUrl: 'templates/intro.html',
+			templateUrl: '/c1/templates/intro.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -70,7 +70,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:patient/gender', {
-			templateUrl: 'templates/gender.html',
+			templateUrl: '/c1/templates/gender.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -78,7 +78,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:patient/age', {
-			templateUrl: 'templates/age.html',
+			templateUrl: '/c1/templates/age.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -86,7 +86,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:patient/reason', {
-			templateUrl: 'templates/reason.html',
+			templateUrl: '/c1/templates/reason.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -94,7 +94,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})		
 		.when('/:patient/doctor-reason', {
-			templateUrl: 'templates/doctor-reason.html',
+			templateUrl: '/c1/templates/doctor-reason.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -102,7 +102,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})	
 		.when('/:patient/symptom-groups', {
-			templateUrl: 'templates/symptom-groups.html',
+			templateUrl: '/c1/templates/symptom-groups.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -110,7 +110,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:patient/initial/:groupId', {
-			templateUrl: 'templates/symptom2.html',
+			templateUrl: '/c1/templates/symptom2.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -118,7 +118,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})	
 		.when('/:session/end', {
-			templateUrl: 'templates/end.html',
+			templateUrl: '/c1/templates/end.html',
 			controller: 'EndCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -126,7 +126,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:session/symptom/:sid', {
-			templateUrl: 'templates/question.html',
+			templateUrl: '/c1/templates/question.html',
 			controller: 'QuestionsCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -134,7 +134,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:session/symptom', {
-			templateUrl: 'templates/question.html',
+			templateUrl: '/c1/templates/question.html',
 			controller: 'QuestionsCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -152,6 +152,12 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
     	$rootScope.$on('$routeChangeSuccess', function(){
     		ga('send', 'pageview', $location.path());
     	});
+    	
+    	$rootScope.$on('$routeChangeError', function(event, current, previous, error){
+    		if(error.code == 401){
+    			location.href = "/auth/login?url=" + encodeURI("/client");
+    		}
+    	});    	
     	
     	document.addEventListener("backbutton", function(){
     		if(location.hash.indexOf("/list") > 0 || location.hash.indexOf("/end") > 0) {

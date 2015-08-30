@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'angularMoment', 'controllers', 'services', 'directives'])
+angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'ngMessages', 'angularMoment', 'controllers', 'services', 'directives'])
 .value('$config', {
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
       scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ],
@@ -20,7 +20,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	    '200': 'ef9a9a',
 	    '300': 'e57373',
 	    '400': 'ef5350',
-	    '500': '2196f3',
+	    '500': '0091de',
 	    '600': 'e53935',
 	    '700': '1976d2',
 	    '800': 'c62828',
@@ -125,11 +125,18 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 
     //$locationProvider.html5Mode({enabled: true,requireBase:false});
 }])
-.run(["$rootScope", "$location", 
-    function ($rootScope, $location) {
-    	$rootScope.$on('$routeChangeSuccess', function(){
+.run(["$rootScope", "$location", function ($rootScope, $location) {
+	
+		console.log("Run started: " + (Date.now() - start) + " ms");
+    	
+		$rootScope.$on('$routeChangeSuccess', function(){
     		ga('send', 'pageview', $location.path());
-    });
-    
-    console.log(Date.now());
+    	});
+    	
+    	$rootScope.$on('$routeChangeError', function(event, current, previous, error){
+    		if(error.code == 401){
+    			location.href = "/auth/login?url=" + encodeURI("/");
+    		}
+    	});
+    	
 }]);
