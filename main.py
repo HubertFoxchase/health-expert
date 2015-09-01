@@ -141,85 +141,121 @@ class ClientMainHandler(BaseHandler):
     def get(self):
         self.serve_static_file('client.html')
 
+class CompleteSignupHandler(BaseHandler):
 
-class AuthHomeHandler(BaseHandler):
+    def get(self, *args, **kwargs):
+        user = None
+        user_id = kwargs['user_id']
+        signup_token = kwargs['signup_token']
 
-    def get(self):
-        self.render_template('home.html')
+        (user, ts) = self.user_model.get_by_auth_token(int(user_id), signup_token, 'invite')
+        
+        organisation = ndb.Key(api2_models.Organisation, user.organisation_id).get()
 
-class SignupHandler(BaseHandler):
+        if user:
+            params = {'email': user.email, 
+                      'organisation_id': user.organisation_id,  
+                      'organisation_name': organisation.name,  
+                      'user_id': user_id, 
+                      'token': signup_token}
+            self.render_template('completeregistration.html', params)
+            return
 
-    def get(self):
-        self.render_template('signup.html')
+        else:            
+            logging.info('Could not find any user with id "%s" token "%s"' , user_id, signup_token)
+            self.abort(404)
+
+
+class CompleteSignupHandlerAjax(BaseHandler):
 
     def post(self):
-        email = self.request.get('email')
+        
         name = self.request.get('name')
         password = self.request.get('password')
-        userType = int(self.request.get('type'))
         role = int(self.request.get('role'))
-        organisation_ref = ndb.Key(api2_models.Organisation, int(self.request.get('organisation')))
+        user_id = self.request.get('user_id')
+        signup_token= self.request.get('token')
+        
+        (user, ts) = self.user_model.get_by_auth_token(int(user_id), signup_token, 'invite')
+
+        user.name = name
+        user.role = role
+        user.active = True
+        user.verified = True
+        user.set_password(password)
+        user.put()        
+
+        # remove signup token, we don't want users to come back with an old link
+        self.user_model.delete_invite_token(user_id, signup_token)
+        
+        # store user data in the session
+        self.auth.set_session(self.auth.store.user_to_dict(user), remember=True)
+        
+        self._serve_page(True)
+        
+    def _serve_page(self, success=False):
+
+        self.response.headers['Content-Type'] = 'application/json'   
+        obj = {'success': success} 
+        self.response.out.write(json.dumps(obj))        
+
+
+class InviteHandlerAjax(BaseHandler):
+
+    @user_required
+    def post(self):
+        user = self.user
+        
+        email = self.request.get('email').lower()
+        #name = self.request.get('name')
+        #password = self.request.get('password')
+        #userType = int(self.request.get('type'))
+        role = int(self.request.get('role'))
+        organisation_id = int(self.request.get('organisation_id'))
+        
+        #TODO: need to check if user is allowed to invite to this organisation
+        organisation_ref = user.organisation_ref
 
         unique_properties = ['email']
         user_data = self.user_model.create_user(
             email,
             unique_properties,
             email=email,
-            password_raw=password,
-            name=name,
-            type=userType,
+            password_raw='AD2H68CD0',
+            #name=name,
+            type=int(api2_models.UserType.NORMAL),
             role=role,
             organisation_ref=organisation_ref,
-            active=True,
+            active=False,
             verified=False,
             )
         if not user_data[0]:  # user_data is a tuple
-            self.display_message('Unable to create user for email %s because of duplicate keys %s' % (email, user_data[1]))
+            #self.display_message('Unable to create user for email %s because of duplicate keys %s' % (email, user_data[1]))
+            logging.debug(user_data[1])
+
+            self._serve_page(success=False, message='Unable to create new user. Email address already exists')
             return
 
         user = user_data[1]
         user_id = user.get_id()
 
-        token = self.user_model.create_signup_token(user_id)
+        token = self.user_model.create_invite_token(user_id)
 
-        verification_url = self.uri_for('verification', type='v', user_id=user_id, signup_token=token, _full=True)
+        verification_url = self.uri_for('complete_signup', type='i', user_id=user_id, signup_token=token, _full=True)
 
-        msg = \
-            'Send an email to user in order to verify their address. \
-          They will be able to do so by visiting <a href="{url}">{url}</a>'
+        self._serve_page(success=True, verification_url=verification_url)
 
-        self.display_message(msg.format(url=verification_url))
+    def _serve_page(self, success=False, verification_url=None, message=None):
+
+        self.response.headers['Content-Type'] = 'application/json'   
+        obj = {'success': success, 'verification': verification_url, 'message': message} 
+        self.response.out.write(json.dumps(obj))
 
 
 class ForgotPasswordHandler(BaseHandler):
 
     def get(self):
-        self._serve_page()
-
-    def post(self):
-        email = self.request.get('email')
-
-        user = self.user_model.get_by_auth_id(email)
-        if not user:
-            logging.info('Could not find any user entry for email %s', email)
-            self._serve_page(not_found=True)
-            return
-
-        user_id = user.get_id()
-        token = self.user_model.create_signup_token(user_id)
-
-        verification_url = self.uri_for('verification', type='p', user_id=user_id, signup_token=token, _full=True)
-
-        msg = \
-            'Send an email to user in order to reset their password. \
-          They will be able to do so by visiting <a href="{url}">{url}</a>'
-
-        self.display_message(msg.format(url=verification_url))
-
-    def _serve_page(self, not_found=False):
-        email = self.request.get('email')
-        params = {'email': email, 'not_found': not_found}
-        self.render_template('forgot.html', params)
+        self.render_template('forgot.html')
 
 class ForgotPasswordHandlerAjax(BaseHandler):
 
@@ -232,7 +268,7 @@ class ForgotPasswordHandlerAjax(BaseHandler):
         user = self.user_model.get_by_auth_id(email)
         if not user:
             logging.info('Could not find any user entry for email %s', email)
-            self._serve_page(success=False)
+            self._serve_page(success=False, message='Could not find any user entry for email ' + email)
             return
 
         user_id = user.get_id()
@@ -242,10 +278,10 @@ class ForgotPasswordHandlerAjax(BaseHandler):
         
         self._serve_page(success=True, verification_url=verification_url)
 
-    def _serve_page(self, success=False, verification_url=None):
+    def _serve_page(self, success=False, verification_url=None, message=None):
 
         self.response.headers['Content-Type'] = 'application/json'   
-        obj = {'success': success, 'verification': verification_url} 
+        obj = {'success': success, 'verification': verification_url, 'message': message} 
         self.response.out.write(json.dumps(obj))
 
 
@@ -261,11 +297,16 @@ class VerificationHandler(BaseHandler):
         # self.auth.get_user_by_token(user_id, signup_token)
         # unfortunately the auth interface does not (yet) allow to manipulate
         # signup tokens concisely
+        
+        token_name = 'signup'
+        
+        if verification_type == 'i':
+            token_name = 'invite'
 
-        (user, ts) = self.user_model.get_by_auth_token(int(user_id), signup_token, 'signup')
+        (user, ts) = self.user_model.get_by_auth_token(int(user_id), signup_token, token_name)
 
         if not user:
-            logging.info('Could not find any user with id "%s" signup token "%s"' , user_id, signup_token)
+            logging.info('Could not find any user with id "%s" token "%s"' , user_id, signup_token)
             self.abort(404)
 
         # store user data in the session
@@ -282,6 +323,16 @@ class VerificationHandler(BaseHandler):
             self.display_message('User email address has been verified.')
             return
 
+        elif verification_type == 'i':
+
+            if user.verified:
+                logging.info('existing account, no need to set up')
+                self.display_message('User already have account.')
+                return
+            
+            params = {'user': user, 'token': signup_token}
+            self.render_template('completeregistration.html', params)
+
         elif verification_type == 'p':
             # supply user to the page
             params = {'user': user, 'token': signup_token}
@@ -291,26 +342,6 @@ class VerificationHandler(BaseHandler):
             logging.info('verification type not supported')
             self.abort(404)
 
-
-class SetPasswordHandler(BaseHandler):
-
-    @user_required
-    def post(self):
-        password = self.request.get('password')
-        old_token = self.request.get('t')
-
-        if not password or password != self.request.get('confirm_password'):
-            self.display_message('passwords do not match')
-            return
-
-        user = self.user
-        user.set_password(password)
-        user.put()
-
-        # remove signup token, we don't want users to come back with an old link
-        self.user_model.delete_signup_token(user.get_id(), old_token)
-
-        self.display_message('Password updated')
 
 class SetPasswordHandlerAjax(BaseHandler):
 
@@ -342,41 +373,13 @@ class SetPasswordHandlerAjax(BaseHandler):
 class LoginHandler(BaseHandler):
 
     def get(self):
-        self._serve_page()
-
-    def post(self):
-        email = self.request.get('email')
-        password = self.request.get('password')
-        remember = bool(self.request.get('remember'))
-        
-        logging.debug(self.request.get('remember'))
-        
-        try:
-            u = self.auth.get_user_by_password(email, password, remember=remember, save_session=True)
-            self.redirect(self.uri_for('home'))
-        except (InvalidAuthIdError, InvalidPasswordError), e:
-            logging.info('Login failed for user %s because of %s', email, type(e))
-            self._serve_page(True)
-
-    def _serve_page(self, failed=False):
-        
-        email = self.request.get('email')
-        remember = bool(self.request.get('remember'))
-        params = {
-                  'email': email, 
-                  'failed': failed, 
-                  'remember': remember
-                  }
-        self.render_template('login.html', params)
+        self.render_template('login.html')
 
 class LoginHandlerAjax(BaseHandler):
 
-    def get(self):
-        self._serve_page()
-
     def post(self):
         
-        email = self.request.get('email')
+        email = self.request.get('email').lower()
         password = self.request.get('password')
         remember = bool(self.request.get('remember'))
         
@@ -401,18 +404,11 @@ class LogoutHandler(BaseHandler):
         self.redirect(self.uri_for('home'))
 
 
-class AuthenticatedHandler(BaseHandler):
-
-    @user_required
-    def get(self):
-        self.render_template('authenticated.html')
-
-
 config = {
     'webapp2_extras.auth': 
     {
       'user_model': 'api2_models.User',
-      'user_attributes': ['email', 'type']
+      'user_attributes': ['email', 'type', 'organisation_id']
     },
     'webapp2_extras.sessions': 
     {
@@ -423,14 +419,20 @@ config = {
 app = webapp2.WSGIApplication([
     webapp2.Route('/', AppMainHandler, name='home'),
     webapp2.Route('/client', ClientMainHandler, name='client'),
-    webapp2.Route('/auth', AuthHomeHandler, name='auth'),
-    webapp2.Route('/auth/signup', SignupHandler),
+    
+    webapp2.Route('/auth/ajax/completesignup', CompleteSignupHandlerAjax),
+    webapp2.Route('/auth/ajax/inviteuser', InviteHandlerAjax),
+    
     webapp2.Route('/auth/<type:v|p>/<user_id:\d+>-<signup_token:.+>', handler=VerificationHandler, name='verification'),
-    webapp2.Route('/auth/password', SetPasswordHandler),
+    webapp2.Route('/auth/<type:i>/<user_id:\d+>-<signup_token:.+>', handler=CompleteSignupHandler, name='complete_signup'),
+    
     webapp2.Route('/auth/ajax/password', SetPasswordHandlerAjax),
+    
     webapp2.Route('/auth/login', LoginHandler, name='login'),
     webapp2.Route('/auth/ajax/login', LoginHandlerAjax, name='ajax_login'),
+    
     webapp2.Route('/auth/logout', LogoutHandler, name='logout'),
+
     webapp2.Route('/auth/forgot', ForgotPasswordHandler, name='forgot' ),
     webapp2.Route('/auth/ajax/forgot', ForgotPasswordHandlerAjax, name='ajax_forgot' ),
 ], debug=True, config=config)

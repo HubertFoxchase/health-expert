@@ -65,8 +65,8 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 
     return {
     	load : function() {
-    	    gapi.load('auth', {'callback': checkAuth});
-
+    	    //gapi.load('auth', {'callback': checkAuth});
+    	    gapi.load('client', {'callback': clientReady});
             return deferred.promise;
     	},
     	

@@ -3,7 +3,7 @@
 <title>{% block title %}Login{% endblock %} - Click4Care</title>
 <meta name="viewport" content="width=device-width, height=device-height, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 
-<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.10.1/angular-material.min.css">
 <link rel="stylesheet" href="/s/css/style.css">
 <link rel="stylesheet" href="/s/css/animation.css">
 
@@ -26,7 +26,7 @@
 	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-animate.min.js"></script>
 	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-aria.min.js"></script>
 	<script	src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular-messages.min.js"></script>
-	<script	src="//ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.js"></script>
+	<script	src="//ajax.googleapis.com/ajax/libs/angular_material/0.10.1/angular-material.min.js"></script>
 
 	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.5.0/angular-material-icons.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/SVG-Morpheus/0.1.8/svg-morpheus.js"></script>
@@ -105,8 +105,13 @@
 			  $scope.user = {
 			    email: '((email))',
 			    password: '',
-			    remember: '((remember))' == 'True'
+			    remember: '((remember))' == 'True',
+			    organisation: {id:'((organisation_id))', name:'((organisation_name))'},
+			    user_id: '((user_id))',
+			    token: '((token))'
 			  };
+			  
+			  $scope.roles = ["Doctor", "Nurse", "Reception", "Support", "Other"];
 			  
 		      var _redirect = location.searchToObject();
 		      	
@@ -152,26 +157,6 @@
 				 });
 			  };
 			  
-		      $scope.reset = function() {
-					// Posting data to php file
-				$http({
-					method  : 'POST',
-					url     : '/auth/ajax/password',
-					data    : $httpParamSerializer($scope.user), //forms user object
-					headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
-				 })
-				 .success(function(data) {
-				    if(data.success) {
-				    	$scope.success = true;
-				    	$scope.error = false;
-				    } 
-				    else {
-				    	$scope.success = false;
-				    	$scope.error = true;
-				    }
-				 });
-			  };			  
-
 		      $scope.password = function() {
 					// Posting data to php file
 				$http({
@@ -183,6 +168,24 @@
 				 .success(function(data) {
 				    if(data.success) {
 				    	$scope.success = true;
+				    } 
+				    else {
+				    	$scope.success = false;
+				    }
+				 });
+			  };			  
+
+		      $scope.completesignup = function() {
+					// Posting data to php file
+				$http({
+					method  : 'POST',
+					url     : '/auth/ajax/completesignup',
+					data    : $httpParamSerializer($scope.user), //forms user object
+					headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+				 })
+				 .success(function(data) {
+				    if(data.success) {
+				    	location.href = "/"
 				    } 
 				    else {
 				    	$scope.success = false;

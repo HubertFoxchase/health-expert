@@ -262,8 +262,8 @@ angular.module("controllers", []).
 		$scope.showDetail = function(itemData, $event) {
 			$rootScope.item = itemData;
 	    	$location.path("/user/" + itemData.id);
-	    };		
-
+	    };
+	    
 		$scope.delete = function(id){
 			_api.user.deleted({id:id}).execute(function(resp){
 				loadUsers();
@@ -348,6 +348,30 @@ angular.module("controllers", []).
 	    $rootScope.readyClass = "app-ready";
 		
 	}]).
+	controller("InviteUserCtrl", ['$scope', '$rootScope',  '$api', '$location', '$httpParamSerializer', '$http', function($scope, $rootScope, $api, $location, $httpParamSerializer, $http){
+		
+		var _api = $api.get();
+
+		$rootScope.showBackBtn = true;
+		$rootScope.backLocation = "/account";
+		$scope.user = {email:null, role:null, organisation_id:$rootScope.organisation.id}
+		
+		$scope.invite = function(user){
+
+			$http({
+				method  : 'POST',
+				url     : '/auth/ajax/inviteuser',
+				data    : $httpParamSerializer($scope.user), //forms user object
+				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+			 })
+			 .success(function(data) {
+				 $scope.resp = data;
+			 });			
+		}		
+		
+	    $rootScope.readyClass = "app-ready";
+		
+	}]).	
 	controller("PatientsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
 		
 		var _api = $api.get();

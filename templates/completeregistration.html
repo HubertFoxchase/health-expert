@@ -1,0 +1,73 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Complete Registration{% endblock %}
+
+{% block maincontent %}
+
+		<md-content layout-padding class="md-whiteframe-z1 c4c-login register" >
+		
+			<h3>Registration</h3>	
+			
+		
+	      <p class="login-error" ng-show="error">Invalid email or password.</p>
+					
+		  <form name="signupForm" autocomplete="off" novalidate ng-submit="signupForm.$valid && completesignup(user)">
+
+			<div layout="row">
+			    <md-input-container flex>
+			      <label>Email (read only)</label>
+			      <input type="text"
+			      		 readonly
+			      		 name="email"
+			      		 ng-model="user.email">
+			    </md-input-container>
+
+			    <md-input-container flex>
+			      <label>Organisation (read only)</label>
+			      <input type="text"
+			      		 readonly 
+			      		 name="organisation" 
+			      		 ng-model="user.organisation.name">
+			    </md-input-container>
+			</div> 
+
+		    <md-input-container style="width:50%">
+		    	<label>Name</label>
+		      <input type="text"
+		      		 required 
+		      		 name="name" 
+		      		 ng-model="user.name">
+		      <div ng-messages="signupForm.name.$error" ng-show="validate || (signupForm.name.$touched && signupForm.name.$invalid)">
+		        <div ng-message="required" >This is required. </div>
+		      </div>
+		    </md-input-container>		    
+		    
+		    <md-input-container  style="width:50%">
+		    	<label>Password</label>
+		      <input type="password" 
+		      		 required 
+		      		 name="password" 
+		      		 autocomplete="new-password"
+		      		 ng-model="user.password">
+		      <div ng-messages="signupForm.password.$error" ng-show="validate || (signupForm.password.$touched && signupForm.password.$invalid)">
+		        <div ng-message="required">This is required</div>
+		      </div>
+		    </md-input-container>
+
+			<md-input-container style="width:50%; margin-bottom:20px">
+		    	<label>User role</label>
+				<md-select ng-model="user.role">
+					<md-option ng-repeat="r in roles" value="{{$index+1}}">{{r}}</md-option>
+				</md-select>
+			</md-input-container>
+
+		    <md-input-container style="margin-bottom:0px">
+		      <md-button type="submit" class="md-raised md-accent c4c-submit-btn" ng-click="validate=true">register</md-button>
+		    </md-input-container>
+		    
+		  </form>
+		  
+		</md-content>
+
+
+{% endblock %}

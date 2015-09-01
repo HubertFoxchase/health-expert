@@ -83,6 +83,15 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	  	    	}]
 	  		}
       })
+      .when('/invite-user', {
+          templateUrl: '/s/templates/inviteUser.html',
+          controller: 'InviteUserCtrl',
+          controllerAs: 'inviteuser',
+	  	  resolve : { init: ['$api', function($api) {
+	            	return $api.load();
+	  	    	}]
+	  		}
+      })
       .when('/settings', {
           templateUrl: '/s/templates/settings.html',
           controller: 'AccountCtrl',

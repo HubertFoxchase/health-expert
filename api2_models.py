@@ -80,6 +80,10 @@ class User(EndpointsModel):
         """Returns this user's unique ID, which can be an integer or string."""
         return self._key.id()
 
+    def get_organisation_id(self):
+        """Returns this organisation's unique ID, which can be an integer or string."""
+        return self.organisation_ref.integer_id() 
+
     def add_auth_id(self, auth_id):
         """A helper method to add additional auth ids to a User
 
@@ -115,7 +119,10 @@ class User(EndpointsModel):
         :returns:
             A user object.
         """
-        return cls.query(cls.auth_ids == auth_id).get()
+        
+        user = cls.query(cls.auth_ids == auth_id).get()
+                
+        return user 
 
     @classmethod
     def get_by_auth_token(cls, user_id, token, subject='auth'):
@@ -133,6 +140,7 @@ class User(EndpointsModel):
         user_key = ndb.Key(cls, user_id)
         # Use get_multi() to save a RPC call.
         valid_token, user = ndb.get_multi([token_key, user_key])
+        
         if valid_token and user:
             timestamp = int(time.mktime(valid_token.created.timetuple()))
             return user, timestamp
@@ -153,6 +161,9 @@ class User(EndpointsModel):
             ``auth.InvalidAuthIdError`` or ``auth.InvalidPasswordError``.
         """
         user = cls.get_by_auth_id(auth_id)
+        
+        logging.debug(user)
+        
         if not user:
             raise auth.InvalidAuthIdError()
 
@@ -172,6 +183,7 @@ class User(EndpointsModel):
 
             - 'auth'
             - 'signup'
+            - 'invite'
         :param token:
             The token string to be validated.
         :returns:
@@ -220,6 +232,19 @@ class User(EndpointsModel):
         cls.token_model.get_key(user_id, 'signup', token).delete()
 
     @classmethod
+    def create_invite_token(cls, user_id):
+        entity = cls.token_model.create(user_id, 'invite')
+        return entity.token
+
+    @classmethod
+    def validate_invite_token(cls, user_id, token):
+        return cls.validate_token(user_id, 'invite', token)
+
+    @classmethod
+    def delete_invite_token(cls, user_id, token):
+        cls.token_model.get_key(user_id, 'invite', token).delete()
+
+    @classmethod
     def create_user(cls, auth_id, unique_properties=None, **user_values):
         """Creates a new user.
 
@@ -253,8 +278,7 @@ class User(EndpointsModel):
             'please provide a single auth_id.'
 
         if 'password_raw' in user_values:
-            user_values['password'] = security.generate_password_hash(
-                user_values.pop('password_raw'), length=12)
+            user_values['password'] = security.generate_password_hash(user_values.pop('password_raw'), length=12)
 
         user_values['auth_ids'] = [auth_id]
         user = cls(**user_values)
@@ -267,6 +291,9 @@ class User(EndpointsModel):
                 uniques.append((key, name))
 
         ok, existing = cls.unique_model.create_multi(k for k, v in uniques)
+        
+        logging.debug(ok)
+        logging.debug(existing)
         if ok:
             user.put()
             return True, user

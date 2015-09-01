@@ -5,29 +5,30 @@
 {% block maincontent %}
 
 		<md-content layout-padding class="md-whiteframe-z1 c4c-login" >
+			
+			<h3>Sign in</h3>	
 		
 	      <p class="login-error" ng-show="error">Invalid email or password.</p>
 					
 		  <form name="loginForm" novalidate ng-submit="loginForm.$valid && login(user)">
 		    
-		    <md-input-container md-no-float>
+		    <md-input-container>
+		      <label>Email address</label>
 		      <input type="text"
 		      		 required 
 		      		 name="email" 
-		      		 ng-model="user.email" 
-		      		 placeholder="Email address" 
-		      		 value="((email))">
+		      		 ng-model="user.email">
 		      <div ng-messages="loginForm.email.$error" ng-show="validate || (loginForm.email.$touched && loginForm.email.$invalid)">
 		        <div ng-message="required" >This is required. </div>
 		      </div>
 		    </md-input-container>
 		    
-		    <md-input-container md-no-float>
+		    <md-input-container>
+		      <label>Password</label>
 		      <input type="password" 
 		      		 required 
 		      		 name="password" 
-		      		 ng-model="user.password" 
-		      		 placeholder="Password" >
+		      		 ng-model="user.password">
 		      <div ng-messages="loginForm.password.$error" ng-show="validate || (loginForm.password.$touched && loginForm.password.$invalid)">
 		        <div ng-message="required">This is required</div>
 		      </div>
@@ -37,7 +38,6 @@
 		        <md-checkbox md-no-ink aria-label="Remember me" ng-model="user.remember" class="md-primary c4c-checkbox">
 		          Remember me
 		        </md-checkbox>
-		        <input type="hidden" name="remember" value="{{user.remember}}">
 		    </md-input-container>
 
 		    <md-input-container>

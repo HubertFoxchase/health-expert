@@ -73,7 +73,7 @@ angular.module("controllers", []).
 			
 	        $mdDialog.show({
 	          targetEvent: $event,
-	          templateUrl: 'templates/pinpad.html',
+	          templateUrl: '/c1/templates/pinpad.html',
 	          parent: angular.element(document.body),
 	          controller: 'AppCtrl'
 	        });

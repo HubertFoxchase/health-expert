@@ -269,11 +269,25 @@ ng-md-icon {
 
 .c4c-login {
 	width:290px; 
-	padding: 40px 20px 20px 20px;	
+	padding: 0px 20px 20px 20px;	
+}
+
+.c4c-login.register {
+	width:400px; 
+}
+
+
+.c4c-login h3 {
+	font-size: 25;
+    font-weight: 300;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+    margin: 20px 4px;
 }
 
 .c4c-login-logotype {
-	margin-top: 100px;
+	margin-top: 5%;
 }
 
 .c4c-login-logotype img {
@@ -302,6 +316,10 @@ ng-md-icon {
 
 .c4c-login > p {
 	margin-top: 0px;
+}
+
+.c4c-login md-input-container {
+	padding-bottom: 20px;
 }
 
 .c4c-login md-input-container.text-link {

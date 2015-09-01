@@ -49,7 +49,7 @@ TOKEN_CONFIG = {
     'token_cache_age': 3600,
 }
 
-SESSION_ATTRIBUTES = ['user_id', 'remember', 'token', 'token_ts', 'cache_ts', 'email', 'type']
+SESSION_ATTRIBUTES = ['user_id', 'remember', 'token', 'token_ts', 'cache_ts', 'email', 'type', 'organisation_id']
 
 SESSION_SECRET_KEY = 'YOUR_SECRET_KEY'
 
@@ -182,7 +182,8 @@ class UserApi(remote.Service):
                        http_method='GET',
                        name='list')   
     def UserList(self, query):
-        _isValidUser()
+        _u = _isValidUser()
+        #return query.filter(User.organisation_ref == ndb.Key(Organisation, _u['organisation_id']))
         return query
 
 
@@ -558,8 +559,6 @@ class MyAuth():
         session_name_data = serializer.deserialize('auth', session_name)
         session_dict = SessionDict(cls, data=session_name_data, new=False)
         
-        logging.debug(session_dict)
-
         if session_dict:
             session_final = dict(zip(SESSION_ATTRIBUTES, session_dict.get('_user')))
             _user, _token = cls.validate_token(session_final.get('user_id'), 
@@ -567,10 +566,9 @@ class MyAuth():
                                                token_ts=session_final.get('token_ts'))
             cls.user = _user
             cls.token = _token
-            cls.userType = session_final.get('type')
-            cls.email = session_final.get('email')
-            
-            logging.debug(_token)
+            cls.user['type'] = session_final.get('type')
+            cls.user['email'] = session_final.get('email')
+            cls.user['organisation_id'] = session_final.get('organisation_id')
 
     @classmethod
     def user_to_dict(cls, user):
@@ -589,6 +587,10 @@ class MyAuth():
 
         user_dict = dict((a, getattr(user, a)) for a in [])
         user_dict['user_id'] = user.get_id()
+        user_dict['organisation_id'] = user.get_organisation_id()
+        
+        logging.debug(user_dict)
+        
         return user_dict
 
     @classmethod
@@ -696,6 +698,8 @@ def _isAdminUser():
             raise endpoints.UnauthorizedException('Invalid or expired token.')
         elif int(a.userType) != int(UserType.ADMIN) :
             raise endpoints.UnauthorizedException('Access denied')       
+
+        return a.user
 
 '''
         current_user = endpoints.get_current_user()
