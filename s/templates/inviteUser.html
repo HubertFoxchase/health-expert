@@ -6,7 +6,7 @@
 	<form name="userForm" flex="50" layout-padding class="md-whiteframe-z1 user-form">
 		<md-input-container> 
 			<label>Email</label> 
-			<input required name="email" ng-model="user.email">
+			<input required name="email" ng-model="user.email" ng-change="resp=null">
 			<div ng-messages="userForm.email.$error" ng-show="userForm.email.$touched && userForm.email.$invalid">
 				<div ng-message="required">This is required.</div>
 			</div>
@@ -24,7 +24,7 @@
 		</md-input-container>
 		<md-input-container>
 			<p ng-hide="resp.success" style="color:red">{{resp.message}}</p>
-			<p ng-show="resp.success">Click <a href="{{resp.verification}}">here</a> to create a user account</p>
+			<p ng-show="resp.success">Invitation to register has been sent to {{user.email}}</p>
 		</md-input-container>		
 	</form>
 	<span flex></span>

@@ -28,6 +28,7 @@ from webapp2_extras import securecookie
 from webapp2_extras.sessions import SessionDict
 
 import Cookie
+from array import array
 
 
 
@@ -145,7 +146,7 @@ class UserApi(remote.Service):
         
         return query.filter(User.active == True) 
     
-    @User.method(request_fields=('name', 'email', 'role', 'organisation_id'),
+    @User.method(request_fields=('name', 'email', 'role', 'type', 'organisation_id', 'password', ),
                  response_fields=('id','email', 'name', 'role', 'created', 'organisation'),
                  path='user', 
                  http_method='POST',
@@ -153,13 +154,10 @@ class UserApi(remote.Service):
     def UserInsert(self, model):
         _isAdminUser()
 
-        #current_user = endpoints.get_current_user()
-        
-        #if current_user is None:
-        #    raise endpoints.UnauthorizedException('Invalid token.')
-        
         model.email = model.email.lower()
-        model.type = int(UserType.NORMAL)
+        model.auth_ids = [model.email] 
+        model.password = security.generate_password_hash(model.password, length=12)        
+        model.verified = True
         model.put()
         return model
     
@@ -177,42 +175,105 @@ class UserApi(remote.Service):
         return model       
 
     @User.query_method(query_fields=('organisation_id',),
-                       collection_fields=('id','email', 'name', 'role', 'created', 'organisation', 'active'),
-                       path='users', 
+                       collection_fields=('id','email', 'name', 'role', 'verified'),
+                       path='users/list', 
                        http_method='GET',
-                       name='list')   
+                       name='list',
+                       use_projection=True)   
     def UserList(self, query):
-        _u = _isValidUser()
-        #return query.filter(User.organisation_ref == ndb.Key(Organisation, _u['organisation_id']))
-        return query
+        _isValidUser()
+        return query.filter(User.active == True).order(User._key)
 
+    @User.query_method(query_fields=('organisation_id',),
+                       collection_fields=('id','email', 'name', 'role'),
+                       path='users/listInvited', 
+                       http_method='GET',
+                       name='listInvited',
+                       use_projection=True)   
+    def UserListInvited(self, query):
+        _isValidUser()
+        return query.filter(User.verified == False).order(User._key)
+                                           
+
+    @User.method(path='user/{id}', 
+                    http_method='DELETE',
+                    name='delete')   
+    def UserDelete(self, model):
+        u = _isOrganisationAdminUser()
+
+        if not model.from_datastore:
+            raise endpoints.NotFoundException('User not found.')
+        
+        if model.organisation_id != int(u['organisation_id']):
+            raise endpoints.UnauthorizedException('Not authorised')            
+        
+        model.active = False
+        model.put_async()
+        
+        return model        
+
+    @endpoints.method(api2_messages.IdListMessage,
+                      message_types.VoidMessage,
+                      path='users/deleteByIdList', 
+                      http_method='GET',
+                      name='deleteByIdList')   
+    def UsersDeleteByIds(self, request):
+        u = _isOrganisationAdminUser()
+        
+        ids = [ndb.Key(User, user_id) for user_id in request.ids]
+
+        users = ndb.get_multi(ids)
+
+        delete_list = []
+        update_list = []
+        
+        for p in users :
+            
+            if p is not None and p.organisation_id == int(u['organisation_id']):
+                if p.verified :
+                    p.active = False
+                    update_list.append(p)
+                else :
+                    delete_list.append(p.key)
+                    
+        ndb.put_multi(update_list)
+        ndb.delete_multi(delete_list)
+        
+        return message_types.VoidMessage()   
 
 @c4c_api.api_class(resource_name='patient')
 class PatientApi(remote.Service):
    
-    @Patient.method(request_fields=('ref', 'age', 'gender', 'organisation_id', ),
+    @Patient.method(request_fields=('ref', 'age', 'dob', 'gender', 'organisation_id', ),
                     response_fields=('id', 'ref', 'age', 'gender', 'organisation', ),
                     path='patient', 
                     http_method='POST',
                     name='insert')   
     def PatientInsert(self, model):
-        _isValidUser()
+        u = _isValidUser()
+        
+        if model.organisation_id != int(u['organisation_id']):
+            raise endpoints.UnauthorizedException('Not authorised')  
+        
+        if model.dob is not None :
+            model.age = (datetime.datetime.today() - model.dob).days // 356
         
         model.put()
         return model
 
     @Patient.query_method(query_fields=('organisation_id',),
-                          collection_fields=('id', 'ref', 'age', 'gender', 'organisation', 'created', 'active'),
+                          collection_fields=('id', 'ref', 'age', 'dob', 'gender'),
                           path='patients', 
                           http_method='GET',
-                          name='list')   
+                          name='list',
+                          use_projection=True)   
     def PatientList(self, query):
         _isValidUser()
         
         return query.filter(Patient.active == True)
 
     @Patient.method(path='patient/{id}', 
-                    response_fields=('id', 'ref', 'age', 'gender', 'organisation', ),
+                    response_fields=('id', 'ref', 'age', 'dob', 'gender', 'organisation', ),
                     http_method='GET',
                     name='get')   
     def PatientGet(self, model):
@@ -222,14 +283,25 @@ class PatientApi(remote.Service):
             raise endpoints.NotFoundException('Patient not found.')
         return model        
 
-    @Patient.method(request_fields=('ref', 'age', 'gender'),
-                    response_fields=('id', 'ref', 'age', 'gender', 'organisation', ),
+    @Patient.method(request_fields=('ref', 'age', 'dob', 'gender'),
+                    response_fields=('id', 'ref', 'age', 'dob', 'gender', 'organisation', ),
                     path='patient/{id}', 
                     http_method='POST',
                     name='update')   
     def PatientUpdate(self, model):
         _isValidUser()
+        
+        if model.dob is not None :
+            
+            today = datetime.date.today()
+            years = today.year - model.dob.year
+            if today.month < model.dob.month or (today.month == model.dob.month and today.day < model.dob.day):
+                years -= 1            
+            
+            model.age = years
+
         model.put()        
+        
         if not model.from_datastore:
             raise endpoints.NotFoundException('Patient not found.')
         return model        
@@ -284,7 +356,105 @@ class PatientApi(remote.Service):
         
         outputs = query.map(callback)         
         
-        return message_types.VoidMessage()         
+        return message_types.VoidMessage() 
+    
+
+@c4c_api.api_class(resource_name='appointment')
+class AppointmentApi(remote.Service):
+
+    @Appointment.method(request_fields=('date', 'duration', 'patient_id', 'doctor_id'),
+                    response_fields=('id', 'date', 'duration', 'patient', 'doctor'),
+                    path='appointment', 
+                    http_method='POST',
+                    name='insert')   
+    def AppointmentInsert(self, model):
+        u = _isValidUser()
+        
+        model.organisation_ref = ndb.Key(Organisation, u['organisation_id'])
+        
+        model.put()
+        return model
+
+    @Appointment.query_method(query_fields=('patient_id',),
+                          collection_fields=('id', 'date', 'duration', 'doctor'),
+                          path='appointments/listByPatient', 
+                          http_method='GET',
+                          name='listByPatient')
+    def AppointmentsListByPatient(self, query):
+        _isValidUser()
+        
+        date = datetime.datetime.today()
+        
+        return query.filter(Appointment.active == True).filter(Appointment.date > date - datetime.timedelta(hours=2)).order(Appointment.date)
+
+    @Appointment.query_method(query_fields=('organisation_id',),
+                          collection_fields=('id', 'date', 'duration', 'patient', 'doctor'),
+                          path='appointments/listByOrganisation', 
+                          http_method='GET',
+                          name='listByOrganisation')   
+    def AppointmentsListByOrganisation(self, query):
+        _isValidUser()
+        
+        #TODO: check for valid organisation
+        
+        date = datetime.datetime.today()
+        
+        return query.filter(Appointment.active == True).filter(Appointment.date > date - datetime.timedelta(hours=2)).order(Appointment.date)
+
+    @Appointment.query_method(query_fields=('doctor_id',),
+                          collection_fields=('id', 'date', 'duration', 'patient'),
+                          path='appointments/listByDoctor', 
+                          http_method='GET',
+                          name='listByDoctor')   
+    def AppointmentsListByDoctor(self, query):
+        _isValidUser()
+        
+        
+        date = datetime.datetime.today()
+        
+        return query.filter(Appointment.active == True).filter(Appointment.date > date - datetime.timedelta(hours=2)).order(Appointment.date)
+
+
+
+    @Appointment.method(path='appointment/{id}', 
+                    response_fields=('id', 'date', 'duration','patient', 'doctor', ),
+                    http_method='GET',
+                    name='get')   
+    def AppointmentGet(self, model):
+        _isValidUser()
+        
+        if not model.from_datastore:
+            raise endpoints.NotFoundException('Appointment not found.')
+        return model        
+
+    @Appointment.method(request_fields=('date', 'duration', 'doctor_id'),
+                    response_fields=('id', 'date', 'duration', 'patient', 'doctor', ),
+                    path='appointment/{id}', 
+                    http_method='POST',
+                    name='update')   
+    def AppointmentUpdate(self, model):
+        _isValidUser()
+        
+        model.put()        
+
+        if not model.from_datastore:
+            raise endpoints.NotFoundException('Appointment not found.')
+        return model        
+
+    @Appointment.method(path='appointment/{id}', 
+                    http_method='DELETE',
+                    name='delete')   
+    def AppointmentDelete(self, model):
+        _isValidUser()
+        
+        model.active = False
+        model.put()
+        
+        if not model.from_datastore:
+            raise endpoints.NotFoundException('Appointment not found.')
+        return model        
+    
+        
 
 @c4c_api.api_class(resource_name='session')
 class SessionApi(remote.Service):
@@ -296,11 +466,29 @@ class SessionApi(remote.Service):
                       name='new')   
     def SessionInsert(self, request):
         
-        _isValidUser()
+        u = _isValidUser()
+        
+        if request.organisation != int(u['organisation_id']):
+            raise endpoints.UnauthorizedException('Not authorised')          
 
         patient = ndb.Key(Patient, request.patient).get()
-        session = Session(patient = patient, patient_ref = patient.key, organisation_ref = patient.organisation_ref, symptoms = Symptoms())
         
+        if patient.organisation_ref.integer_id() != int(u['organisation_id']):
+            raise endpoints.UnauthorizedException('Not authorised')          
+        
+        session = Session(
+                          patient = patient, 
+                          patient_ref = patient.key, 
+                          organisation_ref = patient.organisation_ref, 
+                          symptoms = Symptoms())
+        
+        if request.doctor is not None :
+            session.doctor_ref = ndb.Key(User, request.doctor), 
+
+        if request.appointment is not None :
+            session.appointment_ref = ndb.Key(Appointment, request.appointment), 
+
+
         inf_api = infermedica_api.API(app_id=APP_ID, app_key=APP_KEY)
         r = infermedica_api.Diagnosis(sex=patient.gender, age=patient.age)
 
@@ -344,9 +532,9 @@ class SessionApi(remote.Service):
         
         return query.filter(Session.active == True).order(-Session.created, Session.key)
     
-    @Session.query_method(query_fields=('organisation_id',),
+    @Session.query_method(query_fields=('organisation_id', 'doctor_id'),
                           collection_fields =('id', 'created', 'ended', 'updated', 'status', 'outcome', 'patient'),
-                          path='sessions/listActive', 
+                          path='sessions/listActiveByDoctor', 
                           http_method='GET',
                           name='listActive',
                           limit_default = 99)   
@@ -541,7 +729,6 @@ class MyAuth():
     
     user = None
     token = None
-    userType = None
     email = None
     organisation_ref = None
     
@@ -588,8 +775,6 @@ class MyAuth():
         user_dict = dict((a, getattr(user, a)) for a in [])
         user_dict['user_id'] = user.get_id()
         user_dict['organisation_id'] = user.get_organisation_id()
-        
-        logging.debug(user_dict)
         
         return user_dict
 
@@ -692,12 +877,14 @@ def _isAdminUser():
         a = MyAuth()
         a.get_user_from_cookie()
         
+        logging.debug(a)
+
         if not a.user :
             raise endpoints.UnauthorizedException('Not authorised')
         elif not a.token :
             raise endpoints.UnauthorizedException('Invalid or expired token.')
-        elif int(a.userType) != int(UserType.ADMIN) :
-            raise endpoints.UnauthorizedException('Access denied')       
+        #elif int(a.user['type']) != int(UserType.ADMIN) :
+        #    raise endpoints.UnauthorizedException('Access denied')       
 
         return a.user
 
@@ -712,6 +899,24 @@ def _isAdminUser():
             if user is None:
                 raise endpoints.UnauthorizedException('Not authorised')
 '''
+
+def _isOrganisationAdminUser():
+    
+    if RAISE_UNAUTHORISED:
+        
+        a = MyAuth()
+        a.get_user_from_cookie()
+        
+        logging.debug(a)
+
+        if not a.user :
+            raise endpoints.UnauthorizedException('Not authorised')
+        elif not a.token :
+            raise endpoints.UnauthorizedException('Invalid or expired token.')
+        elif int(a.user['type']) not in [int(UserType.ORGANISATION_ADMIN), int(UserType.ADMIN)] :
+            raise endpoints.UnauthorizedException('Access denied')       
+
+        return a.user
 
 
 def _idDenerator(size=10, chars=string.ascii_uppercase + string.digits):

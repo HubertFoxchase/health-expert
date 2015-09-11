@@ -9,11 +9,12 @@ import datetime
 import time
 from protorpc import messages
 from google.appengine.ext import ndb
-from endpoints_proto_datastore.ndb import EndpointsModel, EndpointsAliasProperty
+from endpoints_proto_datastore.ndb import EndpointsModel, EndpointsAliasProperty, EndpointsDateTimeProperty
 from webapp2_extras import auth
 from webapp2_extras import security
 from webapp2_extras.appengine.auth.models import Unique
 from webapp2_extras.appengine.auth.models import UserToken
+from locale import format_string
 
 class Organisation(EndpointsModel):
     
@@ -28,6 +29,8 @@ class Organisation(EndpointsModel):
 class UserType(messages.Enum):
     ADMIN = 1
     NORMAL = 2
+    ORGANISATION_ADMIN = 3
+    
 
 class UserRole(messages.Enum):
     DOCTOR = 1
@@ -38,7 +41,7 @@ class UserRole(messages.Enum):
 
 class User(EndpointsModel):  
     
-    _message_fields_schema = ('id', 'email', 'name', 'type', 'role', 'organisation', 'organisation_id', 'created')
+    _message_fields_schema = ('id', 'email', 'name', 'type', 'role', 'organisation', 'organisation_id', 'created', 'active', 'verified')
 
     email = ndb.StringProperty()
     name = ndb.StringProperty()
@@ -317,7 +320,7 @@ class Patient(EndpointsModel):
     ref = ndb.StringProperty()
     gender = ndb.StringProperty()
     age = ndb.IntegerProperty()
-    dob = ndb.DateProperty()
+    dob = EndpointsDateTimeProperty(string_format='%Y-%m-%dT%H:%M:%S.%fZ')
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
     active = ndb.BooleanProperty(default = True)
@@ -340,7 +343,85 @@ class Patient(EndpointsModel):
     @EndpointsAliasProperty(property_type=Organisation.ProtoModel())
     def organisation(self):
         if self.organisation_ref is not None:
-            return self.organisation_ref.get() 
+            return self.organisation_ref.get()
+
+
+
+class Appointment(EndpointsModel):
+    
+    _message_fields_schema = ('id', 'created', 'updated', 'date', 'duration', 'status', 'patient', 'patient_id', 'organisation_id', 'doctor', 'doctor_id')    
+    
+    _patientId = None
+    _patient = None
+    
+    status = ndb.IntegerProperty()
+    
+    created = ndb.DateTimeProperty(auto_now_add=True)
+    updated = ndb.DateTimeProperty(auto_now=True)
+    date = EndpointsDateTimeProperty(string_format='%Y-%m-%dT%H:%M:%S.%fZ')
+    duration = ndb.IntegerProperty()
+    
+    active = ndb.BooleanProperty(default = True)
+    
+    organisation_ref = ndb.KeyProperty(kind=Organisation)
+    patient_ref = ndb.KeyProperty(kind=Patient)
+    doctor_ref = ndb.KeyProperty(kind=User)
+
+
+    def OrganisationId(self, value):
+        if not isinstance(value, (int, long)):
+            raise endpoints.BadRequestException('Organisation id must be an integer.')
+        
+        self.organisation_ref = ndb.Key(Organisation, value)
+
+        if self.organisation_ref is None:
+            raise endpoints.NotFoundException('Organisation %s does not exist.' % value)        
+
+    @EndpointsAliasProperty(setter=OrganisationId, property_type=messages.IntegerField)
+    def organisation_id(self):
+        if self.organisation_ref is not None:
+            return self.organisation_ref.integer_id()   
+
+
+    def PatientId(self, value):
+        if not isinstance(value, (int, long)):
+            raise endpoints.BadRequestException('Patient id must be an integer.')
+        
+        self.patient_ref = ndb.Key(Patient, value)
+
+        if self.patient_ref is None:
+            raise endpoints.NotFoundException('Patient %s does not exist.' % value)        
+
+    @EndpointsAliasProperty(setter=PatientId, property_type=messages.IntegerField)
+    def patient_id(self):
+        if self.patient_ref is not None:
+            return self.patient_ref.integer_id()   
+
+    @EndpointsAliasProperty(property_type=Patient.ProtoModel())
+    def patient(self):
+        if self.patient_ref is not None:
+            return self.patient_ref.get()
+        
+
+    def DoctorId(self, value):
+        if not isinstance(value, (int, long)):
+            raise endpoints.BadRequestException('Doctor/Nurse id must be an integer.')
+        
+        self.doctor_ref = ndb.Key(User, value)
+
+        if self.doctor_ref is None:
+            raise endpoints.NotFoundException('Doctor/Nurse %s does not exist.' % value)        
+
+
+    @EndpointsAliasProperty(setter=DoctorId, property_type=messages.IntegerField)
+    def doctor_id(self):
+        if self.doctor_ref is not None:
+            return self.doctor_ref.integer_id()   
+
+    @EndpointsAliasProperty(property_type=User.ProtoModel())
+    def doctor(self):
+        if self.doctor_ref is not None:
+            return self.doctor_ref.get()
     
 
 '''    
@@ -398,7 +479,7 @@ class SessionState(messages.Enum):
 
 class Session(EndpointsModel):
     
-    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'status', 'symptoms', 'outcome', 'next', 'patient', 'patient_id', 'organisation_id', )    
+    _message_fields_schema = ('id', 'created', 'ended', 'updated', 'status', 'symptoms', 'outcome', 'next', 'patient', 'patient_id', 'organisation_id', 'appointment_id', 'doctor_id')    
     
     _patientId = None
     _symptomId = None
@@ -416,7 +497,13 @@ class Session(EndpointsModel):
     outcome = ndb.LocalStructuredProperty(Outcome)
     active = ndb.BooleanProperty(default = True)
     
+    appointment_ref = ndb.KeyProperty(kind=Appointment)
     organisation_ref = ndb.KeyProperty(kind=Organisation)
+    doctor_ref = ndb.KeyProperty(kind=User)
+
+    patient = ndb.LocalStructuredProperty(Patient)
+    patient_ref = ndb.KeyProperty(kind=Patient)
+    
 
     def OrganisationId(self, value):
         if not isinstance(value, (int, long)):
@@ -432,9 +519,6 @@ class Session(EndpointsModel):
         if self.organisation_ref is not None:
             return self.organisation_ref.integer_id()   
 
-
-    patient = ndb.LocalStructuredProperty(Patient)
-    patient_ref = ndb.KeyProperty(kind=Patient)
 
     def PatientId(self, value):
         if not isinstance(value, (int, long)):
@@ -452,6 +536,37 @@ class Session(EndpointsModel):
     def patient_id(self):
         if self.patient_ref is not None:
             return self.patient_ref.integer_id()   
+
+
+    def DoctorId(self, value):
+        if not isinstance(value, (int, long)):
+            raise endpoints.BadRequestException('Doctor/Nurse id must be an integer.')
+        
+        self.doctor_ref = ndb.Key(User, value)
+
+        if self.doctor_ref is None:
+            raise endpoints.NotFoundException('Doctor/Nurse %s does not exist.' % value)        
+
+    @EndpointsAliasProperty(setter=DoctorId, property_type=messages.IntegerField)
+    def doctor_id(self):
+        if self.doctor_ref is not None:
+            return self.doctor_ref.integer_id()   
+
+               
+
+    def AppointmentId(self, value):
+        if not isinstance(value, (int, long)):
+            raise endpoints.BadRequestException('Appointment id must be an integer.')
+        
+        self.appointment_ref = ndb.Key(Appointment, value)
+
+        if self.appointment_ref is None:
+            raise endpoints.NotFoundException('Appointment %s does not exist.' % value)        
+
+    @EndpointsAliasProperty(setter=AppointmentId, property_type=messages.IntegerField)
+    def appointment_id(self):
+        if self.appointment_ref is not None:
+            return self.appointment_ref.integer_id() 
 
     
     
@@ -496,4 +611,5 @@ class Session(EndpointsModel):
         
         entity.put()
         return entity    
-    
+
+

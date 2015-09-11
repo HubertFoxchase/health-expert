@@ -1,0 +1,109 @@
+<md-dialog style="min-height:450px">
+	<md-toolbar>
+		<div class="md-toolbar-tools">
+	    	<h2>
+	    		<span ng-hide="changed">New Appointment</span>
+	    		<span ng-show="changed">{{selected | amDateFormat:'HH:mm ddd D MMMM'}} with {{doctor.name}}</span>
+	    	</h2>
+	      	<span flex></span>
+	      	<md-button class="md-icon-button" ng-click="cancel($event)">
+				<ng-md-icon icon="close" style="fill:#fff"></ng-md-icon>
+	      	</md-button>
+		</div>
+	</md-toolbar>
+	<md-dialog-content>
+	<!-- 
+		<div layout="row" layout-align="start start" style="overflow:hidden" class="c4c-appointment-info">
+			<div flex="20" layout="column">
+				<h4>Calendar</h4>
+			</div>	
+		</div>
+	 -->	
+		<div layout="row" layout-align="space-between start" class="c4c-appointment-calendar">
+			<div layout="column" class="cal-doctor">
+				<h4>Select doctor</h4>
+				<md-radio-group ng-model="doctor">
+					<md-radio-button ng-value="item" 
+									 class="md-primary" 
+									 ng-repeat="(id, item) in $root.doctors"
+									 aria-label="{{item.name}}">{{item.name}}</md-radio-button>
+				</md-radio-group>				
+			</div>	
+			<div layout="column" class="cal-date">
+				<h4 layout="row" layout-align="space-between start" flex>
+					<md-button class="md-icon-button" ng-click="chageMonth(-1)">
+						<ng-md-icon icon="chevron_left" style="fill: #333" size="20"></ng-md-icon>
+					</md-button>
+					<span>{{date | amDateFormat:'MMMM YYYY'}}</span>
+					<md-button class="md-icon-button" ng-click="chageMonth(1)">
+						<ng-md-icon icon="chevron_right" style="fill: #333" size="20"></ng-md-icon>
+					</md-button>
+				</h4>
+				<div layout="row" flex class="cal-week-days">
+					<span flex>M</span>
+					<span flex>T</span>
+					<span flex>W</span>
+					<span flex>T</span>
+					<span flex>F</span>
+					<span flex>S</span>
+					<span flex>S</span>
+				</div>
+				<div class="cal-dates">
+					<div class="cal-date-cell md-ink" 
+						 ng-class="{'this-month' : d.isThisMonth, 
+						 			'today' : d.isToday, 
+						 			'suggested' : selected.isSame(d.moment, 'd'), 
+						 			'selected' : (dateChanged && selected.isSame(d.moment, 'd'))}" 
+						 ng-repeat="d in daysSet track by $index"
+						 ng-click="setDate($event, d.moment)">{{d.day}}</div>
+				</div>
+				<div layout="row" flex layout-align="center start" style="margin-top: 20px">
+					<md-button class="md-raised" ng-click="setToday()">Today</md-button>					
+					<md-button class="md-raised" ng-click="setTomorrow()">Tomorrow</md-button>					
+				</div>
+			</div>			
+			<div layout="column" class="cal-hours">
+				<h4>Hours</h4>
+				<div flex layout="column" style="height:300px; flex-wrap:wrap">
+					<md-button class="md-raised"
+								ng-class="{'this-hour' : hours[$index].isThisHour, 
+										   'suggested' : hours[$index].isSelected, 
+										   'selected' : (hourChanged && hours[$index].isSelected)}"
+								ng-repeat="h in hoursSet" 
+								ng-click="setHour($event, hours[$index].hour, patient)">
+						<span ng-show="h<13">{{h}}:00am</span>
+						<span ng-show="h>12">{{h-12}}:00pm</span>
+					</md-button>
+				</div>
+			</div>
+			<div layout="column" class="cal-minutes">
+				<h4>Minutes</h4>
+				<div flex layout="column" style="height:300px; flex-wrap:wrap" id="selectable-container">
+					<md-button class="md-raised"
+								ng-class="{'this-minute' : minutes[$index].isThisMinute, 
+										   'suggested' : minutes[$index].isSelected, 
+										   'selected' : minutesChanged && minutes[$index].isSelected}"
+								ng-repeat="m in minutesSet" 
+								ng-click="setMinute($event, minutes[$index].minute, patient)">
+						<span>{{m}}</span>
+					</md-button>
+				</div>
+			</div>			
+		</div>
+	</md-dialog-content>
+	<div class="md-actions" layout="row" style="border-top:1px solid #eee">
+		<md-button class="md-raised md-accent md-hue-2" ng-click="delete($event, appointment.id)" ng-show="appointment">
+		  Delete
+		</md-button>
+		<ng-md-icon ng-show="!(changed && doctor.id)" icon="warning" style="fill: red" size="20"></ng-md-icon>
+		<span ng-show="!changed">Please select the time for the appointment</span>
+		<span ng-hide="!changed || doctor.id">Please select doctor or nurse</span>
+		<span flex></span>
+		<md-button class="md-raised md-accent" ng-click="save($event)" ng-disabled="!(changed && doctor.id)">
+		  Save
+		</md-button>
+		<md-button ng-click="cancel($event)" style="margin-right:20px;">
+		  Cancel
+		</md-button>
+	</div>	
+</md-dialog>

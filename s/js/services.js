@@ -31,6 +31,8 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 	
 	var clientReady = function() {
 		
+		$rootScope.loadingProgress += 1; 
+		
 		var protocol = "https://"; 
 		
 		if (location.host.indexOf("localhost") > -1)
@@ -42,20 +44,37 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
     }      
 
     var apiReady = function() {
-        if (gapi.client.c4c) {
+
+		console.log("API loaded: " + (Date.now() - start) + " ms");
+    	
+    	if (gapi.client.c4c) {
         	_api = gapi.client.c4c;
         	
-        	console.log("API loaded: " + (Date.now() - start) + "ms");
-
         	// get user and organisation
 			_api.user.me().execute(function(resp){
 				
+    			console.log("Me loaded: " + (Date.now() - start) + " ms");
 				if(!resp.error) {
 					$rootScope.user = resp;
 					$rootScope.organisation = $rootScope.user.organisation;
 
-		        	console.log("User info loaded: " + (Date.now() - start) + " ms");
-					
+		        	_api.user.list({organisation_id:$rootScope.organisation.id}).execute(function(resp){
+						
+		    			console.log("Users loaded: " + (Date.now() - start) + " ms");
+		        		if(!resp.error) {
+							$rootScope.doctors = {};
+							
+							angular.forEach(resp.items, function(el, index, array){
+								$rootScope.doctors[el.id] = el;
+							})
+
+							deferred.resolve(_api);
+						}
+						else {
+				            deferred.reject({code:resp.error.code, message:resp.error.message});
+						}
+		        	});
+		        	
 					deferred.resolve(_api);
 				}
 				else {

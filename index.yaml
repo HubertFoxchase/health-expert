@@ -10,6 +10,45 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Appointment
+  properties:
+  - name: active
+  - name: doctor_ref
+  - name: date
+
+- kind: Appointment
+  properties:
+  - name: active
+  - name: doctor_ref
+  - name: date
+  - name: duration
+
+- kind: Appointment
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: date
+
+- kind: Appointment
+  properties:
+  - name: active
+  - name: patient_ref
+  - name: date
+
+- kind: Appointment
+  properties:
+  - name: active
+  - name: patient_ref
+  - name: date
+  - name: duration
+
+- kind: Appointment
+  properties:
+  - name: active
+  - name: patient_ref
+  - name: date
+    direction: desc
+
 - kind: Msg
   properties:
   - name: channel
@@ -21,9 +60,54 @@ indexes:
   - name: timestamp
     direction: desc
 
+- kind: Organisation
+  properties:
+  - name: __key__
+  - name: name
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: age
+  - name: dob
+  - name: gender
+  - name: ref
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: age
+  - name: gender
+  - name: organisation_ref
+  - name: ref
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: age
+  - name: gender
+  - name: ref
+
 - kind: Session
   properties:
   - name: active
+  - name: created
+    direction: desc
+
+- kind: Session
+  properties:
+  - name: active
+  - name: doctor_ref
+  - name: organisation_ref
+  - name: status
+  - name: created
+    direction: desc
+
+- kind: Session
+  properties:
+  - name: active
+  - name: doctor_ref
+  - name: status
   - name: created
     direction: desc
 
@@ -39,6 +123,14 @@ indexes:
   - name: active
   - name: organisation_ref
   - name: state
+  - name: created
+    direction: desc
+
+- kind: Session
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: status
   - name: created
     direction: desc
 
@@ -75,3 +167,19 @@ indexes:
     direction: desc
   - name: created
     direction: desc
+
+- kind: User
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: __key__
+  - name: email
+  - name: name
+  - name: role
+  - name: verified
+
+- kind: User
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: name

@@ -18,6 +18,15 @@ import api2_models
 import json
 import urllib
 
+import string
+import random
+
+from sendgrid import SendGridClient
+from sendgrid import Mail
+
+SENDGRID_USER = 'click4care'
+SENDGRID_PASSWORD = 'skynet1997'
+
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')),
     extensions=['jinja2.ext.autoescape'],
@@ -41,7 +50,6 @@ def user_required(handler):
             return handler(self, *args, **kwargs)
 
     return check_login
-
 
 class BaseHandler(webapp2.RequestHandler):
 
@@ -108,6 +116,33 @@ class BaseHandler(webapp2.RequestHandler):
         
         template = JINJA_ENVIRONMENT.get_template(view_filename)
         self.response.write(template.render(params))
+
+    def render_template_to_string(self, view_filename, params=None):
+        if not params:
+            params = {}
+        user = self.user_info
+        params['user'] = user
+        
+        template = JINJA_ENVIRONMENT.get_template(view_filename)
+        return template.render(params)
+
+    def send_email(self, email_to, email_from, subject, template_filename, params=None ):
+        # make a secure connection to SendGrid
+        sg = SendGridClient(SENDGRID_USER, SENDGRID_PASSWORD, secure=True)
+        
+        # make a message object
+        message = Mail()
+        message.set_subject(subject)
+        message.set_text(self.render_template_to_string(template_filename, params))
+        message.set_from(email_from)
+        
+        # add a recipient
+        message.add_to(email_to)
+        
+        # use the Web API to send your message
+        sg.send(message)       
+
+
         
     def display_message(self, message):
         """Utility function to display a template with a simple message."""
@@ -128,6 +163,8 @@ class BaseHandler(webapp2.RequestHandler):
             # Save all sessions.
             self.session_store.save_sessions(self.response)
 
+    def random_id_generator(self, size=10, chars=string.ascii_uppercase + string.digits):
+        return ''.join(random.choice(chars) for _ in range(size))
 
 class AppMainHandler(BaseHandler):
 
@@ -207,7 +244,8 @@ class InviteHandlerAjax(BaseHandler):
         user = self.user
         
         email = self.request.get('email').lower()
-        #name = self.request.get('name')
+        sender_name = self.request.get('sender_name')
+        organisation_name = self.request.get('organisation_name')
         #password = self.request.get('password')
         #userType = int(self.request.get('type'))
         role = int(self.request.get('role'))
@@ -221,7 +259,7 @@ class InviteHandlerAjax(BaseHandler):
             email,
             unique_properties,
             email=email,
-            password_raw='AD2H68CD0',
+            password_raw=self.random_id_generator(),
             #name=name,
             type=int(api2_models.UserType.NORMAL),
             role=role,
@@ -236,26 +274,36 @@ class InviteHandlerAjax(BaseHandler):
             self._serve_page(success=False, message='Unable to create new user. Email address already exists')
             return
 
-        user = user_data[1]
-        user_id = user.get_id()
+        new_user = user_data[1]
+        new_user_id = new_user.get_id()
 
-        token = self.user_model.create_invite_token(user_id)
+        token = self.user_model.create_invite_token(new_user_id)
 
-        verification_url = self.uri_for('complete_signup', type='i', user_id=user_id, signup_token=token, _full=True)
+        verification_url = self.uri_for('complete_signup', type='i', user_id=new_user_id, signup_token=token, _full=True)
 
+        params = {'v' : verification_url,
+                  'sender': sender_name,
+                  'org' : organisation_name}
+
+        self.send_email(email,
+                        'Click4Care <info@click4care.ie>', 
+                        'Click4Care account registration', 
+                        'emails/invitation.html', 
+                        params)
+        
         self._serve_page(success=True, verification_url=verification_url)
 
     def _serve_page(self, success=False, verification_url=None, message=None):
 
         self.response.headers['Content-Type'] = 'application/json'   
-        obj = {'success': success, 'verification': verification_url, 'message': message} 
+        obj = {'success': success, 'message': message} 
         self.response.out.write(json.dumps(obj))
 
 
 class ForgotPasswordHandler(BaseHandler):
 
     def get(self):
-        self.render_template('forgot.html')
+        self.render_template('forgot-password.html')
 
 class ForgotPasswordHandlerAjax(BaseHandler):
 
@@ -271,17 +319,27 @@ class ForgotPasswordHandlerAjax(BaseHandler):
             self._serve_page(success=False, message='Could not find any user entry for email ' + email)
             return
 
+        logging.debug(user)
+
         user_id = user.get_id()
         token = self.user_model.create_signup_token(user_id)
 
         verification_url = self.uri_for('verification', type='p', user_id=user_id, signup_token=token, _full=True)
+        
+        params = {'v' : verification_url, 'name' :  user.name}
+
+        self.send_email(email,
+                        'Click4Care <info@click4care.ie>', 
+                        'Click4Care password reset', 
+                        'emails/reset-password.html', 
+                        params)        
         
         self._serve_page(success=True, verification_url=verification_url)
 
     def _serve_page(self, success=False, verification_url=None, message=None):
 
         self.response.headers['Content-Type'] = 'application/json'   
-        obj = {'success': success, 'verification': verification_url, 'message': message} 
+        obj = {'success': success, 'message': message} 
         self.response.out.write(json.dumps(obj))
 
 
@@ -330,13 +388,13 @@ class VerificationHandler(BaseHandler):
                 self.display_message('User already have account.')
                 return
             
-            params = {'user': user, 'token': signup_token}
-            self.render_template('completeregistration.html', params)
+            params = {'token': signup_token}
+            self.render_template('complete-registration.html', params)
 
         elif verification_type == 'p':
             # supply user to the page
-            params = {'user': user, 'token': signup_token}
-            self.render_template('resetpassword.html', params)
+            params = {'token': signup_token}
+            self.render_template('reset-password.html', params)
         
         else:
             logging.info('verification type not supported')
@@ -360,6 +418,16 @@ class SetPasswordHandlerAjax(BaseHandler):
 
         # remove signup token, we don't want users to come back with an old link
         self.user_model.delete_signup_token(user.get_id(), old_token)
+        
+        
+        params = {'name' :  user.name, 
+                  'link' : self.uri_for('home', _full=True)}
+
+        self.send_email(user.email,
+                        'Click4Care <info@click4care.ie>', 
+                        'Click4Care password reset', 
+                        'emails/reset-password-success.html', 
+                        params)         
 
         self._serve_page(True)
         

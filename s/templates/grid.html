@@ -1,52 +1,101 @@
-<div layout="row" class="session-tools">
-	<h3>Dashboard</h3>
-	<span flex></span>
-	<div layout="row" layout-align="end center" ng-show="selected.length > 0">
- 		<md-button class="md-raised" ng-click="clearSelected()">Cancel</md-button>
- 		<md-button class="md-raised" ng-click="deleteSelected(selected)">Delete</md-button>
+<div layout="row">
+
+	<div layout="column" id="grid" flex="70">
+
+		<div layout="row" class="session-tools">
+			<h3 ng-hide="doctor_id">Waiting room</h3>
+			<h3 ng-show="doctor_id">{{$root.doctors[doctor_id].name}}'s waiting room</h3>
+			<span flex></span>
+			<div layout="row" layout-align="end center" ng-show="selected.length > 0">
+		 		<md-button class="md-raised" ng-click="clearSelected()">Cancel</md-button>
+		 		<md-button class="md-raised" ng-click="deleteSelected(selected)">Delete</md-button>
+			</div>
+		</div>
+		
+		<div layout="row" layout-align="start start" layout-wrap style="margin-top: 5px; margin-right: -15px">
+		 	<div flex="50" flex-sm="100" flex-md="50" flex-lg="50" 
+		 		 class="patient-tile-container" 
+		 		 ng-class="exists(item.id, selected) ? 'selected' : ''" 
+		 		 layout-align="start start" ng-click="showDetail(item, $event)" 
+		 		 ng-repeat="item in sessions">
+		 		<div layout="column" layout-padding flex class="patient-tile md-whiteframe-z1">
+		
+			        	<md-button class="md-icon-button select-btn" md-no-ink ng-click="toggle(item.id, selected, $event)" aria-label="Back">
+			            	<ng-md-icon icon="check_circle"></ng-md-icon>
+			          	</md-button> 				
+		
+			 			<div layout="row" class="item">
+			 				<div class="dd">Patient</div>
+			 				<div class="dt">{{item.patient.ref}}</div>
+			 			</div>
+			 			<div layout="row" class="item">
+			 				<div class="dd">Age</div>
+			 				<div class="dt">{{item.patient.age}}</div>
+			 			</div>
+			 			<div layout="row" class="item">
+			 				<div class="dd">Gender</div>
+			 				<div class="dt">{{item.patient.gender}}</div>
+			 			</div>
+			 			<div layout="row" class="item">
+			 				<div class="dd">Diagnosis</div>
+			 				<div class="dt">{{item.outcome.name}}</div>
+			 			</div>
+			 			<div layout="row" class="item">
+			 				<div class="dd">Confidence</div>
+			 				<div class="dt">{{item.outcome.probability*100 | number:1}}%</div>
+			 			</div>
+			 			<div layout="row" class="item" ng-show="item.status == '1'">
+			 				<div class="dd">Status</div>
+			 				<div class="dt">In progress (<span am-time-ago="item.updated"></span>)</div>
+			 			</div>
+			 			<div layout="row" class="item" ng-show="item.status == '2'">
+			 				<div class="dd">Completed</div>
+			 				<div class="dt">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
+			 			</div>
+			 	</div>		
+			</div>			
+		</div>
 	</div>
-</div>
+	<div layout="column" id="appointments" flex="30">
+		<div layout="row" class="session-tools">
+			<h3>Appointments</h3>
+			<span flex></span>
+		</div>
+		<md-content layout="column" class="md-whiteframe-z1">
+			<div layout="column" flex style="position: relative;">
+				
+				<div layout="row" class="table-header">
+				    <div flex="5"></div>
+				    <div flex="20">Date</div>
+				    <div flex="20">Time</div>
+				    <div flex="20">Duration</div>
+				    <div flex="35">Doctor</div>
+				</div>
+		
+				<div class="table-row" layout="row" layout-align="center center" ng-show="appointmentsLoading">
+					<div flex="20">Loading ...</div>
+				</div>		
 
-<div layout="row" layout-align="start start" layout-wrap style="margin-top: 5px; margin-right: -15px">
- 	<div flex="33" flex-sm="100" flex-md="50" flex-lg="50" 
- 		 class="patient-tile-container" 
- 		 ng-class="exists(item.id, selected) ? 'selected' : ''" 
- 		 layout-align="start start" ng-click="showDetail(item, $event)" 
- 		 ng-repeat="item in sessions">
- 		<div layout="column" layout-padding flex class="patient-tile md-whiteframe-z1">
-
-	        	<md-button class="md-icon-button select-btn" md-no-ink ng-click="toggle(item.id, selected, $event)" aria-label="Back">
-	            	<ng-md-icon icon="check_circle"></ng-md-icon>
-	          	</md-button> 				
-
-	 			<div layout="row" class="item">
-	 				<div class="dd">Patient</div>
-	 				<div class="dt">{{item.patient.ref}}</div>
-	 			</div>
-	 			<div layout="row" class="item">
-	 				<div class="dd">Age</div>
-	 				<div class="dt">{{item.patient.age}}</div>
-	 			</div>
-	 			<div layout="row" class="item">
-	 				<div class="dd">Gender</div>
-	 				<div class="dt">{{item.patient.gender}}</div>
-	 			</div>
-	 			<div layout="row" class="item">
-	 				<div class="dd">Diagnosis</div>
-	 				<div class="dt">{{item.outcome.name}}</div>
-	 			</div>
-	 			<div layout="row" class="item">
-	 				<div class="dd">Confidence</div>
-	 				<div class="dt">{{item.outcome.probability*100 | number:1}}%</div>
-	 			</div>
-	 			<div layout="row" class="item" ng-show="item.status == '1'">
-	 				<div class="dd">Status</div>
-	 				<div class="dt">In progress (<span am-time-ago="item.updated"></span>)</div>
-	 			</div>
-	 			<div layout="row" class="item" ng-show="item.status == '2'">
-	 				<div class="dd">Completed</div>
-	 				<div class="dt">{{item.ended | amDateFormat:'MMM DD, h:mmA'}}</div>
-	 			</div>
-	 	</div>		
-	</div>			
+				<div class="table-row" layout="row" layout-align="center center" ng-hide="appointmentsLoading || appointments.length > 0">
+					<div flex="70">No upcoming appointments</div>
+				</div>
+				
+				<div layout="row" ng-repeat="item in appointments" 
+								  class="table-row" 
+								  ng-click="showAppointment($event, item)">
+				    <div flex="5"></div>
+				    <div flex="20">{{item.date  | amDateFormat:'MMM DD'}}</div>
+				    <div flex="20">{{item.date  | amDateFormat:'h:mmA'}}</div>
+				    <div flex="20">{{item.duration}} min</div>
+				    <div flex="35">{{item.doctor.name}}</div>
+				</div>
+			</div>
+		</md-content>
+		<div class="lock-size" layout="row" layout-align="center center">
+			<md-button aria-label="appointment" class="md-fab" ng-click="newPatient($event)">
+				<md-tooltip md-direction="bottom">New appointment</md-tooltip>
+				<ng-md-icon icon="person"></ng-md-icon>
+			</md-button>
+		</div>			
+	</div>
 </div>

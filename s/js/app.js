@@ -5,7 +5,14 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'ngMessages', 'angu
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
       scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ],
       userRoles    : ["Doctor", "Nurse", "Reception", "Support", "Other"],
-      observationsJson : "js/observations.js"
+      observationsJson : "js/observations.js",
+      calendar : {
+    	  officeOpenHour : 7,
+    	  officeCloseHour : 19,
+    	  appointmentDuration : 15,
+    	  appointmentStep: 5,
+    	  daysOpen : [1,2,3,4,5]
+      }
 })
 .constant('angularMomentConfig', {
     preprocess: 'utc', // optional
@@ -57,6 +64,15 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	        controllerAs: 'grid'
 	  })      
       .when('/grid', {
+        templateUrl: '/s/templates/grid.html',
+        controller: 'GridCtrl',
+        controllerAs: 'grid',
+		resolve : { init: ['$api', function($api) {
+          	return $api.load();
+	    	}]
+		}
+      })
+      .when('/grid/:doctor', {
         templateUrl: '/s/templates/grid.html',
         controller: 'GridCtrl',
         controllerAs: 'grid',
@@ -147,5 +163,4 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
     			location.href = "/auth/login?url=" + encodeURI("/");
     		}
     	});
-    	
 }]);

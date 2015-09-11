@@ -1,43 +1,108 @@
-<div layout="row" class="session-tools">
-	<h3 ng-show="patient.id">Edit Patient Details</h3>
-	<h3 ng-hide="patient.id">New Patient Record</h3>
-</div>
-
-<div layout="row">
-	<form name="userForm" flex="50" layout-padding class="md-whiteframe-z1 user-form">
-		<md-input-container> 
-			<label>Reference</label> 
-			<input md-maxlength="30" required name="name" ng-model="patient.ref">
-			<div ng-messages="userForm.name.$error" ng-show="userForm.name.$touched && userForm.name.$invalid">
-				<div ng-message="required">This is required.</div>
-			</div>
-		</md-input-container>
+<div layout="row" layout="space-between start">
+	<div layout="column" flex>
+		<div layout="row" class="session-tools">
+			<h3 ng-show="patient.id">Edit Patient Details</h3>
+			<h3 ng-hide="patient.id">New Patient Record</h3>
+		</div>
 		
-		<md-input-container style="width:30%"> 
-			<label>Age</label> 
-			<input md-maxlength="3" required name="age" ng-model="patient.age">
-			<div ng-messages="userForm.name.$error" ng-show="userForm.name.$touched && userForm.name.$invalid">
-				<div ng-message="required">This is required.</div>
-			</div>
-		</md-input-container>
+		<div layout="row">
+			<form flex name="userForm" layout-padding class="md-whiteframe-z1 user-form">
+				
+				<md-input-container> 
+					<label>Reference</label> 
+					<input md-maxlength="30" required name="name" ng-model="patient.ref">
+					<div ng-messages="userForm.name.$error" ng-show="userForm.name.$touched && userForm.name.$invalid">
+						<div ng-message="required">This is required.</div>
+					</div>
+				</md-input-container>
 
-		<md-input-container style="width:30%" layout="row" class="checkbox-holder">
-			<div flex>
-				<span class="label">Gender</span>
-			</div>
-			<div flex>
-				<md-radio-group ng-model="patient.gender" aria-label="Patient Gender"> 
-					<md-radio-button value="female">Female</md-radio-button> 
-					<md-radio-button value="male">Male</md-radio-button> 
-				</md-radio-group> 
-			</div>
-		</md-input-container>
+				<md-input-container> 
+					<label>Date of birth</label> 
+					<input type="date" ng-required="!patient.age" name="dob" ng-model="patient.dob" ng-change="updateAge(patient)">
+					<div ng-messages="userForm.dob.$error" ng-show="userForm.dob.$touched && userForm.dob.$invalid">
+						<div ng-message="required">Either DOB or age is required.</div>
+					</div>
+				</md-input-container>
 
-	</form>
-	<span flex></span>
-</div>
+				<md-input-container>  
+					<label>Age</label> 
+					<input ng-required="!patient.dob" name="age" ng-model="patient.age">
+					<div ng-messages="userForm.age.$error" ng-show="userForm.age.$touched && userForm.age.$invalid">
+						<div ng-message="required">Either DOB or age is required.</div>
+					</div>
+				</md-input-container>
+		
+				<md-input-container layout="column" class="checkbox-holder">
+					<div flex>
+						<span class="label">Gender</span>
+					</div>
+					<div flex>
+				        <md-checkbox
+				            ng-model="patient.gender"
+				            aria-label="gender"
+				            ng-true-value="'female'"
+				            ng-false-value="'male'"
+				            ng-required="!patient.gender"
+				            class="md-primary md-align-top-left">
+				            Female <br>					
+					</div>
+					<div flex>
+				        <md-checkbox
+				            ng-model="patient.gender"
+				            aria-label="gender"
+				            ng-true-value="'male'"
+				            ng-false-value="'female'"
+				            ng-required="!patient.gender"
+				            class="md-primary md-align-top-left">					
+							Male <br>
+					</div>			        
+				</md-input-container>
+			</form>
+		</div>
+		
+		<div layout="row"  layout="row" class="form-tools" layout-align="start center">
+			<md-button class="md-raised md-accent" ng-click="save(patient, false)" ng-disabled="!userForm.$valid" >Save</md-button>
+			<md-button class="md-raised md-accent" ng-click="save(patient, true)" ng-disabled="!userForm.$valid" hg-show="patient.id == 0">
+				Save + New Appointment
+			</md-button>
+			<md-button md-no-ink class="md-primary" ng-href="#/patients">Cancel</md-button>
+		</div>
+	</div>
+	<div layout="column" flex style="margin-left: 20px">
+		<div layout="row" class="session-tools" layout-align="space-between center">
+			<h3>Appointments</h3>
+			<md-button class="md-raised md-accent" ng-click="newAppointment($event, patient)" ng-disabled="!patient.id">New Appointment</md-button>
+		</div>
+		
+		<md-content layout="column" class="md-whiteframe-z1">
+			<div layout="column" flex style="position: relative;">
+				
+				<div layout="row" class="table-header">
+				    <div flex="5"></div>
+				    <div flex="20">Date</div>
+				    <div flex="20">Time</div>
+				    <div flex="20">Duration</div>
+				    <div flex="35">Doctor</div>
+				</div>
+		
+				<div class="table-row" layout="row" layout-align="center center" ng-show="appointmentsLoading">
+					<div flex="20">Loading ...</div>
+				</div>		
 
-<div layout="row"  layout="row" class="form-tools" layout-align="start center">
-	<md-button class="md-raised md-accent" ng-click="save(patient)" ng-disabled="!userForm.$valid" >Save</md-button>
-	<md-button md-no-ink class="md-primary" ng-href="#/patients">Cancel</md-button>
+				<div class="table-row" layout="row" layout-align="center center" ng-hide="appointmentsLoading || appointments.length > 0">
+					<div flex="30">No upcoming appointments</div>
+				</div>
+				
+				<div layout="row" ng-repeat="item in appointments" 
+								  class="table-row" 
+								  ng-click="showAppointment($event, item)">
+				    <div flex="5"></div>
+				    <div flex="20">{{item.date  | amDateFormat:'MMM DD'}}</div>
+				    <div flex="20">{{item.date  | amDateFormat:'h:mmA'}}</div>
+				    <div flex="20">{{item.duration}}</div>
+				    <div flex="35">{{item.doctor.name}}</div>
+				</div>
+			</div>
+		</md-content>			
+	</div>
 </div>

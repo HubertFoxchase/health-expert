@@ -57,7 +57,10 @@ class OutcomeResposeMessage(messages.Message):
 
 class SessionNewRequestInsertMessage(messages.Message):
     patient = messages.IntegerField(1)
-    present = messages.StringField(2, repeated=True)
+    organisation = messages.IntegerField(2)
+    doctor = messages.IntegerField(3)
+    appointment = messages.IntegerField(4)
+    present = messages.StringField(5, repeated=True)
 
 
 class SessionResponseMessage(messages.Message):
