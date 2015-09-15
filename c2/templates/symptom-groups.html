@@ -1,91 +1,67 @@
-<div layout="column" layout-fill layout-align="start space-between">
-
-	<div layout="row" layout-margin layout-padding layout-align="space-between start" class="md-whiteframe-z1" style="background: #fff; height:90px">
+<div layout="column" layout-align="start space-between" style="height: 670px">
 	
-		<md-chips flex ng-model="selectedSymptoms" md-autocomplete-snap md-require-match style="background: #fff">
-	      <md-autocomplete
-	      	  ng-disabled="true"
-	          md-min-length = "2"
-	          md-delay = "1000"
-	          md-menu-class = "c4c-autocomplete"
-	      	  md-selected-item-change="null" 
-	      	  md-search-text-change="null"
-	          md-selected-item="selectedSymptom"
-	          md-search-text="searchText"
-	          md-items="item in querySearch(searchText)"
-	          md-item-text="item.name"
-	          placeholder="+ add symptopm">
-	        <span md-highlight-text="searchText">{{item.name}}</span>
-	      </md-autocomplete>
-
-	      <md-chip-template>
-	        <span>
-	          <strong>{{$chip.name}}</strong>
-	        </span>
-	      </md-chip-template>
-		</md-chips>
-    		
-	   	<md-button flex="20" class="md-raised md-accent" ng-click="newSession(selectedSymptoms)" >
-	    	<div layout="row" layout-align="space-between start">
-		    	<span flex>Start Assessment</span>
-	    	</div>
-	   	</md-button>		
+	<div layout="row" layout-margin layout-align="space-between start" style="height: 54px">
+		<h3 style="margin: 10px 0">Select initial symptoms </h3>
+		<span flex></span>
+		<h3 style="margin: 10px 0">
+			Progress : <strong>
+			{{$root.progress  | number:0}}% 
+			complete</strong>
+		</h3>
 	</div>
-	
-	<div layout="row" flex layout-align="start space-between" layout-padding>
+
+	<div layout="row" flex layout-align="start space-between" layout-padding ng-class="{'three-cols' : layout == 3}" style="height: 100%">
 		
-		<div layout="column" flex="{{bodyView ? '' : 80}}" 
-							 layout-align="start start" 
-							 class="md-whiteframe-z1 c4c-symptopms-container"
-							 ng-class="{closed : bodyView}" >
-		
-			<h3 ng-click="showSymptomsSelector()" class="c4c-symptoms-header">General Symptom Groups</h3>
-			<div>
-				<md-button ng-repeat="g in groupsOfSymptoms" class="md-raised" ng-class="{'md-primary' : symptomsGroup == g}" ng-click="setSymptomsGroup(g)">
-		    		{{g.name}}
+		<div layout="column" flex="25" layout-align="start center" class="md-whiteframe-z1 c4c-body-container">
+			<h3>Use the <span style="font-weight: 400">Body Map</span></h3>
+			<div class="c4c-body-map-assembly">
+				<svg-head style="width:41px;height:50px;" ng-class="{'selected' : selectedBodyPart == 'Head'}" id="head" ng-click="selectBodyPart('Head')"></svg-head>
+				<svg-chest style="width:64px;height:83px;" ng-class="{'selected' : selectedBodyPart == 'Chest'}" id="chest" ng-click="selectBodyPart('Chest')"></svg-chest>
+				<svg-abdomen style="width:77px;height:85px;" ng-class="{'selected' : selectedBodyPart == 'Abdomen'}" id="abdomen" ng-click="selectBodyPart('Abdomen')"></svg-abdomen>
+				<svg-legs style="width:79px;height:153px;" ng-class="{'selected' : selectedBodyPart == 'Legs'}" id="legs" ng-click="selectBodyPart('Legs')"></svg-legs>
+				<svg-arm-left style="width:48px;height:156px;" ng-class="{'selected' : selectedBodyPart == 'Arms'}" id="left-arm" ng-click="selectBodyPart('Arms')"></svg-arm-left>
+				<svg-arm-right style="width:48px;height:156px;" ng-class="{'selected' : selectedBodyPart == 'Arms'}" id="right-arm" ng-click="selectBodyPart('Arms')"></svg-arm-right>
+				<!--
+				<img src="/c2/css/img/body_head.svg" width="41" height="50" id="head" ng-click="selectBodyPart('Head')">
+				<img src="/c2/css/img/body_chest.svg" width="64" height="83" id="chest" ng-click="selectBodyPart('Chest')">
+				<img src="/c2/css/img/body_center.svg" width="77" height="85" id="abdomen" ng-click="selectBodyPart('Abdomen')">
+				<img src="/c2/css/img/body_legs.svg" width="79" height="153" id="legs" ng-click="selectBodyPart('Legs')">
+				<img src="/c2/css/img/body_arm_left.svg" width="48" height="156" id="left-arm" ng-click="selectBodyPart('Arms')">
+				<img src="/c2/css/img/body_arm_right.svg" width="48" height="156" id="right-arm" ng-click="selectBodyPart('Arms')">
+				-->
+			</div>
+			<br>
+			<a class="md-button" ng-show="selectedBodyPart" ng-click="backToList()">Back to Symptoms List</a>
+		</div> 
+
+		<div layout="column" flex layout-align="start center" class="md-whiteframe-z1 c4c-groups-container" >
+			<h3 ng-hide="selectedBodyPart">or select from the <span style="font-weight: 400">list</span></h3>
+			<h3 ng-show="selectedBodyPart">you selected <span style="font-weight: 400">{{selectedBodyPart}}</span></h3>
+			<md-content layout="column" flex layout-align="start center" md-scroll-y layout-padding>
+				<md-button ng-repeat="g in list" 
+						   class="md-raised c4c-medium-button"
+						   ng-class="{'md-primary' : selectedItem == $index}" 
+						   ng-click="drillDown(g, $index)">
+			    	<div layout="row" layout-align="start space-between">
+				    	<span flex>{{g.name}}</span>
+			    		<ng-md-icon icon="chevron_right" size="25"></ng-md-icon>
+			    	</div>						   
 		   		</md-button>
-	   		</div>
-			<h3 style="margin-top: 50px">{{symptomsGroup.name}} symptoms</h3>
-			<div>
-				<md-button ng-repeat="s in symptomsGroup.symptoms" class="md-raised md-hue-1" ng-click="addSymptom(s)">
-			    	{{s.name}}
-			   	</md-button>
-		   	</div>
-		   	
-		</div>      
-		<div layout="row" flex="{{bodyView ? 90 : ''}}" 
-							 layout-align="space-between start" 
-							 class="md-whiteframe-z1 c4c-body-container"  
-							 ng-class="{closed : !bodyView}" 
-							 style="background: #fff">
-			<div layout="column" flex="70" layout-align="start start" class="c4c-symptoms-selector">
-				<h3>{{symptomsLocation.name}}</h3>
-				<div>
-					<md-button ng-repeat="l in symptomsLocation.parts" class="md-raised" ng-class="{'md-primary' : symptomsGroup == l}" ng-click="setSymptomsGroup(l)">
-			    		{{l.name}}
-			   		</md-button>
-		   		</div>
-				<h3 style="margin-top: 50px" ng-show="symptomsGroup.name">{{symptomsGroup.name}} symptoms</h3>
-				<div>
-					<md-button ng-repeat="s in symptomsGroup.symptoms" class="md-raised md-hue-1" ng-click="addSymptom(s)">
-				    	{{s.name}}
-				   	</md-button>
-			   	</div>
-			</div>
-
-			<div layout="column" flex class="c4c-body-map" layout-align="start center" layout-padding>
-				<h3>Body map</h3>
-				<div class="c4c-body-map-assembly">
-					<img src="/c1/css/img/body_head.svg" width="41" height="50" id="head" ng-click="selectBodyPart('Head')">
-					<img src="/c1/css/img/body_chest.svg" width="64" height="83" id="chest" ng-click="selectBodyPart('Chest')">
-					<img src="/c1/css/img/body_center.svg" width="77" height="85" id="abdomen" ng-click="selectBodyPart('Abdomen')">
-					<img src="/c1/css/img/body_legs.svg" width="79" height="153" id="legs" ng-click="selectBodyPart('Legs')">
-					<img src="/c1/css/img/body_arm_left.svg" width="48" height="156" id="left-arm" ng-click="selectBodyPart('Arms')">
-					<img src="/c1/css/img/body_arm_right.svg" width="48" height="156" id="right-arm" ng-click="selectBodyPart('Arms')">
-				
-				</div>
-			</div>
-		</div>      
+			</md-content>
+		</div>
+		<div layout="column" flex layout-align="start center" class="md-whiteframe-z1 c4c-symptoms-container" ng-show="selected">
+			<h3 ng-hide="selectedBodyPart2">{{selected.name}}</h3>
+			<h3 ng-show="selectedBodyPart2"><span style="font-weight: 400">{{selectedBodyPart2}}</span> symptoms</h3>
+			<md-content layout="column" flex layout-align="start center" md-scroll-y layout-padding>
+				<md-button ng-repeat="s in selected.symptoms" 
+						   class="md-raised c4c-medium-button" 
+						   ng-click="newSession(s)">
+			    	<div layout="row" layout-align="start space-between">
+				    	<span flex>{{s.name}}</span>
+			    		<ng-md-icon icon="chevron_right" size="25"></ng-md-icon>
+			    	</div>						   
+		   		</md-button>
+			</md-content>
+		</div> 		   
 	</div>
-
 </div>

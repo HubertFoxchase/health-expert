@@ -253,6 +253,10 @@ md-progress-linear:not([md-mode=indeterminate]) .md-container {
 	color:red;
 }
 
+.c4c-body-container {
+	background-color:#fff;
+}
+
 .c4c-body-container h3 {
 	width:100%; 
 	text-align: center;

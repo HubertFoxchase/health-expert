@@ -139,7 +139,7 @@ md-toolbar {
 
 .c4c-app-background {
 	background:#f7f7f7 url('img/app_backround@x2.png') no-repeat bottom left / 100%;
-	height:calc(100% - 110px);	
+	height:calc(100% - 110px);
 	overflow: hidden;
 }
 
@@ -176,22 +176,32 @@ md-toolbar {
 	width: 150px;
 }
 
-.c4c-body-map-assembly img{
+.c4c-body-map-assembly > *{
 	position: absolute;
+	fill:#dedede;
+	stroke:#bbb;
+	outline:none;
 }
 
+.c4c-body-map-assembly .selected{
+	fill:#0091de;
+	
+}
+
+
+
 .c4c-body-map-assembly #head{
-    bottom: 313px;
-    left: 54px;
+    bottom: 314px;
+    left: 55px;
 }
 
 .c4c-body-map-assembly #chest{
-    bottom: 232px;
+    bottom: 233px;
     left: 43px;
 }
 
 .c4c-body-map-assembly #abdomen{
-    bottom: 150px;
+    bottom: 151px;
     left: 37px;
 }
 
@@ -201,13 +211,13 @@ md-toolbar {
 }
 
 .c4c-body-map-assembly #left-arm{
-    bottom: 146px;
-    left: -3px;	
+    bottom: 147px;
+    left: -3px;
 }
 
 .c4c-body-map-assembly #right-arm{
-    bottom: 147px;
-    left: 106px;	
+    bottom: 148px;
+    left: 106px;
 }
 
 h3 {
@@ -253,43 +263,79 @@ md-progress-linear:not([md-mode=indeterminate]) .md-container {
 	color:red;
 }
 
+.c4c-body-container {
+	background-color:#fff;
+	margin-right: 20px;
+}
+
 .c4c-body-container h3 {
 	width:100%; 
 	text-align: center;
 }
 
-.c4c-body-container.closed .c4c-symptoms-selector {
-	display: none
+.c4c-groups-container, .c4c-symptoms-container{
+	background: #fff;
+	padding-bottom:20px !important;
 }
 
-.c4c-symptopms-container{
-	background: #fff; 
+.three-cols .c4c-groups-container{
 	margin-right: 20px;
+}
+
+.c4c-symptoms-container md-content, .c4c-groups-container md-content{
+	padding-left:15px;
+	padding-right:15px;
 	position: relative;
 }
 
-.c4c-symptopms-container h3{
-	width:100%; 
-	text-align: center;
-	outline: none;
+md-content[md-scroll-y]::-webkit-scrollbar {
+  width: 5px;
+}
+
+md-content[md-scroll-y]::-webkit-scrollbar-thumb:vertical {
+  margin: 5px;
+  background-color: #999;
+  -webkit-border-radius: 5px;
+}
+
+md-content[md-scroll-y]::-webkit-scrollbar-button:start:decrement,
+md-content[md-scroll-y]::-webkit-scrollbar-button:end:increment {
+  height: 5px;
+  display: block;
+}
+
+.c4c-medium-button {
+	margin: 9px 0px;
+	line-height: 40px;
+	font-size: 16px;
+	text-align: left;
+	font-weight: 300;
+	padding: 0px 18px;
+	/* min-width: 250px; */
+	width: 350px;
+}
+
+.c4c-medium-button.md-primary ng-md-icon {
+	margin-top: 7.5px;
+	fill:#fff;
+}
+
+.c4c-medium-button ng-md-icon {
+	margin-top: 7.5px;
+	fill:#888;
+}
+
+.three-cols .c4c-medium-button {
+	width:250px;
 }
 
 
-.c4c-symptopms-container.closed * {
-	display: none;
+.three-cols .c4c-medium-button span{
+	text-overflow: ellipsis;
+	flex-shrink:;
+	overflow: hidden;
 }
 
-.c4c-symptopms-container.closed h3.c4c-symptoms-header {
-   display: inline-block;
-   white-space: nowrap;
- 
-   transform: translate(0,100%) rotate(-90deg);
-   transform-origin: 0 0;
-   
-   position: absolute;
-   top:70%;
-   left:30%;
-   
-   cursor: pointer;
-   
+.patient-form {
+	margin-top: 50px;
 }

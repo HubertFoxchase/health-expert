@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'ngMessages', 'controllers', 'services', 'values'])
+angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'ngMessages', 'controllers', 'services', 'values', 'directives'])
 .value('$config', {
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
       scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ],
@@ -38,7 +38,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	
 	$routeProvider
 		.when('/list', {
-			templateUrl: '/c2/templates/list.html',
+			templateUrl: '/c2/templates/patients-list.html',
 			controller: 'PatientCtrl',
 			resolve : { init: ['$api', function($api) {
 		          	return $api.load();
@@ -50,14 +50,6 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 		          	return $api.load();
-	        	}]
-			}
-		})
-		.when('/authorise', {
-			templateUrl: '/c2/templates/authorise.html',
-			controller: 'StartCtrl',
-			resolve : { init: ['$api', function($api) {
-	          	return $api.load();
 	        	}]
 			}
 		})
@@ -147,7 +139,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 
     //$locationProvider.html5Mode({enabled: true,requireBase:false});
 }])
-.run(["$rootScope", "$location", function ($rootScope, $location) {
+.run(["$rootScope", "$location", "$mdDialog", function ($rootScope, $location, $mdDialog) {
 	
     	$rootScope.$on('$routeChangeSuccess', function(){
     		ga('send', 'pageview', $location.path());
@@ -157,7 +149,20 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
     		if(error.code == 401){
     			location.href = "/auth/login?url=" + encodeURI("/client");
     		}
-    	});    	
+    	});
+    	
+    	$rootScope.$on('$commsError', function(event, args){
+    	    $mdDialog.show(
+    	      $mdDialog.alert()
+    	        //.parent(angular.element(document.querySelector('#popupContainer')))
+    	        .clickOutsideToClose(true)
+    	        .title(args ? args.title : 'Hmm... something went wrog here')
+    	        .content(args ? args.description : 'No futher info.')
+    	        .ariaLabel('Error Alert')
+    	        .ok('OK')
+    	        .targetEvent(event)
+    	    );
+    	});      	
     	
     	document.addEventListener("backbutton", function(){
     		if(location.hash.indexOf("/list") > 0 || location.hash.indexOf("/end") > 0) {

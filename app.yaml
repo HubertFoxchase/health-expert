@@ -21,6 +21,10 @@ handlers:
   static_dir: c1
   secure: always
 
+- url: /c2
+  static_dir: c2
+  secure: always
+
 - url: /c
   static_dir: c
   secure: always  

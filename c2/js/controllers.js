@@ -1,5 +1,6 @@
 angular.module("controllers", []).
 	controller("AppCtrl", ['$scope', '$rootScope', '$mdSidenav', '$mdDialog', '$api', function($scope, $rootScope, $mdSidenav, $mdDialog, $api){
+		
 		$scope.end = function ($event) {
 	        $mdDialog.show({
 	          targetEvent: $event,
@@ -73,7 +74,7 @@ angular.module("controllers", []).
 			
 	        $mdDialog.show({
 	          targetEvent: $event,
-	          templateUrl: '/c1/templates/pinpad.html',
+	          templateUrl: '/c2/templates/pinpad.html',
 	          parent: angular.element(document.body),
 	          controller: 'AppCtrl'
 	        });
@@ -116,20 +117,21 @@ angular.module("controllers", []).
 				}
 			);
 		}
-		
-		$scope.login = function(){
-			$api.handleAuthClick();
-		}
-		
 	}]).
-	controller("PatientCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", "$mdDialog", function($scope, $rootScope, $routeParams, $api, $location, $mdDialog){
+	controller("PatientCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", function($scope, $rootScope, $routeParams, $api, $location){
 
 		var _api = $api.get();
 
 		var loadPatients = function(){
 			_api.patient.list({organisation:$rootScope.organisation.id}).execute(function(resp){
-				$scope.patients = resp.items;
-				$scope.$apply()
+				
+				if(!resp.error) {
+					$scope.patients = resp.items;
+					$scope.$apply()
+				}
+				else {
+					$rootScope.$emit("$commsError", {title:"API Error", description : "Can't load patients list."})
+				}
 			});
 		}
 
@@ -140,7 +142,7 @@ angular.module("controllers", []).
 		$scope.selectPatient = function(patient, $event) {
 			$rootScope.patient = patient;
 			$rootScope.progress = 15;
-			location.hash = "/" + patient.id + "/reason";
+			$location.path("/" + patient.id + "/reason");
 	    };
 	    
 	    $rootScope.readyClass = "app-ready";
@@ -149,18 +151,6 @@ angular.module("controllers", []).
 	controller("StartCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", "$mdDialog", "groupsOfSymptoms", "body", "$http", "$config", function($scope, $rootScope, $routeParams, $api, $location, $mdDialog, groupsOfSymptoms, body, $http, $config){
 		
 		var _api = $api.get();
-
-		//load ovservations to use in auto-complete
-		var _obs = null;
-		$http.get($config.observationsJson).success(function(data) {
-			_obs = data.map(function(item){
-						return {
-									id : item.id, 
-									name : item.name,
-									sex_filter :item.sex_filter
-								}
-			});			
-		});		
 
 		if(!$rootScope.patient){
 			$rootScope.patient = {id:$routeParams.patient};
@@ -196,58 +186,41 @@ angular.module("controllers", []).
 			return null;
 		}
 
-		$scope.setSymptomsGroup = function(g){
-			$scope.symptomsGroup = g;
+		$scope.drillDown = function(g, index){
+			$scope.selected = g;
+			$scope.selectedItem = index;
+			$scope.layout = 3;
+			
+			if($scope.selectedBodyPart){
+				$scope.selectedBodyPart2 = g.name
+			}
 		}
 
-		$scope.addSymptom = function(s){
-			for(var i = 0; i < $scope.selectedSymptoms.length; i++){
-				if($scope.selectedSymptoms[i].id == s.id){
-					return;
-				}
-			}
-			$scope.selectedSymptoms.push(s);
-		}
-		
 		$scope.selectBodyPart = function(name){
+
+			if(!$scope.selectedBodyPart2){
+				$scope.layout = 2;
+				$scope.selected = null;
+			}
+			console.log(1);
 			$scope.bodyView = true;
 			$scope.symptomsLocation = $scope.findByName($scope.bodyParts, name);
-			$scope.symptomsGroup = $scope.symptomsLocation.parts[0];
-		}
-
-		$scope.showSymptomsSelector = function(){
-			$scope.bodyView = false;
-			$scope.symptomsGroup = $scope.findByName(groupsOfSymptoms, "Common");
+			$scope.list = $scope.symptomsLocation.parts;
+			$scope.selectedBodyPart = name;
 		}
 
 		//initial state
-		$scope.groupsOfSymptoms = groupsOfSymptoms;
+		$scope.list = groupsOfSymptoms;
 		$scope.bodyParts = body;
-		$scope.selectedSymptoms = [];
 		
-		$scope.showSymptomsSelector();
-		//initial state ends
-		
-		//autocomplete
-		$scope.selectedSymptom = null;
-		
-		$scope.searchText = null;
-		
-		$scope.querySearch = function(query){
-			
-			if(angular.isString(query) && query.length > 1){
-				query = query.toLowerCase();
-				
-				return _obs.filter(function(value){
-					return value.name.toLowerCase().indexOf(query) >= 0;
-			    })
-			}
-			else {
-				return [];
-			}
+		$scope.backToList = function(){
+			$scope.selectedBodyPart = null;
+			$scope.selectedBodyPart2 = null;
+			$scope.list = groupsOfSymptoms;
+			$scope.selected = null;
+			$scope.layout = 2;
 		}
-		//autocomplete - ends
-
+		
 		$scope.start = function(ref){
 			console.log("start");
 			_api.patient.insert({ref:ref, organisation_id:$rootScope.organisation.id}).execute(function(resp){
@@ -286,14 +259,7 @@ angular.module("controllers", []).
 			location.hash = "/" + $rootScope.patient.id + "/symptom-groups";
 		}
 		
-		
-		$scope.setInitialSymptoms = function(id){
-			console.log("initial symptoms");
-			$rootScope.progress += 5;
-			location.hash = "/" + $rootScope.patient.id + "/initial/" + id;
-		}
-		
-		$scope.newSession = function(symptoms){
+		$scope.newSession = function(symptom){
 			console.log("new session");
 
 			var showError = function() {
@@ -310,45 +276,13 @@ angular.module("controllers", []).
 			            controller: 'AppCtrl'
 			        });					
 			}
-
-			var showNoSymptomsWarning = function() {
-				$mdDialog.show({
-		          template:
-			            '<md-dialog>' +
-			            '  <md-dialog-content><h3>No symptoms selected</h3><p>Please select at least one symptom to start the assessment.</p></md-dialog-content>' +
-			            '  <div class="md-actions" layout="row">' +
-			            '    <md-button ng-click="closeDialog()">' +
-			            '      Close' +
-			            '    </md-button>' +
-			            '  </div>' +
-			            '</md-dialog>',
-			            controller: 'AppCtrl'
-			        });					
-			}			
 			
-			var s = [];
-
-			if(angular.isArray(symptoms) && symptoms.length > 0){
-				s = symptoms.map(function(item){
-					return item.id;
-				});
-			}
-			else if (angular.isString(symptoms) && symptoms != ""){
-				s = [symptoms];
-			}			
-			else if(angular.isArray(symptoms) && symptoms.length == 0){
-				showNoSymptomsWarning();
-				return;
-			}
-			else {
-				showError();
-				return;
-			}
-				
+			$rootScope.reasonForVisit = symptom.name
+		
 			_api.session.new({
 					organisation : $rootScope.organisation.id,
 					patient : $rootScope.patient.id,
-					present : s
+					present : [symptom.id]
 			}).execute(function(resp){
 				
 				if(resp.error){

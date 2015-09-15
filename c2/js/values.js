@@ -5,7 +5,7 @@ angular.module("values", [])
 		'groupsOfSymptoms', 
 	    [
 	     	{
-	     		name: 'Common',
+	     		name: 'Common Symptoms',
 	     		symptoms : [
 	    	                {
 	    	                    name: 'Cough',
@@ -15,6 +15,10 @@ angular.module("values", [])
 	    	                    name: 'Fever',
 	    	                    id: 's_98'
 	    	                },	
+	       	                {
+	    	                    name: 'Chills',
+	    	                    id: 's_81'
+	    	                },	 	    	                
 	    	                {
 	    	                    name: 'Nausea',
 	    	                    id: 's_156'
@@ -26,7 +30,7 @@ angular.module("values", [])
 	     		]
 	     	},
 	        {
-	            name: 'Pain',
+	            name: 'Pain or discomfort',
 	            symptoms: [
    	                {
 	                    name: 'Headache',
@@ -71,20 +75,7 @@ angular.module("values", [])
 	            ]
 	        },
 	        {
-	            name: 'Flu-like',
-	            symptoms: [
-   	                {
-	                    name: 'Chills',
-	                    id: 's_81'
-	                },	                
-	                {
-	                    name: 'Fever',
-	                    id: 's_98'
-	                },	
-	            ]
-	        },
-	        {
-	            name: 'Respiratory',
+	            name: 'Respiratory problems',
 	            symptoms: [
 	                {
 	                    name: 'Cough',
@@ -109,7 +100,7 @@ angular.module("values", [])
 	            ]
 	        },
 	        {
-	            name: 'Digestive',
+	            name: 'Digestive problems',
 	            symptoms: [
 	                {
 	                    name: 'Diarrhea',
@@ -138,7 +129,7 @@ angular.module("values", [])
 	            ]
 	        },
 	        {
-	            name: 'Skin',
+	            name: 'Skin Symptoms',
 	            symptoms: [
   	                {
 	                    name: 'Skin lesions',
@@ -164,7 +155,7 @@ angular.module("values", [])
 	            ]
 	        },
 	        {
-	            name: 'Pshycological',
+	            name: 'Pshycological Symptoms',
 	            symptoms: [
 	                {
 	                    name: 'Anxiety',
