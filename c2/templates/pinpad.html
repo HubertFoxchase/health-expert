@@ -3,7 +3,7 @@
 		<div class="md-toolbar-tools">
 	    	<h2>Pin required</h2>
 	      	<span flex></span>
-	      	<md-button class="md-icon-button" ng-click="closeDialog($event)">
+	      	<md-button class="md-icon-button" ng-click="cancel($event)">
 				<ng-md-icon icon="close" style="fill:#fff"></ng-md-icon>
 	      	</md-button>
 		</div>
@@ -20,26 +20,26 @@
 			</div>
 			
 			<div layout="row" layout-padding layout-align="space-between center">
-				<md-button class="md-fab" ng-click="pinpadKeyPress('1')">1</md-button>
-				<md-button class="md-fab" ng-click="pinpadKeyPress('2')">2</md-button>
-				<md-button class="md-fab" ng-click="pinpadKeyPress('3')">3</md-button>
+				<md-button class="c4c-round-button" md-no-ink ng-click="pinpadKeyPress('1')">1</md-button>
+				<md-button class="c4c-round-button" md-no-ink ng-click="pinpadKeyPress('2')">2</md-button>
+				<md-button class="c4c-round-button" md-no-ink ng-click="pinpadKeyPress('3')">3</md-button>
 			</div>
 		
 			<div layout="row" layout-padding layout-align="space-between center">
-				<md-button class="md-fab" ng-click="pinpadKeyPress('4')">4</md-button>
-				<md-button class="md-fab" ng-click="pinpadKeyPress('5')">5</md-button>
-				<md-button class="md-fab" ng-click="pinpadKeyPress('6')">6</md-button>
+				<md-button class="c4c-round-button" md-no-ink ng-click="pinpadKeyPress('4')">4</md-button>
+				<md-button class="c4c-round-button" md-no-ink ng-click="pinpadKeyPress('5')">5</md-button>
+				<md-button class="c4c-round-button" md-no-ink ng-click="pinpadKeyPress('6')">6</md-button>
 			</div>
 	
 			<div layout="row" layout-padding layout-align="space-between center">
-				<md-button class="md-fab" ng-click="pinpadKeyPress('7')">7</md-button>
-				<md-button class="md-fab" ng-click="pinpadKeyPress('8')">8</md-button>
-				<md-button class="md-fab" ng-click="pinpadKeyPress('9')">9</md-button>
+				<md-button class="c4c-round-button" md-no-ink ng-click="pinpadKeyPress('7')">7</md-button>
+				<md-button class="c4c-round-button" md-no-ink ng-click="pinpadKeyPress('8')">8</md-button>
+				<md-button class="c4c-round-button" md-no-ink ng-click="pinpadKeyPress('9')">9</md-button>
 			</div>
 	
 			<div layout="row" layout-padding layout-align="space-between center">
-				<md-button class="md-fab" style="visibility:hidden"></md-button>
-				<md-button class="md-fab" ng-click="pinpadKeyPress('0')">0</md-button>
+				<md-button class="c4c-round-button" md-no-ink style="visibility:hidden"></md-button>
+				<md-button class="c4c-round-button" md-no-ink ng-click="pinpadKeyPress('0')">0</md-button>
 				<span flex="30" class="btn">
 					<a ng-click="pinpadClear()">clear</a>
 				</span>

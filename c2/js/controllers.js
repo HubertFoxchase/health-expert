@@ -1,43 +1,57 @@
 angular.module("controllers", []).
-	controller("AppCtrl", ['$scope', '$rootScope', '$mdSidenav', '$mdDialog', '$api', function($scope, $rootScope, $mdSidenav, $mdDialog, $api){
+	controller("AppCtrl", ['$scope', '$rootScope', '$mdDialog', '$api', function($scope, $rootScope, $mdDialog, $api){
 		
-		$scope.end = function ($event) {
-	        $mdDialog.show({
+		$scope.showPinpad = function ($event, next) {
+			
+	        var ret = $mdDialog.show({
 	          targetEvent: $event,
-	          template:
-	            '<md-dialog>' +
-	            '  <md-dialog-content><h3>End assesment</h3><p>Would you like to end your current assessment session?</p></md-dialog-content>' +
-	            '  <div class="md-actions" layout="row">' +
-	            '    <md-button ng-click="closeDialog()">' +
-	            '      No, continue' +
-	            '    </md-button>' +
-	            '    <md-button ng-click="endSession()">' +
-	            '      Okay' +
-	            '    </md-button>' +
-	            '  </div>' +
-	            '</md-dialog>',
-	            controller: 'AppCtrl'
+	          templateUrl: '/c2/templates/pinpad.html',
+	          parent: angular.element(document.body),
+	          controller: 'PinpadCtrl',
+	          locals: { 
+	        	  		$next : next
+	        	  	  }
 	        });
+	        
+	        ret.then(function(val){
+	        	if(next == 'new-session'){
+	        		newSession();
+	        	}
+	        	else if(next == 'end-session'){
+	        		endSession();
+	        	}
+	        	else if (next == 'logout'){
+					location.href = "/auth/logout";	        		
+	        	}
+	        },function(){
+	        	//do nothinf;
+	        })
 	    }
+		
+		var newSession = function(){
+			$rootScope.session = null;
+			$rootScope.patient = null;
+			$rootScope.progress = 0;
+			$rootScope.outcome = null;
+			location.href = "/client";
+		}		
+		
+		var endSession = function(){
+			var _api = $api.get();
 
-		$scope.start1 = function ($event) {
-	        $mdDialog.show({
-	          targetEvent: $event,
-	          template:
-	            '<md-dialog>' +
-	            '  <md-dialog-content><h3>New session</h3><p>Would you like to start a new assessment session?</p></md-dialog-content>' +
-	            '  <div class="md-actions" layout="row">' +
-	            '    <md-button ng-click="closeDialog()">' +
-	            '      No, continue' +
-	            '    </md-button>' +
-	            '    <md-button ng-click="newSession()">' +
-	            '      Okay' +
-	            '    </md-button>' +
-	            '  </div>' +
-	            '</md-dialog>',
-	            controller: 'AppCtrl'
-	        });
-	    }
+			if(_api && $rootScope.session){
+				_api.session.end({id:$rootScope.session.id}).execute(function(resp){
+					$rootScope.session = resp;
+					$rootScope.progress = 100;
+					location.hash = "/" + resp.id + "/end";
+				});
+			}
+			else {
+				newSession();
+			}
+		}
+	}]).
+	controller("PinpadCtrl", ['$scope', '$rootScope', '$mdDialog', '$next', function($scope, $rootScope, $mdDialog, $next){
 		
 		var pin = "";
 		$scope.display = "";
@@ -57,85 +71,71 @@ angular.module("controllers", []).
 
 		$scope.pinpadCheck = function(){
 			if(pin == "1234"){
-				$scope.newSession();
+				$mdDialog.hide($next);
 			}
 			else {
 				pin = "";
 				$scope.display = "";				
 				$scope.pinError = true;
 			}
-		}
+		}	
 		
-		$scope.start = function ($event) {
-			
-			pin = "";
-			$scope.display = "";
-			$scope.pinError = false;
-			
-	        $mdDialog.show({
-	          targetEvent: $event,
-	          templateUrl: '/c2/templates/pinpad.html',
-	          parent: angular.element(document.body),
-	          controller: 'AppCtrl'
-	        });
-	    }		
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}	
 		
-		$scope.closeDialog = function(){
-			$mdDialog.hide();
-		}
-
-		$scope.newSession = function(){
-			$mdDialog.hide().then(
-				function(){
-					$rootScope.session = null;
-					$rootScope.patient = null;
-					$rootScope.progress = 0;
-					$rootScope.outcome = null;
-					location.hash = "/list";
-				}
-			);
-		}		
 		
-		$scope.endSession = function(){
-			$mdDialog.hide().then(
-				function(){
-					var _api = $api.get();
-
-					if(_api && $rootScope.session){
-						_api.session.end({id:$rootScope.session.id}).execute(function(resp){
-							$rootScope.session = resp;
-							$rootScope.progress = 100;
-							location.hash = "/" + resp.id + "/end";
-						});
-					}
-					else {
-						$rootScope.session = null;
-						$rootScope.patient = null;
-						$rootScope.progress = 0;
-						location.hash = "/list";
-					}
-				}
-			);
-		}
 	}]).
 	controller("PatientCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", function($scope, $rootScope, $routeParams, $api, $location){
 
 		var _api = $api.get();
 
-		var loadPatients = function(){
-			_api.patient.list({organisation:$rootScope.organisation.id}).execute(function(resp){
+		var loadPatients = function(order){
+			var params = {
+					organisation : $rootScope.organisation.id,
+					limit : 100
+			}
+			
+			if(order) {
+				params.order = order;
+			}
+			
+			_api.patient.list(params).execute(function(resp){
 				
-				if(!resp.error) {
+				if(resp.error) {
+					$rootScope.$emit("$commsError", {title:"Can't load patients list", description : resp.error.message})
+				}
+				else {
 					$scope.patients = resp.items;
 					$scope.$apply()
 				}
-				else {
-					$rootScope.$emit("$commsError", {title:"API Error", description : "Can't load patients list."})
-				}
 			});
 		}
+		
+		var loadAppointment = function(order){
+			var params = {
+					organisation : $rootScope.organisation.id,
+					limit : 100
+			}
+			
+			if(order) {
+				params.order = order;
+			}
+			
+			_api.appointment.list(params).execute(function(resp){
+				
+				if(!resp.error) {
+					$rootScope.$emit("$commsError", {title:"Can't load appointments", description : resp.error.message})
+				}
+				else {
+					$scope.appointments = resp.items;
+					$scope.$apply()
+				}
+			});
+		}		
 
-		loadPatients();
+		//loadAppointment('date');
+		loadPatients('ref');
 		
 		$rootScope.patient = null;
 		
@@ -144,6 +144,10 @@ angular.module("controllers", []).
 			$rootScope.progress = 15;
 			$location.path("/" + patient.id + "/reason");
 	    };
+	    
+	    $scope.min = function(a,b){
+	    	return Math.min(a,b);
+	    }
 	    
 	    $rootScope.readyClass = "app-ready";
 		
@@ -187,12 +191,29 @@ angular.module("controllers", []).
 		}
 
 		$scope.drillDown = function(g, index){
-			$scope.selected = g;
-			$scope.selectedItem = index;
-			$scope.layout = 3;
 			
-			if($scope.selectedBodyPart){
-				$scope.selectedBodyPart2 = g.name
+			if(g.deadEnd){
+			    var confirm = $mdDialog.confirm()
+		        	.title("Can't find your symptoms?")
+		        	.content("If you can't find you symptoms you can end your assesnement session now.")
+		        	.ariaLabel("Can't find symptoms ")
+		        	.ok('End session')
+		        	.cancel('Cancel');
+			    
+			    $mdDialog.show(confirm).then(function() {
+			    	location.hash = "/0/end";
+			    }, function() {
+
+			    });
+			}
+			else {
+				$scope.selected = g;
+				$scope.selectedItem = index;
+				$scope.layout = 3;
+				
+				if($scope.selectedBodyPart){
+					$scope.selectedBodyPart2 = g.name
+				}
 			}
 		}
 
@@ -201,7 +222,9 @@ angular.module("controllers", []).
 			if(!$scope.selectedBodyPart2){
 				$scope.layout = 2;
 				$scope.selected = null;
+				$scope.selectedItem = null;
 			}
+			
 			console.log(1);
 			$scope.bodyView = true;
 			$scope.symptomsLocation = $scope.findByName($scope.bodyParts, name);
@@ -218,6 +241,7 @@ angular.module("controllers", []).
 			$scope.selectedBodyPart2 = null;
 			$scope.list = groupsOfSymptoms;
 			$scope.selected = null;
+			$scope.selectedItem = null;
 			$scope.layout = 2;
 		}
 		
@@ -262,21 +286,6 @@ angular.module("controllers", []).
 		$scope.newSession = function(symptom){
 			console.log("new session");
 
-			var showError = function() {
-				$mdDialog.show({
-		          template:
-			            '<md-dialog>' +
-			            '  <md-dialog-content><h3>Hmm... something went wrog here</h3><p>Probably missing or incorrect symptom data. Try another symptom.</p></md-dialog-content>' +
-			            '  <div class="md-actions" layout="row">' +
-			            '    <md-button ng-click="closeDialog()">' +
-			            '      Close' +
-			            '    </md-button>' +
-			            '  </div>' +
-			            '</md-dialog>',
-			            controller: 'AppCtrl'
-			        });					
-			}
-			
 			$rootScope.reasonForVisit = symptom.name
 		
 			_api.session.new({
@@ -286,7 +295,7 @@ angular.module("controllers", []).
 			}).execute(function(resp){
 				
 				if(resp.error){
-					showError();
+					$rootScope.$emit("$commsError", {title:"Can't start diagnostic session", description : resp.error.message})
 				}
 				else {
 					$rootScope.session = resp;
@@ -311,6 +320,8 @@ angular.module("controllers", []).
 	controller("QuestionsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", function($scope, $rootScope, $routeParams, $api, $location){
 		
 		var _api = $api.get();
+		
+		$scope.progress = null;
 
 		if($rootScope.session){
 			$scope.session = $rootScope.session;
@@ -320,33 +331,41 @@ angular.module("controllers", []).
 		}
 		else {
 			_api.session.get({id:$routeParams.session}).execute(function(resp){
-				$rootScope.session = resp;
-				$rootScope.patient = resp.patient;
-				$rootScope.progress = 25; //this is a recovered session, we can set progress to 25%
-
-			    $rootScope.readyClass = "app-ready";
 				
-				if(resp.outcome){
-					var p = resp.outcome.probability * 100;
-					
-					if($rootScope.progress && p > $rootScope.progress){
-						$rootScope.progress = p;
-					}
-					else{
-						$rootScope.progress += 5;
-					}
-					
-					$rootScope.outcome = Math.round(p)
+				if(resp.error){
+					$rootScope.$emit("$commsError", {title:"Can't load session", description : resp.error.message});
 				}
-				
-				$scope.session = $rootScope.session;
-				$scope.step = 1;
-				$scope.$apply();
+				else {
+					$rootScope.session = resp;
+					$rootScope.patient = resp.patient;
+					$rootScope.progress = 25; //this is a recovered session, we can set progress to 25%
+	
+				    $rootScope.readyClass = "app-ready";
+					
+					if(resp.outcome){
+						var p = resp.outcome.probability * 100;
+						
+						if($rootScope.progress && p > $rootScope.progress){
+							$rootScope.progress = p;
+						}
+						else{
+							$rootScope.progress += 5;
+						}
+						
+						$rootScope.outcome = Math.round(p)
+					}
+					
+					$scope.session = $rootScope.session;
+					$scope.step = 1;
+					$scope.$apply();
+				}
 			});
 		}
 		
 
 		$scope.question = function(symptoms){
+			
+			$scope.progress = 'indeterminate';
 			
 			var present = [];
 			var absent = [];
@@ -360,34 +379,39 @@ angular.module("controllers", []).
 			
 			_api.session.insertMultipleSymptoms({session:$rootScope.session.id, present:present, absent:absent}).execute(function(resp){
 
-				if(resp.next && resp.outcome.probability < 0.90){
-					$scope.symptom = {value:null};
-					$rootScope.session = resp;
-
-					if(resp.outcome){
-						var p = resp.outcome.probability * 100;
-						
-						if($rootScope.progress && p > $rootScope.progress){
-							$rootScope.progress = p;
-						}
-						else{
-							$rootScope.progress += 5;
-						}
-					}
-
-					$rootScope.outcome = Math.round(p)
-					
-					$scope.session = $rootScope.session;
-					$scope.step++;
-					$scope.$apply();
+				if(resp.error) {
+					$rootScope.$emit("$commsError", {title:"Can't save question", description : resp.error.message})
 				}
 				else {
-					
-					_api.session.end({id:$rootScope.session.id}).execute(function(resp){
-						$rootScope.session = resp
-						//$rootScope.progress = 100;
-						location.hash = "/" + resp.id + "/end";
-					});
+					if($rootScope.progress < 95 && resp.next && resp.outcome.probability < 0.90){
+						$scope.symptom = {value:null};
+						$rootScope.session = resp;
+	
+						if(resp.outcome){
+							var p = resp.outcome.probability * 100;
+							
+							if($rootScope.progress && p > $rootScope.progress){
+								$rootScope.progress = p;
+							}
+							else{
+								$rootScope.progress += 5;
+							}
+						}
+	
+						$rootScope.outcome = Math.round(p)
+						
+						$scope.session = $rootScope.session;
+						$scope.step++;
+						$scope.progress = null;
+						$scope.$apply();
+					}
+					else {
+						_api.session.end({id:$rootScope.session.id}).execute(function(resp){
+							$rootScope.session = resp
+							//$rootScope.progress = 100;
+							location.hash = "/" + resp.id + "/end";
+						});
+					}
 				}
 			});
 		}

@@ -9,10 +9,7 @@ class SMTPAPIHeader(object):
     def add_to(self, to):
         if 'to' not in self.data:
             self.data['to'] = []
-        if type(to) is list:
-            self.data['to'] += to
-        else:
-            self.data['to'].append(to)
+        self.data['to'].append(to)
 
     def set_tos(self, tos):
         self.data['to'] = tos
@@ -51,17 +48,6 @@ class SMTPAPIHeader(object):
     def set_sections(self, value):
         self.data['section'] = value
 
-    def add_send_each_at(self, time):
-        if 'send_each_at' not in self.data:
-          self.data['send_each_at'] = []
-        self.data['send_each_at'].append(time)
-
-    def set_send_each_at(self, time):
-      self.data['send_each_at'] = time
-
-    def set_send_at(self, time):
-      self.data['send_at'] = time
-
     def add_filter(self, app, setting, val):
         if 'filters' not in self.data:
             self.data['filters'] = {}
@@ -70,12 +56,6 @@ class SMTPAPIHeader(object):
         if 'settings' not in self.data['filters'][app]:
             self.data['filters'][app]['settings'] = {}
         self.data['filters'][app]['settings'][setting] = val
-
-    def set_asm_group_id(self, value):
-        if not bool(value):
-            self.data['asm_group_id'] = {}
-        else:
-            self.data['asm_group_id'] = value
 
     def json_string(self):
         result = {}

@@ -21,8 +21,7 @@ import urllib
 import string
 import random
 
-from sendgrid import SendGridClient
-from sendgrid import Mail
+#from sendgrid import SendGridClient, Mail
 
 SENDGRID_USER = 'click4care'
 SENDGRID_PASSWORD = 'skynet1997'
@@ -43,6 +42,7 @@ def user_required(handler):
 
     def check_login(self, *args, **kwargs):
         auth = self.auth
+        
         if not auth.get_user_by_session():
             _params = {'url' : self.request.path_qs}
             self.redirect(self.uri_for('login') + '?' + urllib.urlencode(_params), abort=True)
@@ -128,21 +128,29 @@ class BaseHandler(webapp2.RequestHandler):
 
     def send_email(self, email_to, email_from, subject, template_filename, params=None ):
         # make a secure connection to SendGrid
-        sg = SendGridClient(SENDGRID_USER, SENDGRID_PASSWORD, secure=True)
+        
+        #sg = SendGridClient(SENDGRID_USER, SENDGRID_PASSWORD, secure=True)
         
         # make a message object
-        message = Mail()
-        message.set_subject(subject)
-        message.set_text(self.render_template_to_string(template_filename, params))
-        message.set_from(email_from)
+        #message = Mail()
+        #message.set_subject(subject)
+        #message.set_text(self.render_template_to_string(template_filename, params))
+        #message.set_from(email_from)
         
         # add a recipient
-        message.add_to(email_to)
+        #message.add_to(email_to)
         
         # use the Web API to send your message
-        sg.send(message)       
-
-
+        #sg.send(message)       
+        
+        #message = mail.EmailMessage()
+        #message.to = email_to
+        #message.sender = email_from
+        #message.subject = subject
+        #message.body = self.render_template_to_string(template_filename, params)
+        
+        #message.send()
+        pass
         
     def display_message(self, message):
         """Utility function to display a template with a simple message."""
@@ -195,7 +203,7 @@ class CompleteSignupHandler(BaseHandler):
                       'organisation_name': organisation.name,  
                       'user_id': user_id, 
                       'token': signup_token}
-            self.render_template('completeregistration.html', params)
+            self.render_template('complete-registration.html', params)
             return
 
         else:            

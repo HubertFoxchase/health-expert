@@ -13,6 +13,11 @@ indexes:
 - kind: Appointment
   properties:
   - name: active
+  - name: date
+
+- kind: Appointment
+  properties:
+  - name: active
   - name: doctor_ref
   - name: date
 
@@ -86,6 +91,21 @@ indexes:
   - name: active
   - name: age
   - name: gender
+  - name: ref
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: age
+  - name: dob
+  - name: gender
+  - name: ref
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: organisation_ref
   - name: ref
 
 - kind: Session

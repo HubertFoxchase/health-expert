@@ -182,6 +182,7 @@ angular.module("values", [])
 	        },
 	        {
 	            name: 'Other',
+	            deadEnd :  true,
 	            symptoms: [
 	                
 	            ]
@@ -399,20 +400,207 @@ angular.module("values", [])
 	     		]
 	     	},
 	     	{
-	     		name : "Chest",
-	     		parts : []
+	     		name : "Chest / Upper back",
+	     		parts : [
+	     		         {
+	     		        	 name : "Chest",
+	     		        	 symptoms : [
+     		    					{
+	     		   					    name: 'Chest pain',
+	     		   					    id: 's_50'
+	     		   					},
+     		    					{
+	     		   					    name: 'Heartburn',
+	     		   					    id: 's_338'
+	     		   					}	     		   					
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Heart",
+	     		        	 symptoms : [
+     		    					{
+	     		   					    name: 'Heart palpitations',
+	     		   					    id: 's_110'
+	     		   					},
+     		    					{
+	     		   					    name: 'Slow heart rate',
+	     		   					    id: 's_534'
+	     		   					},
+     		    					{
+	     		   					    name: 'Fast heart rate',
+	     		   					    id: 's_261'
+	     		   					}
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Upper back",
+	     		        	 symptoms : [
+     		    					{
+	     		   					    name: 'Back pain',
+	     		   					    id: 's_1190'
+	     		   					},
+     		    					{
+	     		   					    name: 'Stiff back in the morning',
+	     		   					    id: 's_257'
+	     		   					}
+	     		        	 ]
+	     		         }
+	     		]
 	     	},
 	     	{
-	     		name : "Abdomen",
-	     		parts : []
+	     		name : "Abdomen / Lower back",
+	     		parts : [
+	     		         {
+	     		        	 name : "Abdomed",
+	     		        	 symptoms : [
+     		     		         	{
+     	 		   					    name: 'Abdominal pain',
+     	 		   					    id: 's_13'
+     	 		   					},
+     		    					{
+     	 		   					    name: 'Bloating',
+     	 		   					    id: 's_309'
+     	 		   					},
+     		    					{
+     	 		   					    name: 'Constipation',
+     	 		   					    id: 's_329'
+     	 		   					},
+     		    					{
+     	 		   					    name: 'Diarrhea',
+     	 		   					    id: 's_8'
+     	 		   					},
+     		    					{
+     	 		   					    name: 'Blood in stool',
+     	 		   					    id: 's_112'
+     	 		   					}
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Urinary tract",
+	     		        	 symptoms : [
+     		     		         	{
+     	 		   					    name: 'Pain while urinating',
+     	 		   					    id: 's_39'
+     	 		   					},
+     		    					{
+     	 		   					    name: 'Blood in urine',
+     	 		   					    id: 's_309'
+     	 		   					},
+     		    					{
+     	 		   					    name: 'Dark urine',
+     	 		   					    id: '611'
+     	 		   					},
+     		    					{
+     	 		   					    name: 'Difficulty urinating',
+     	 		   					    id: 's_264'
+     	 		   					},
+     		    					{
+     	 		   					    name: 'Frequent urination',
+     	 		   					    id: 's_215'
+     	 		   					},
+     		    					{
+     	 		   					    name: 'Incontinence',
+     	 		   					    id: 's_153'
+     	 		   					}
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Lower back",
+	     		        	 symptoms : [
+     		     		         	{
+     	 		   					    name: 'Back pain',
+     	 		   					    id: 's_53'
+     	 		   					}
+	     		        	 ]
+	     		         }
+	     		]
 	     	},
 	     	{
 	     		name : "Legs",
-	     		parts : []
+	     		parts : [
+	     		         {
+	     		        	 name : "Upper legs",
+	     		        	 symptoms : [
+     		    					{
+	     		   					    name: 'Lack of strength',
+	     		   					    id: 's_743'
+	     		   					}
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Lower legs",
+	     		        	 symptoms : [
+     		    					{
+	     		   					    name: 'Swelling',
+	     		   					    id: 's_173'
+	     		   					},
+     		    					{
+	     		   					    name: 'Lack of strength',
+	     		   					    id: 's_743'
+	     		   					},
+     		    					{
+	     		   					    name: 'Muscle spasm',
+	     		   					    id: 's_117'
+	     		   					}
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Knees",
+	     		        	 symptoms : [
+     		    					{
+	     		   					    name: 'Swelling & pain',
+	     		   					    id: 's_171'
+	     		   					}
+	     		        	 ]
+	     		         },
+	     		         {
+	     		        	 name : "Feet",
+	     		        	 symptoms : [
+     		    					{
+	     		   					    name: 'Foot joint pain',
+	     		   					    id: 's_578'
+	     		   					},
+     		    					{
+	     		   					    name: 'Swelling around ankles',
+	     		   					    id: 's_1124'
+	     		   					},
+     		    					{
+	     		   					    name: 'Cold hands and feet',
+	     		   					    id: 's_408'
+	     		   					},
+     		    					{
+	     		   					    name: 'Cold sensitivity',
+	     		   					    id: 's_296'
+	     		   					},	     		        	 
+     		    					{
+	     		   					    name: 'Tingling and Numbness',
+	     		   					    id: 's_1063'
+	     		   					}	     		        	 
+	     		   			]
+	     		         }
+	     		         
+ 		   		]
 	     	},
 	     	{
 	     		name : "Arms",
-	     		parts : []
+	     		parts : [
+     		         {
+     		        	 name : "Upper arm",
+     		        	 symptoms : [
+     		        	 ]
+     		         },
+     		         {
+     		        	 name : "Lower arm",
+     		        	 symptoms : [
+     		        	 ]
+     		         },
+     		         {
+     		        	 name : "Hand",
+     		        	 symptoms : [
+     		        	 ]
+     		         },
+     		         
+	     		]
 	     	}
 	     	
 	    ]

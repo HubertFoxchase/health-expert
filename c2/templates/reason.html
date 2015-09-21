@@ -2,25 +2,25 @@
 	<span flex></span>
 	<div flex-md="70" flex-gt-md="60" flex-sm="90" layout="column" layout-align="space-between center">
 		<h3>Hello {{$root.patient.ref}}. How can we help you today?</h3>
-	   	<md-button layout-fill class="md-raised c4c-large-button" ng-click="gotoDoctor()">
+	   	<md-button layout-fill md-no-ink class="md-raised c4c-large-button" ng-click="gotoDoctor()">
 	    	<div layout="row" layout-align="center space-between">
 		    	<span flex>I'm here to see the doctor</span>
 	    		<ng-md-icon icon="chevron_right" size="50" style="fill:#888; width:35px"></ng-md-icon>
 	    	</div>
 	   	</md-button>
-	   	<md-button layout-fill class="md-raised c4c-large-button">
+	   	<md-button layout-fill md-no-ink class="md-raised c4c-large-button" ng-click="$root.notImplemented()">
 	    	<div layout="row" layout-align="center space-between">
 		    	<span flex>I'm here to see the nurse</span>
 	    		<ng-md-icon icon="chevron_right" size="50" style="fill:#888; width:35px"></ng-md-icon>
 	    	</div>
 	   	</md-button>
-	   	<md-button layout-fill class="md-raised c4c-large-button">
+	   	<md-button layout-fill md-no-ink class="md-raised c4c-large-button" ng-click="$root.notImplemented()">
 	    	<div layout="row" layout-align="center space-between">
 		    	<span flex>I need new prescription</span>
 	    		<ng-md-icon icon="chevron_right" size="50" style="fill:#888; width:35px"></ng-md-icon>
 	    	</div>
 	   	</md-button>
-	   	<md-button layout-fill class="md-raised c4c-large-button">
+	   	<md-button layout-fill md-no-ink class="md-raised c4c-large-button" ng-href="#/0/end">
 	    	<div layout="row" layout-align="center space-between">
 		    	<span flex>Other</span>
 	    		<ng-md-icon icon="chevron_right" size="50" style="fill:#888; width:35px"></ng-md-icon>

@@ -261,16 +261,17 @@ class PatientApi(remote.Service):
         model.put()
         return model
 
-    @Patient.query_method(query_fields=('organisation_id',),
+    @Patient.query_method(query_fields=('limit', 'order', 'pageToken'),
                           collection_fields=('id', 'ref', 'age', 'dob', 'gender'),
                           path='patients', 
                           http_method='GET',
-                          name='list',
-                          use_projection=True)   
+                          name='list')   
     def PatientList(self, query):
-        _isValidUser()
+        u = _isValidUser()
         
-        return query.filter(Patient.active == True)
+        organisation_ref = ndb.Key(Organisation, u['organisation_id'])
+        
+        return query.filter(Patient.active == True).filter(Patient.organisation_ref == organisation_ref)
 
     @Patient.method(path='patient/{id}', 
                     response_fields=('id', 'ref', 'age', 'dob', 'gender', 'organisation', ),
@@ -385,23 +386,27 @@ class AppointmentApi(remote.Service):
         
         date = datetime.datetime.today()
         
-        return query.filter(Appointment.active == True).filter(Appointment.date > date - datetime.timedelta(hours=2)).order(Appointment.date)
+        return query.filter(Appointment.active == True
+                            ).filter(Appointment.date > date - datetime.timedelta(hours=2)
+                                     ).order(Appointment.date)
 
-    @Appointment.query_method(query_fields=('organisation_id',),
+    @Appointment.query_method(query_fields=('limit', 'order', 'pageToken'),
                           collection_fields=('id', 'date', 'duration', 'patient', 'doctor'),
-                          path='appointments/listByOrganisation', 
+                          path='appointments/list', 
                           http_method='GET',
-                          name='listByOrganisation')   
-    def AppointmentsListByOrganisation(self, query):
-        _isValidUser()
+                          name='list')   
+    def AppointmentsList(self, query):
+        u = _isValidUser()
         
         #TODO: check for valid organisation
-        
+        organisation_ref = ndb.Key(Organisation, u['organisation_id'])
         date = datetime.datetime.today()
         
-        return query.filter(Appointment.active == True).filter(Appointment.date > date - datetime.timedelta(hours=2)).order(Appointment.date)
+        return query.filter(Appointment.active == True
+                            ).filter(Appointment.date > date - datetime.timedelta(hours=2)
+                                     ).filter(Appointment.organisation_ref == organisation_ref)
 
-    @Appointment.query_method(query_fields=('doctor_id',),
+    @Appointment.query_method(query_fields=('doctor_id', 'limit', 'order', 'pageToken'),
                           collection_fields=('id', 'date', 'duration', 'patient'),
                           path='appointments/listByDoctor', 
                           http_method='GET',
@@ -412,7 +417,8 @@ class AppointmentApi(remote.Service):
         
         date = datetime.datetime.today()
         
-        return query.filter(Appointment.active == True).filter(Appointment.date > date - datetime.timedelta(hours=2)).order(Appointment.date)
+        return query.filter(Appointment.active == True
+                            ).filter(Appointment.date > date - datetime.timedelta(hours=2))
 
 
 
@@ -469,12 +475,14 @@ class SessionApi(remote.Service):
         u = _isValidUser()
         
         if request.organisation != int(u['organisation_id']):
-            raise endpoints.UnauthorizedException('Not authorised')          
+            raise endpoints.UnauthorizedException('Not authorised 1056')          
 
         patient = ndb.Key(Patient, request.patient).get()
         
         if patient.organisation_ref.integer_id() != int(u['organisation_id']):
-            raise endpoints.UnauthorizedException('Not authorised')          
+            logging.debug(patient.organisation_ref.integer_id())
+            logging.debug(int(u['organisation_id']))
+            raise endpoints.UnauthorizedException('Not authorised 1057')          
         
         session = Session(
                           patient = patient, 

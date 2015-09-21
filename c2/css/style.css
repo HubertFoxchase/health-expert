@@ -59,6 +59,8 @@ md-toolbar {
 	background-color: #fff;
 	cursor: pointer;
 	outline: none;
+	width: 100%;
+	min-height: 46px;
 }
 
 .table-header {
@@ -80,16 +82,28 @@ md-toolbar {
 
 .key-pad > div {
     width: 290px;
-    padding: 4px;
+    padding: 7px 10px;
+    /* padding-bottom: 10px; */
 }
 
-.key-pad > div .md-fab {
-	width:70px;
-	height: 70px;
+.key-pad .c4c-round-button {
+	width: 80px;
+	min-width:80px;
+	height: 80px;
+	margin:0;
+	padding:0;
 	font-size: 38px;
-	background-color: #e7e7e7;
-    color: #666;
-    font-weight: 300;
+	line-height:38px;
+	background-color: #fff;
+	color: #666;
+	font-weight: 300;
+	box-shadow: none;
+	border: 1px solid #aaa;
+	border-radius: 50%;
+	background-clip: padding-box;
+	overflow: hidden;
+	transition: .2s linear;
+	transition-property: background-color,box-shadow;
 }
 
 
@@ -139,8 +153,8 @@ md-toolbar {
 
 .c4c-app-background {
 	background:#f7f7f7 url('img/app_backround@x2.png') no-repeat bottom left / 100%;
-	height:calc(100% - 110px);
-	overflow: hidden;
+	/* height: calc(100% - 80px); */
+	/* overflow: hidden; */
 }
 
 .c4c-large-button {
@@ -221,12 +235,18 @@ md-toolbar {
 }
 
 h3 {
-	font-size: 25;
-    font-weight: 300;
+	font-size: 22px;
+	font-weight: 300;
 }
 
 h3 strong {
     font-weight: 400;
+}
+
+.question-header h3 {
+	font-size:25px;
+	font-weight:400;
+	margin-top: 50px;
 }
 
 
@@ -306,13 +326,17 @@ md-content[md-scroll-y]::-webkit-scrollbar-button:end:increment {
 
 .c4c-medium-button {
 	margin: 9px 0px;
-	line-height: 40px;
-	font-size: 16px;
+	line-height: 38px;
+	font-size: 14px;
 	text-align: left;
-	font-weight: 300;
+	font-weight: 400;
 	padding: 0px 18px;
 	/* min-width: 250px; */
 	width: 350px;
+}
+
+.c4c-medium-button:active, .c4c-large-button:active, .c4c-square-button:active{
+	background-color: #f9f9f9 !important;
 }
 
 .c4c-medium-button.md-primary ng-md-icon {
@@ -321,7 +345,7 @@ md-content[md-scroll-y]::-webkit-scrollbar-button:end:increment {
 }
 
 .c4c-medium-button ng-md-icon {
-	margin-top: 7.5px;
+	margin-top: 5.5px;
 	fill:#888;
 }
 
@@ -336,6 +360,39 @@ md-content[md-scroll-y]::-webkit-scrollbar-button:end:increment {
 	overflow: hidden;
 }
 
+.c4c-groups-container md-content .c4c-medium-button:last-child, .c4c-symptoms-container md-content .c4c-medium-button:last-child {
+	margin-bottom: 15px;
+}
+
+.questions-container md-progress-circular {
+	/* width: 30px; */
+	height: 40px;
+}
+
+
+.yes-no-buttons-container .c4c-medium-button {
+	text-align: center;
+	font-size: 20px;
+	height: 45px;
+	width:inherit;
+	min-width:250px;
+}
+
+.yes-no-buttons-container .c4c-medium-button:first-child {
+	margin-right: 15px;
+}
+
+.yes-no-buttons-container .c4c-medium-button:last-child {
+	margin-left: 15px;
+}
+
+
 .patient-form {
 	margin-top: 50px;
+}
+
+.lock-size {
+	position: absolute;
+	bottom: -30px;
+	right: 0px;
 }

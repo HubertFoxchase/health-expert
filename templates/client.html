@@ -13,7 +13,7 @@
     </script>
 
 </head>
-<body layout="column" ng-controller="AppCtrl" ng-class="$root.readyClass" ontouchmove="{event.preventDefault()}">
+<body layout="column" ng-controller="AppCtrl" ng-class="$root.readyClass">
 
 	<div id="loading">
 		<p ng-hide="$root.requireAuth">Launching Click4Care ...</p>
@@ -35,13 +35,18 @@
 			          
 			          <md-menu-content width="2">
 			            <md-menu-item ng-show="$root.session.state == 1">
-			              <md-button ng-click="end()" >
+			              <md-button ng-click="showPinpad($event, 'end-session')" >
 			                <p>End session</p>
 			              </md-button>
 			            </md-menu-item>
 			            <md-menu-item ng-show="!$root.session.state || $root.session.state > 1">
-			              <md-button ng-click="start()" >
+			              <md-button ng-click="showPinpad($event, 'new-session')" >
 			                <p>New session</p>
+			              </md-button>
+			            </md-menu-item>
+			            <md-menu-item>
+			              <md-button ng-click="showPinpad($event, 'logout')" >
+			                <p>Logout</p>
 			              </md-button>
 			            </md-menu-item>
 			          </md-menu-content>

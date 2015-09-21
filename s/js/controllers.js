@@ -55,9 +55,8 @@ angular.module("controllers", []).
 				func = _api.appointment.listByDoctor;
 			}
 			else{
-				func = _api.appointment.listByOrganisation;
+				func = _api.appointment.list;
 			}
-			
 			
 			func(params).execute(function(resp){
 				$scope.appointmentsLoading = false;
@@ -67,7 +66,8 @@ angular.module("controllers", []).
 		}		
 
 		var params = {
-				organisation_id:$rootScope.organisation.id
+				organisation_id:$rootScope.organisation.id,
+				order : 'date'
 		};
 		
 		if($routeParams.doctor) {
@@ -150,7 +150,11 @@ angular.module("controllers", []).
 		
 		$scope.newPatient = function ($event) {
 			$location.path("/patient/0");
-	    }  		
+	    }
+		
+		$scope.sameDay = function (d1, d2){
+			return moment(d1).isSame(moment(d2), 'd');
+		}
 	    
 	    console.log("Grid page loaded: " + (Date.now() - start) + " ms");
 	    

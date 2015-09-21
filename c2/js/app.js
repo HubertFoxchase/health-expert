@@ -132,7 +132,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	          	return $api.load();
 	        	}]
 			}
-		})
+		})		
 	    .otherwise({
 	          redirectTo: '/list'
 	    });		
@@ -162,7 +162,23 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
     	        .ok('OK')
     	        .targetEvent(event)
     	    );
-    	});      	
+    	});
+    	
+    	$rootScope.$on('$notImplemented', function(event, args){
+    	    $mdDialog.show(
+    	      $mdDialog.alert()
+    	        .clickOutsideToClose(true)
+    	        .title('Sorry, this feature has not been implemented yet ...')
+    	        .content('... but we are working really hard to make it work!')
+    	        .ariaLabel('Not Implemented')
+    	        .ok('Close')
+    	        .targetEvent(event)
+    	    );
+    	});    	
+    	
+		$rootScope.notImplemented = function(){
+			$rootScope.$emit("$notImplemented", {});			
+		}
     	
     	document.addEventListener("backbutton", function(){
     		if(location.hash.indexOf("/list") > 0 || location.hash.indexOf("/end") > 0) {

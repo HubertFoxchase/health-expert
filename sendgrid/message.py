@@ -1,6 +1,5 @@
 import io
 import sys
-import json
 try:
     import rfc822
 except Exception as e:
@@ -8,14 +7,13 @@ except Exception as e:
 from smtpapi import SMTPAPIHeader
 
 
-class Mail():
+class Mail(SMTPAPIHeader):
 
     """SendGrid Message."""
 
     def __init__(self, **opts):
         """
         Constructs SendGrid Message object.
-
         Args:
             to: Recipient
             to_name: Recipient name
@@ -30,6 +28,7 @@ class Mail():
             headers: Set headers
             files: Attachments
         """
+        super(Mail, self).__init__()
         self.to = []
         self.to_name = []
         self.cc = []
@@ -45,12 +44,11 @@ class Mail():
         self.add_bcc(opts.get('bcc', []))
         self.reply_to = opts.get('reply_to', '')
         self.files = opts.get('files', {})
-        self.set_headers(opts.get('headers', ''))
+        self.headers = opts.get('headers', '')
         self.date = opts.get('date', rfc822.formatdate())
-        self.content = opts.get('content', {})
-        self.smtpapi = opts.get('smtpapi', SMTPAPIHeader())
 
     def parse_and_add(self, to):
+        super(Mail, self).add_to(to)
         name, email = rfc822.parseaddr(to.replace(',', ''))
         if email:
             self.to.append(email)
@@ -62,12 +60,6 @@ class Mail():
             self.parse_and_add(to)
         elif sys.version_info < (3, 0) and isinstance(to, unicode):
             self.parse_and_add(to.encode('utf-8'))
-        elif type(to) is tuple:
-            if len(to) == 1:
-                self.add_to(to[0])
-            elif len(to) == 2:
-                self.add_to(to[0])
-                self.add_to_name(to[1])
         elif hasattr(to, '__iter__'):
             for email in to:
                 self.add_to(email)
@@ -78,8 +70,7 @@ class Mail():
         elif sys.version_info < (3, 0) and isinstance(to_name, unicode):
             self.to_name.append(to_name.encode('utf-8'))
         elif hasattr(to_name, '__iter__'):
-            for tn in to_name:
-                self.add_to_name(tn)
+            self.to_name = self.to_name + to_name
 
     def add_cc(self, cc):
         if isinstance(cc, str):
@@ -126,8 +117,6 @@ class Mail():
         self.reply_to = replyto
 
     def add_attachment(self, name, file_):
-        if sys.version_info < (3, 0) and isinstance(name, unicode):
-            name = name.encode('utf-8')
         if isinstance(file_, str):  # filepath
             with open(file_, 'rb') as f:
                 self.files[name] = f.read()
@@ -135,56 +124,15 @@ class Mail():
             self.files[name] = file_.read()
 
     def add_attachment_stream(self, name, string):
-        if sys.version_info < (3, 0) and isinstance(name, unicode):
-            name = name.encode('utf-8')
-        if isinstance(string, io.BytesIO):
+        if isinstance(string, str):
+            self.files[name] = string
+        elif isinstance(string, io.BytesIO):
             self.files[name] = string.read()
-        else:
+        elif sys.version_info < (3, 0) and isinstance(string, unicode):
             self.files[name] = string
 
-    def add_content_id(self, cid, value):
-        self.content[cid] = value
-
     def set_headers(self, headers):
-        if isinstance(headers, str):
-            self.headers = headers
-        else:
-            self.headers = json.dumps(headers)
+        self.headers = headers
 
     def set_date(self, date):
         self.date = date
-
-    # SMTPAPI Wrapper methods
-
-    def add_substitution(self, key, value):
-        self.smtpapi.add_substitution(key, value)
-
-    def set_substitutions(self, subs):
-        self.smtpapi.set_substitutions(subs)
-
-    def add_unique_arg(self, key, value):
-        self.smtpapi.add_unique_arg(key, value)
-
-    def set_unique_args(self, args):
-        self.smtpapi.set_unique_args(args)
-
-    def add_category(self, cat):
-        self.smtpapi.add_category(cat)
-
-    def set_categories(self, cats):
-        self.smtpapi.set_categories(cats)
-
-    def add_section(self, key, value):
-        self.smtpapi.add_section(key, value)
-
-    def set_sections(self, sections):
-        self.smtpapi.set_sections(sections)
-
-    def add_filter(self, filterKey, setting, value):
-        self.smtpapi.add_filter(filterKey, setting, value)
-
-    def set_asm_group_id(self, value):
-        self.smtpapi.set_asm_group_id(value)
-
-    def json_string(self):
-        return self.smtpapi.json_string()

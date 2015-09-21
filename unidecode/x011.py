@@ -51,7 +51,7 @@ data = (
 'sm',    # 0x31
 'sb',    # 0x32
 'sbg',    # 0x33
-'sss',    # 0x34
+'sendgrid',    # 0x34
 's',    # 0x35
 'sj',    # 0x36
 'sc',    # 0x37

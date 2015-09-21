@@ -17,10 +17,9 @@ class SendGridClient(object):
 
     """SendGrid API."""
 
-    def __init__(self, username_or_apikey, password=None, **opts):
+    def __init__(self, username, password, **opts):
         """
         Construct SendGrid API object.
-
         Args:
             username: SendGrid username
             password: SendGrid password
@@ -31,17 +30,8 @@ class SendGridClient(object):
                 1.0.0, the default will be changed to True, so you are
                 recommended to pass True for forwards compatability.
         """
-
-        # Check if username + password or api key
-        if password is None:
-            # API Key
-            self.username = None
-            self.password = username_or_apikey
-        else:
-            # Username + password
-            self.username = username_or_apikey
-            self.password = password
-
+        self.username = username
+        self.password = password
         self.useragent = 'sendgrid/' + __version__ + ';python'
         self.host = opts.get('host', 'https://api.sendgrid.com')
         self.port = str(opts.get('port', '443'))
@@ -61,7 +51,9 @@ class SendGridClient(object):
                     setattr(message, k, v.encode('utf-8'))
 
         values = {
-            'to[]': message.to if message.to else [message.from_email],
+            'api_user': self.username,
+            'api_key': self.password,
+            'to[]': message.to,
             'toname[]': message.to_name,
             'cc[]': message.cc,
             'bcc[]': message.bcc,
@@ -75,21 +67,12 @@ class SendGridClient(object):
             'date': message.date,
             'x-smtpapi': message.json_string()
         }
-
-        if self.username != None:
-            # Using username + password
-            values['api_user'] = self.username
-            values['api_key'] = self.password
-
         for k in list(values.keys()):
             if not values[k]:
                 del values[k]
         for filename in message.files:
             if message.files[filename]:
                 values['files[' + filename + ']'] = message.files[filename]
-        for content in message.content:
-            if message.content[content]:
-                values['content[' + content + ']'] = message.content[content]
         return values
 
     def _make_request(self, message):
@@ -100,11 +83,6 @@ class SendGridClient(object):
         data = urlencode(self._build_body(message), True).encode('utf-8')
         req = urllib_request.Request(self.mail_url, data)
         req.add_header('User-Agent', self.useragent)
-
-        if self.username is None:
-            # Using API key
-            req.add_header('Authorization', 'Bearer ' + self.password)
-
         response = urllib_request.urlopen(req, timeout=10)
         body = response.read()
         return response.getcode(), body
@@ -127,9 +105,9 @@ class SendGridClient(object):
         try:
             return self._make_request(message)
         except HTTPError as e:
-            if 400 <= e.code < 500:
+            if e.code in range(400, 500):
                 raise SendGridClientError(e.code, e.read())
-            elif 500 <= e.code < 600:
+            elif e.code in range(500, 600):
                 raise SendGridServerError(e.code, e.read())
             else:
                 assert False

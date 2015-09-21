@@ -5,6 +5,7 @@ Created on 5 May 2015
 '''
 
 import os
+import sys
 
 # Workaround the dev-environment SSL
 #   http://stackoverflow.com/q/16192916/893652
@@ -17,3 +18,6 @@ if os.environ.get('SERVER_SOFTWARE', '').startswith('Development'):
     # Use the system socket.
     psocket = os.path.join(os.path.dirname(os.__file__), 'socket.py')
     imp.load_source('socket', psocket)
+    
+#add libs folder for future better content organisation
+sys.path.append(os.path.join(os.path.dirname(__file__), "libs"))
