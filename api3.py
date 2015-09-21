@@ -6,14 +6,14 @@ Created on 5 Mar 2015
 
 import endpoints
 import datetime
-import api2_messages
+import api3_messages
 import logging
 from protorpc import messages
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
 from protorpc import remote, message_types
 from protorpc import message_types
-from api2_models import *
+from api3_models import *
 
 import infermedica_api
 import string
@@ -212,7 +212,7 @@ class UserApi(remote.Service):
         
         return model        
 
-    @endpoints.method(api2_messages.IdListMessage,
+    @endpoints.method(api3_messages.IdListMessage,
                       message_types.VoidMessage,
                       path='users/deleteByIdList', 
                       http_method='GET',
@@ -330,7 +330,7 @@ class PatientApi(remote.Service):
             raise endpoints.NotFoundException('Patient not found.')
         return model        
 
-    @endpoints.method(api2_messages.IdListMessage,
+    @endpoints.method(api3_messages.IdListMessage,
                       message_types.VoidMessage,
                       path='patients/deleteByIdList', 
                       http_method='GET',
@@ -465,7 +465,7 @@ class AppointmentApi(remote.Service):
 @c4c_api.api_class(resource_name='session')
 class SessionApi(remote.Service):
    
-    @endpoints.method(api2_messages.SessionNewRequestInsertMessage,
+    @endpoints.method(api3_messages.SessionNewRequestInsertMessage,
                       Session.ProtoModel(),
                       path='new_session', 
                       http_method='POST',
@@ -593,7 +593,7 @@ class SessionApi(remote.Service):
         return model  
 
 
-    @endpoints.method(api2_messages.IdListMessage,
+    @endpoints.method(api3_messages.IdListMessage,
                       message_types.VoidMessage,
                       path='sessions/deleteByIdList', 
                       http_method='GET',
@@ -629,7 +629,7 @@ class SessionApi(remote.Service):
             raise endpoints.NotFoundException('Session not found.')
         return model  
 
-    @endpoints.method(api2_messages.SymptomMultiRequestMessage, 
+    @endpoints.method(api3_messages.SymptomMultiRequestMessage, 
                       Session.ProtoModel(),
                       path='session/insertMultipleSymptoms', 
                       http_method='POST',
@@ -699,7 +699,7 @@ class SessionApi(remote.Service):
         return session.ToMessage()
 
 
-    @endpoints.method(api2_messages.OutcomeRequestMessage, 
+    @endpoints.method(api3_messages.OutcomeRequestMessage, 
                       Session.ProtoModel(),
                       path='session/insertOutcome', 
                       http_method='POST',

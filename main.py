@@ -13,7 +13,7 @@ from webapp2_extras import sessions
 
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
-import api2_models
+import api3_models
 
 import json
 import urllib
@@ -195,7 +195,7 @@ class CompleteSignupHandler(BaseHandler):
 
         (user, ts) = self.user_model.get_by_auth_token(int(user_id), signup_token, 'invite')
         
-        organisation = ndb.Key(api2_models.Organisation, user.organisation_id).get()
+        organisation = ndb.Key(api3_models.Organisation, user.organisation_id).get()
 
         if user:
             params = {'email': user.email, 
@@ -269,7 +269,7 @@ class InviteHandlerAjax(BaseHandler):
             email=email,
             password_raw=self.random_id_generator(),
             #name=name,
-            type=int(api2_models.UserType.NORMAL),
+            type=int(api3_models.UserType.NORMAL),
             role=role,
             organisation_ref=organisation_ref,
             active=False,
@@ -483,7 +483,7 @@ class LogoutHandler(BaseHandler):
 config = {
     'webapp2_extras.auth': 
     {
-      'user_model': 'api2_models.User',
+      'user_model': 'api3_models.User',
       'user_attributes': ['email', 'type', 'organisation_id']
     },
     'webapp2_extras.sessions': 
