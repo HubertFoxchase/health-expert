@@ -4,7 +4,7 @@ angular.module("directives", [])
 .directive('svgHead', function(){
 	return {
         restrict: 'E',
-        templateUrl: '/c2/css/img/body_head.svg',
+        templateUrl: '/client-assets/css/img/body_head.svg',
         link: function (scope, element, attrs) {
             
         }
@@ -13,7 +13,7 @@ angular.module("directives", [])
 .directive('svgChest', function(){
 	return {
         restrict: 'E',
-        templateUrl: '/c2/css/img/body_chest.svg',
+        templateUrl: '/client-assets/css/img/body_chest.svg',
         link: function (scope, element, attrs) {
             
         }
@@ -22,7 +22,7 @@ angular.module("directives", [])
 .directive('svgAbdomen', function(){
 	return {
         restrict: 'E',
-        templateUrl: '/c2/css/img/body_center.svg',
+        templateUrl: '/client-assets/css/img/body_center.svg',
         link: function (scope, element, attrs) {
             
         }
@@ -31,7 +31,7 @@ angular.module("directives", [])
 .directive('svgArmLeft', function(){
 	return {
         restrict: 'E',
-        templateUrl: '/c2/css/img/body_arm_left.svg',
+        templateUrl: '/client-assets/css/img/body_arm_left.svg',
         link: function (scope, element, attrs) {
             
         }
@@ -40,7 +40,7 @@ angular.module("directives", [])
 .directive('svgArmRight', function(){
 	return {
         restrict: 'E',
-        templateUrl: '/c2/css/img/body_arm_right.svg',
+        templateUrl: '/client-assets/css/img/body_arm_right.svg',
         link: function (scope, element, attrs) {
             
         }
@@ -49,7 +49,7 @@ angular.module("directives", [])
 .directive('svgLegs', function(){
 	return {
         restrict: 'E',
-        templateUrl: '/c2/css/img/body_legs.svg',
+        templateUrl: '/client-assets/css/img/body_legs.svg',
         link: function (scope, element, attrs) {
             
         }

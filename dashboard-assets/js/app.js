@@ -50,7 +50,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	
     $routeProvider
       .when('/session/:id', {
-        templateUrl: '/s/templates/sessionDetail.html',
+        templateUrl: '/dashboard-assets/templates/sessionDetail.html',
         controller: 'SessionDetailCtrl',
         controllerAs: 'session',
 		resolve : { init: ['$api', function($api) {
@@ -59,12 +59,12 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 		}
       })
 	 .when('/authorise', {
-			templateUrl: '/s/templates/authorise.html',
+			templateUrl: '/dashboard-assets/templates/authorise.html',
 			controller: 'GridCtrl',
 	        controllerAs: 'grid'
 	  })      
       .when('/grid', {
-        templateUrl: '/s/templates/grid.html',
+        templateUrl: '/dashboard-assets/templates/grid.html',
         controller: 'GridCtrl',
         controllerAs: 'grid',
 		resolve : { init: ['$api', function($api) {
@@ -73,7 +73,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 		}
       })
       .when('/grid/:doctor', {
-        templateUrl: '/s/templates/grid.html',
+        templateUrl: '/dashboard-assets/templates/grid.html',
         controller: 'GridCtrl',
         controllerAs: 'grid',
 		resolve : { init: ['$api', function($api) {
@@ -82,7 +82,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 		}
       })
       .when('/history', {
-          templateUrl: '/s/templates/history.html',
+          templateUrl: '/dashboard-assets/templates/history.html',
           controller: 'HistoryCtrl',
           controllerAs: 'history',
   		  resolve : { init: ['$api', function($api) {
@@ -91,7 +91,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
   		}
       })
       .when('/account', {
-          templateUrl: '/s/templates/account.html',
+          templateUrl: '/dashboard-assets/templates/account.html',
           controller: 'AccountCtrl',
           controllerAs: 'account',
 	  	  resolve : { init: ['$api', function($api) {
@@ -100,7 +100,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	  		}
       })
       .when('/invite-user', {
-          templateUrl: '/s/templates/inviteUser.html',
+          templateUrl: '/dashboard-assets/templates/inviteUser.html',
           controller: 'InviteUserCtrl',
           controllerAs: 'inviteuser',
 	  	  resolve : { init: ['$api', function($api) {
@@ -109,7 +109,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	  		}
       })
       .when('/settings', {
-          templateUrl: '/s/templates/settings.html',
+          templateUrl: '/dashboard-assets/templates/settings.html',
           controller: 'AccountCtrl',
           controllerAs: 'settings',
 	  		resolve : { init: ['$api', function($api) {
@@ -118,7 +118,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	  		}
       })
       .when('/user/:id', {
-          templateUrl: '/s/templates/userDetail.html',
+          templateUrl: '/dashboard-assets/templates/userDetail.html',
           controller: 'UserDetailCtrl',
           controllerAs: 'userdetail',
 	  		resolve : { init: ['$api', function($api) {
@@ -127,7 +127,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	  		}
       })
       .when('/patients', {
-          templateUrl: '/s/templates/patients.html',
+          templateUrl: '/dashboard-assets/templates/patients.html',
           controller: 'PatientsCtrl',
           controllerAs: 'patients',
 	  		resolve : { init: ['$api', function($api) {
@@ -136,7 +136,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	  		}
       })
       .when('/patient/:id', {
-          templateUrl: '/s/templates/patientDetail.html',
+          templateUrl: '/dashboard-assets/templates/patientDetail.html',
           controller: 'PatientDetailCtrl',
           controllerAs: 'patientdetail',
 	  		resolve : { init: ['$api', function($api) {

@@ -5,7 +5,7 @@ angular.module("controllers", []).
 			
 	        var ret = $mdDialog.show({
 	          targetEvent: $event,
-	          templateUrl: '/c2/templates/pinpad.html',
+	          templateUrl: '/client-assets/templates/pinpad.html',
 	          parent: angular.element(document.body),
 	          controller: 'PinpadCtrl',
 	          locals: { 

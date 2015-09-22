@@ -21,7 +21,7 @@ import urllib
 import string
 import random
 
-#from sendgrid import SendGridClient, Mail
+from sendgrid import SendGridClient, Mail
 
 SENDGRID_USER = 'click4care'
 SENDGRID_PASSWORD = 'skynet1997'
@@ -129,19 +129,19 @@ class BaseHandler(webapp2.RequestHandler):
     def send_email(self, email_to, email_from, subject, template_filename, params=None ):
         # make a secure connection to SendGrid
         
-        #sg = SendGridClient(SENDGRID_USER, SENDGRID_PASSWORD, secure=True)
+        sg = SendGridClient(SENDGRID_USER, SENDGRID_PASSWORD, secure=True)
         
         # make a message object
-        #message = Mail()
-        #message.set_subject(subject)
-        #message.set_text(self.render_template_to_string(template_filename, params))
-        #message.set_from(email_from)
+        message = Mail()
+        message.set_subject(subject)
+        message.set_text(self.render_template_to_string(template_filename, params))
+        message.set_from(email_from)
         
         # add a recipient
-        #message.add_to(email_to)
+        message.add_to(email_to)
         
         # use the Web API to send your message
-        #sg.send(message)       
+        sg.send(message)       
         
         #message = mail.EmailMessage()
         #message.to = email_to

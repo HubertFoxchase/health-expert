@@ -1,5 +1,5 @@
 application: health-expert-1705
-version: 1
+version: 2
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -13,21 +13,13 @@ handlers:
   script: api3.app
   secure: always
 
-- url: /s
-  static_dir: s
+- url: /dashboard-assets
+  static_dir: dashboard-assets
   secure: always
 
-- url: /c1
-  static_dir: c1
+- url: /client-assets
+  static_dir: client-assets
   secure: always
-
-- url: /c2
-  static_dir: c2
-  secure: always
-
-- url: /c
-  static_dir: c
-  secure: always  
 
 - url: .*
   script: main.app

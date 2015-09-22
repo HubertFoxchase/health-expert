@@ -133,7 +133,7 @@ angular.module("controllers", []).
 			
 	        var ret = $mdDialog.show({
 	          targetEvent: $event,
-	          templateUrl: '/s/templates/appointmentSelector.html',
+	          templateUrl: '/dashboard-assets/templates/appointmentSelector.html',
 	          parent: angular.element(document.body),
 	          controller: 'AppointmentSelectCtrl',
 	          locals: { $patient : null,
@@ -562,7 +562,7 @@ angular.module("controllers", []).
 			
 	        var ret = $mdDialog.show({
 	          targetEvent: $event,
-	          templateUrl: '/s/templates/appointmentSelector.html',
+	          templateUrl: '/dashboard-assets/templates/appointmentSelector.html',
 	          parent: angular.element(document.body),
 	          controller: 'AppointmentSelectCtrl',
 	          locals: { $appointment : appointment,
@@ -582,7 +582,7 @@ angular.module("controllers", []).
 			
 	        var ret = $mdDialog.show({
 	          targetEvent: $event,
-	          templateUrl: '/s/templates/appointmentSelector.html',
+	          templateUrl: '/dashboard-assets/templates/appointmentSelector.html',
 	          parent: angular.element(document.body),
 	          controller: 'AppointmentSelectCtrl',
 	          locals: { $patient : patient,

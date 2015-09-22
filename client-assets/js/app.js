@@ -4,7 +4,7 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'ngMessages', 'cont
 .value('$config', {
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
       scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ],
-      observationsJson : "/c2/js/observations.js"
+      observationsJson : "/client-assets/js/observations.js"
 })
 .config(['$routeProvider', '$locationProvider', '$mdThemingProvider',
 function($routeProvider, $locationProvider, $mdThemingProvider) {
@@ -38,7 +38,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	
 	$routeProvider
 		.when('/list', {
-			templateUrl: '/c2/templates/patients-list.html',
+			templateUrl: '/client-assets/templates/patients-list.html',
 			controller: 'PatientCtrl',
 			resolve : { init: ['$api', function($api) {
 		          	return $api.load();
@@ -46,7 +46,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/start', {
-			templateUrl: '/c2/templates/start.html',
+			templateUrl: '/client-assets/templates/start.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 		          	return $api.load();
@@ -54,7 +54,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:patient/intro', {
-			templateUrl: '/c2/templates/intro.html',
+			templateUrl: '/client-assets/templates/intro.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -62,7 +62,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:patient/gender', {
-			templateUrl: '/c2/templates/gender.html',
+			templateUrl: '/client-assets/templates/gender.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -70,7 +70,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:patient/age', {
-			templateUrl: '/c2/templates/age.html',
+			templateUrl: '/client-assets/templates/age.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -78,7 +78,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:patient/reason', {
-			templateUrl: '/c2/templates/reason.html',
+			templateUrl: '/client-assets/templates/reason.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -86,7 +86,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})		
 		.when('/:patient/doctor-reason', {
-			templateUrl: '/c2/templates/doctor-reason.html',
+			templateUrl: '/client-assets/templates/doctor-reason.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -94,7 +94,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})	
 		.when('/:patient/symptom-groups', {
-			templateUrl: '/c2/templates/symptom-groups.html',
+			templateUrl: '/client-assets/templates/symptom-groups.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -102,7 +102,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:patient/initial/:groupId', {
-			templateUrl: '/c2/templates/symptom2.html',
+			templateUrl: '/client-assets/templates/symptom2.html',
 			controller: 'StartCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -110,7 +110,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})	
 		.when('/:session/end', {
-			templateUrl: '/c2/templates/end.html',
+			templateUrl: '/client-assets/templates/end.html',
 			controller: 'EndCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -118,7 +118,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:session/symptom/:sid', {
-			templateUrl: '/c2/templates/question.html',
+			templateUrl: '/client-assets/templates/question.html',
 			controller: 'QuestionsCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
@@ -126,7 +126,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})
 		.when('/:session/symptom', {
-			templateUrl: '/c2/templates/question.html',
+			templateUrl: '/client-assets/templates/question.html',
 			controller: 'QuestionsCtrl',
 			resolve : { init: ['$api', function($api) {
 	          	return $api.load();
