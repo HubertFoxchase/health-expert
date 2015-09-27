@@ -1,8 +1,6 @@
 angular.module("controllers", []).
-	controller("AppCtrl", ['$scope', '$rootScope', '$mdSidenav', '$api', '$timeout', '$location', function($scope, $rootScope, $mdSidenav, $api, $timeout, $location){
+	controller("AppCtrl", ['$scope', '$rootScope', '$mdSidenav', '$timeout', '$mdDialog', '$location', function($scope, $rootScope, $mdSidenav, $timeout, $mdDialog, $location){
 		
-		var _api;
-
 		$scope.refresh = false;
 		
 		$scope.toggleSidenav = function(menuId) {
@@ -25,9 +23,9 @@ angular.module("controllers", []).
 				},
 				5000);
 		}
-		poll();	
+		poll();
 	}]).
-	controller("GridCtrl", ['$scope', '$rootScope', '$routeParams', '$api', '$location', '$mdDialog', function($scope, $rootScope, $routeParams, $api, $location, $mdDialog){
+	controller("GridCtrl", ['$scope', '$rootScope', '$routeParams', '$api', '$location', '$mdDialog', '$rtc', function($scope, $rootScope, $routeParams, $api, $location, $mdDialog, $rtc){
 		
 		var _api = $api.get();
 
@@ -80,7 +78,7 @@ angular.module("controllers", []).
 			
 		$rootScope.$on('refresh', function(){
 			loadSessions($routeParams.doctor);
-		})
+		});
 		
 		$scope.showDetail = function(itemData, $event) {
 			$rootScope.item = itemData;
@@ -156,7 +154,51 @@ angular.module("controllers", []).
 			return moment(d1).isSame(moment(d2), 'd');
 		}
 	    
-	    console.log("Grid page loaded: " + (Date.now() - start) + " ms");
+		$rootScope.rtcCall = function(id){
+			
+		
+		}
+		
+		var callback;
+		
+		$rootScope.$on('$incomingCall', function(event, data){
+
+			var patientId = $rootScope.callers[data.callerId].apiField.patient.fieldValue;
+			callback = data.callback;
+			
+		});	
+		
+		$scope.acceptCall =  function(val, $event){
+
+	        var ret = $mdDialog.show({
+		          templateUrl: '/dashboard-assets/templates/videoChat.html',
+		          parent: angular.element(document.body),
+		          controller: 'VideoChatCtrl',
+		          locals: {
+		        	  $callerId : 0
+		          },
+		          onComplete : function(){
+		      		
+		              	$rtc.setSelfVideoEl(document.getElementById("self"));
+		              	$rtc.setCallerVideoEl(document.getElementById("caller"));
+		              	
+						callback(val);
+		          }
+		        });
+		        
+		        ret.then(function(val){
+		        	$rtc.hangup();
+		        },
+		        function(){
+		        	$rtc.hangup();
+		        });			
+			
+			$event.stopPropagation();			
+		}
+		
+		$rtc.connectToRoom();			
+		
+		console.log("Grid page loaded: " + (Date.now() - start) + " ms");
 	    
 	    $rootScope.readyClass = "app-ready";
 	}]).	
@@ -211,12 +253,12 @@ angular.module("controllers", []).
 				$rootScope.gridItems = null;
 				$scope.back();
 			});
-		}		
+		}
 
 		$rootScope.readyClass = "app-ready";
 	
 	}]).
-	controller("HistoryCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
+	controller("HistoryCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', '$mdToast', function($scope, $rootScope, $routeParams, $api, $location, $mdToast){
 		
 		var _api = $api.get();
 
@@ -227,11 +269,18 @@ angular.module("controllers", []).
 		$scope.selected = [];
 
 		var loadSessions = function(){
+			$mdToast.simple().content('Loading ...');
 			_api.session.list({organisation:$rootScope.organisation.id}).execute(function(resp){
-				$scope.historyLoading =  false;
-				$scope.sessions = resp.items;
-				$rootScope.gridItems = resp.items;
-				$scope.$apply()
+				if(resp.error){
+					
+				}
+				else {
+					$scope.historyLoading =  false;
+					$scope.sessions = resp.items;
+					$rootScope.gridItems = resp.items;
+					$mdToast.hide();
+					$scope.$apply()
+				}
 			});
 		}
 
@@ -327,7 +376,7 @@ angular.module("controllers", []).
 	    
 		$scope.deleteSelected = function(selected){
 			_api.user.deleteByIdList({ids:selected}).execute(function(resp){
-				if(resp && !resp.error) {
+				if(!resp.error) {
 					var list = $scope.users;
 			    	angular.forEach(selected, function(value, key) {
 			    		for(i=0;i<list.length;i++){
@@ -381,6 +430,7 @@ angular.module("controllers", []).
 
 		$rootScope.showBackBtn = true;
 		$rootScope.backLocation = "/account";
+		$scope.allowChange = true;
 		
 		var loadUser = function(){
 			_api.user.get({id:$routeParams.id}).execute(function(resp){
@@ -390,6 +440,7 @@ angular.module("controllers", []).
 		}
 
 		if($routeParams.id && $routeParams.id != "0"){
+			$scope.allowChange = $routeParams.id == $rootScope.user.id || $rootScope.user.isAdmin;
 			loadUser();
 		}
 		else {
@@ -883,7 +934,14 @@ angular.module("controllers", []).
 				});
 			}
 		}	
+	}])
+	.controller("VideoChatCtrl", ['$scope', '$rootScope', '$api', '$location', '$mdDialog', '$config', '$rtc', '$callerId',function($scope, $rootScope, $api, $location, $mdDialog, $config, $rtc, $callerId){
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
 	}]);
+	
 	
 	
 	

@@ -108,7 +108,20 @@
 					</md-item-content>
 				</a> 
 			</md-item> 		
+			<md-subheader>Incoming</md-subheader> 
+			<md-item ng-repeat="(id, caller) in $root.callers"> 
+				<a ng-click="$root.rtcCall(id)">
+					<md-item-content md-ink-ripple layout="row"	layout-align="start center">
+						<div class="inset">
+							<ng-md-icon icon="person"></ng-md-icon>
+						</div>
+						<div class="inset">{{caller.username}}</div>
+					</md-item-content>
+				</a> 
+			</md-item> 		
+
 		</md-list> 
+
 	</md-sidenav>
 	<div layout="column" flex class="relative" role="main" id="main">
 
@@ -157,10 +170,10 @@
 		
 		<md-content flex md-scroll-y class="c4c-app-background">
 			<div ng-view layout="column" layout-fill layout-padding style="padding:10px 20px">
-			
+
 			</div>
 		</md-content>
-
+		
 		<!-- 
 		<div class="view-container">
 			<div ng-view class="view-frame"></div>
@@ -184,6 +197,10 @@
 	<script src="//cdn.jsdelivr.net/momentjs.timezone/0.4.0/moment-timezone-with-data.min.js"></script>
 	<script src="//cdn.jsdelivr.net/angular.moment/0.10.3/angular-moment.min.js"></script>
 
+
+	<script src="//c4c-nibler.rhcloud.com/socket.io/socket.io.js"></script>
+	<script src="//c4c-nibler.rhcloud.com/easyrtc/easyrtc.js"></script>
+
 	<script>
     	console.log("Angular loaded: " + (Date.now() - start) + " ms");
     </script>
@@ -192,6 +209,8 @@
 	<script src="/dashboard-assets/js/controllers.js"></script>
 	<script src="/dashboard-assets/js/services.js"></script>
 	<script src="/dashboard-assets/js/directives.js"></script>
+
+
 
 	<script>
 		(function(i, s, o, g, r, a, m) {

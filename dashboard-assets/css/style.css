@@ -85,6 +85,10 @@ md-toolbar h1 {
 	background-color: #252833;	
 }
 
+#grid {
+	margin-right:20px;
+}
+
 .session-detials .patient-tile h3{
 	margin: 0px 0px 16px 0px;
 }
@@ -94,8 +98,8 @@ md-toolbar h1 {
 }
 
 .session-tools{
-	padding-bottom: 5px; 
-	margin-right: -5px	
+	/* padding-bottom: 5px; */
+	margin-right: 10px;
 }
 
 .session-tools h3{
@@ -150,7 +154,7 @@ md-toolbar h1 {
 
 .patient-tile-container.selected .patient-tile{
 	transform : scale(0.90, 0.90);
-	margin: 0; 
+	/* margin: 0; */
 }
 
 .patient-tile  {
@@ -177,6 +181,15 @@ md-toolbar h1 {
 	top:10px; 
 	right:10px;
 }
+
+.call-btn {
+	fill:red;
+	position:absolute; 
+	bottom:10px; 
+	right:10px;
+}
+
+
 
 .select-btn:hover {
 	fill:#888;
@@ -467,6 +480,54 @@ ng-md-icon {
 
 .lock-size {
 	position: absolute;
-	bottom: -30px;
+	top: 15px;
 	right: 0px;
 }
+
+#chat-holder {
+	position: relative;
+	margin: 20px;
+	width: 640px;
+	height: 480px;
+	background-color: #bbb;
+}
+
+#chat-holder .call-toolbar {
+	bottom: 0;
+	position: absolute;
+	width: 100%;
+	fill:#fff;
+}
+
+#chat-holder .call-toolbar .call-toolbar-backdrop {
+	background-color: #000;
+	opacity: 0.4;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+}
+
+
+#chat-holder #self{
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	background-color: #999;
+	/* border: 1px solid #777; */
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+	}
+
+#chat-holder #caller{
+	position: absolute;
+	background-color: #999;
+}
+
+#easyrtcErrorDialog {
+	position: absolute;
+	bottom:0;
+	right: 0;
+	background-color: #aaa;
+}
+

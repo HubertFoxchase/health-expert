@@ -29,9 +29,9 @@
 	<span flex></span>
 	<div layout="row" layout-align="end center" ng-show="selected.length > 0">
  		<md-button class="md-raised" ng-click="clearSelected()">Cancel</md-button>
- 		<md-button class="md-raised" ng-click="deleteSelected(selected)">Delete</md-button>
+ 		<md-button class="md-raised" ng-click="deleteSelected(selected)" ng-show="$root.user.isAdmin">Delete</md-button>
 	</div>
-	<div layout="row" layout-align="end center" ng-hide="selected.length > 0 || $root.user.type != '2' || $root.user.type != '1')">
+	<div layout="row" layout-align="end center" ng-hide="selected.length > 0 || !$root.user.isAdmin">
  		<md-button class="md-raised md-primary md-accent" ng-href="#/invite-user">Invite User</md-button>
 	</div>
 </div>

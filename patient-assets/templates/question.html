@@ -1,0 +1,118 @@
+<div layout="column" layout-align="start space-between" style="height: 650px">
+	
+	<div layout="row" layout-margin layout-align="space-between start" style="height: 50px" class="sub-header-container">
+		<h3 style="margin: 10px 2px">Reason for the visit: <strong>{{$root.reasonForVisit}}</strong></h3>
+		<span flex></span>
+		<h3 style="margin: 10px 2px">
+			Progress : <strong>
+			{{$root.progress  | number:0}}% 
+			complete</strong>
+		</h3>
+	</div>
+
+	<div layout="row" flex layout-align="start start" layout-padding class="md-whiteframe-z1 questions-container" style="background-color: #fff;">
+		<span flex></span>
+		
+		<div flex="60" layout="column" layout-align="start start" ng-show="session.next.type=='group_multiple'">
+			<div layout="column" layout-padding class="question-header">
+				<h3>{{step}}. {{session.next.label}}</h3>
+				<p class="explainer">You can select multiple items</p>
+			</div>
+			<md-checkbox ng-repeat="cat in session.next.symptoms" ng-model="cat.value" ng-true-value="'present'" ng-false-value="'absent'">
+	      		{{ cat.name }}
+			</md-checkbox>
+			<div class="inset"></div>
+			<div layout="row" class="next-button-container">
+			   	<md-button md-no-ink 
+			   				ng-disabled="progress == 'indeterminate'"
+			   				class="md-raised md-primary" 
+			   				ng-click="question(session.next.symptoms)">
+			    	Next
+			   	</md-button>
+    			<md-progress-circular class="md-hue-2" md-mode="{{progress}}" md-diameter="25px"></md-progress-circular>
+		   	</div> 
+		</div>
+		   
+		<div flex="60" layout="column" layout-align="space-between start" ng-show="session.next.type=='single'">
+			<div layout="row" layout-padding class="question-header">
+				<h3>{{step}}. {{session.next.label}}</h3>
+			</div>
+	
+			<div class="inset"></div>
+	
+			<div layout="row" flex layout-align="space-between start" layout-padding class="yes-no-buttons-container">
+				
+			   	<md-button md-no-ink
+			   			   ng-disabled="progress == 'indeterminate'" 
+			   			   class="md-raised c4c-medium-button" 
+			   			   ng-click="question([{id:session.next.symptoms[0].id, value:'present'}])">
+			    	Yes
+			   	</md-button>
+			   	
+			   	<md-button md-no-ink 
+			   				ng-disabled="progress == 'indeterminate'"
+			   				class="md-raised c4c-medium-button" 
+			   				ng-click="question([{id:session.next.symptoms[0].id, value:'absent'}])">
+			    	No
+			   	</md-button>
+    			<md-progress-circular class="md-hue-2" md-mode="{{progress}}" md-diameter="25px"></md-progress-circular>
+			</div>
+		</div>   
+		
+		<div flex="60" layout="column" layout-align="space-between start" ng-show="session.next.type=='group_single'">
+			<div layout="row" layout-padding class="question-header">
+				<h3>{{step}}. {{session.next.label}}</h3>
+			</div>
+			
+			<md-radio-group ng-model="s">
+	  			<md-radio-button ng-repeat="cat in session.next.symptoms" ng-value="cat.id">
+	         		{{ cat.name }}
+	  			</md-radio-button>
+			</md-radio-group>
+			
+			<div class="inset"></div>
+	
+			<div layout="row" class="next-button-container">
+			   	<md-button flex 
+			   				md-no-ink 
+			   				ng-disabled="progress == 'indeterminate'"
+			   				class="md-raised md-primary" 
+			   				ng-click="question([{id:s, value:'present'}])">
+			    	Next
+			   	</md-button>
+    			<md-progress-circular class="md-hue-2" md-mode="{{progress}}" md-diameter="25px"></md-progress-circular>
+			</div>
+		</div> 	   
+		
+		<div flex="60" layout="column" layout-align="space-between center" ng-show="session.next.type=='numeric'">
+			<div layout="row" layout-padding class="question-header">
+				<h3>{{step}}. {{session.next.label}}</h3>
+			</div>
+			
+		    <md-input-container class="form-item-med">
+				<label>{{session.next.label}}</label>
+				<input name="ref" ng-model="symptom.value">
+				<div ng-messages="symptom.value.$error">
+					<div ng-message="required">{{session.next.description}}</div>
+				</div>
+		    </md-input-container>
+	
+			<div class="inset"></div>
+	
+		   	<div layout="row" >
+			   	<md-button flex 
+			   				md-no-ink 
+			   				ng-disabled="progress == 'indeterminate'"
+			   				class="md-raised md-primary button-med" 
+			   				ng-click="question(symptom.value)">
+			    	Next
+			   	</md-button>
+    			<md-progress-circular class="md-hue-2" md-mode="{{progress}}" md-diameter="25px"></md-progress-circular>
+			</div>
+		</div>
+		      
+		<span flex></span>
+	</div>
+</div>
+
+	

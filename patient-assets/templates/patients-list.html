@@ -1,0 +1,38 @@
+<div layout="row">
+	<span flex></span>
+	<div layout="column" flex="50" flex-sm="95" flex-md="75">
+		
+		<div layout="row" flex>
+			<h3>Select patient</h3>
+			<span flex></span>
+			<div layout="row" layout-align="end center" style="margin-right: -8px;">
+		 		<md-button class="md-raised md-primary md-accent" ng-href="#/start">New Patient</md-button>
+			</div>
+		</div>
+		
+		<div layout="column" flex class="md-whiteframe-z1">
+
+			<div layout="row" class="table-header">
+			    <div flex="5"></div>
+			    <div flex>Reference</div>
+			    <div flex>Gender</div>
+			    <div flex>Age</div>
+			    <div flex>DOB</div>
+			</div>
+			
+			<md-content layout="column" layout-align="start center" md-scroll-y style="height:{{min(patients.length, 10.5) * 46}}px">
+				<div layout="row" ng-repeat="patient in patients" 
+								  class="table-row" 
+								  ng-click="selectPatient(patient, $event)">
+				    <div flex="5"></div>
+				    <div flex>{{patient.ref}}</div>
+				    <div flex>{{patient.gender}}</div>
+				    <div flex>{{patient.age}}</div>
+				    <div flex>{{patient.dob | date : 'dd MMM yyyy'}}</div>
+				</div>
+			</md-content>
+
+		</div>
+	</div>
+	<span flex></span>
+</div>

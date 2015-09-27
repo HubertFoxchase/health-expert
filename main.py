@@ -186,6 +186,12 @@ class ClientMainHandler(BaseHandler):
     def get(self):
         self.serve_static_file('client.html')
 
+class PatientMainHandler(BaseHandler):
+
+    @user_required
+    def get(self):
+        self.serve_static_file('patient.html')
+
 class CompleteSignupHandler(BaseHandler):
 
     def get(self, *args, **kwargs):
@@ -495,6 +501,7 @@ config = {
 app = webapp2.WSGIApplication([
     webapp2.Route('/', AppMainHandler, name='home'),
     webapp2.Route('/client', ClientMainHandler, name='client'),
+    webapp2.Route('/patient', PatientMainHandler, name='client'),
     
     webapp2.Route('/auth/ajax/completesignup', CompleteSignupHandlerAjax),
     webapp2.Route('/auth/ajax/inviteuser', InviteHandlerAjax),

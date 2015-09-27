@@ -221,8 +221,6 @@ angular.module("controllers", []).
 
 			if(!$scope.selectedBodyPart2){
 				$scope.layout = 2;
-				$scope.selected = null;
-				$scope.selectedItem = null;
 			}
 			
 			console.log(1);
@@ -230,6 +228,8 @@ angular.module("controllers", []).
 			$scope.symptomsLocation = $scope.findByName($scope.bodyParts, name);
 			$scope.list = $scope.symptomsLocation.parts;
 			$scope.selectedBodyPart = name;
+			$scope.selected = null;
+			$scope.selectedItem = null;
 		}
 
 		//initial state

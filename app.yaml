@@ -1,5 +1,5 @@
 application: health-expert-1705
-version: 2
+version: 3
 runtime: python27
 api_version: 1
 threadsafe: yes
@@ -19,6 +19,10 @@ handlers:
 
 - url: /client-assets
   static_dir: client-assets
+  secure: always
+
+- url: /patient-assets
+  static_dir: patient-assets
   secure: always
 
 - url: .*

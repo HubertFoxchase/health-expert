@@ -1,0 +1,69 @@
+<div layout="column" layout-align="start space-between" style="height: 650px">
+	
+	<div layout="row" layout-margin layout-align="space-between start" style="height: 50px" class="sub-header-container">
+		<h3 style="margin: 10px 0">Select initial symptoms </h3>
+		<span flex></span>
+		<h3 style="margin: 10px 0">
+			Progress : <strong>
+			{{$root.progress  | number:0}}% 
+			complete</strong>
+		</h3>
+	</div>
+
+	<div layout="row" flex layout-align="start space-between" layout-padding ng-class="{'three-cols' : layout == 3}">
+		
+		<div layout="column" flex="25" layout-align="start center" class="md-whiteframe-z1 c4c-body-container">
+			<h3>Use the <span style="font-weight: 400">Body Map</span></h3>
+			<div class="c4c-body-map-assembly">
+				<svg-head style="width:41px;height:50px;" ng-class="{'selected' : selectedBodyPart == 'Head'}" id="head" ng-click="selectBodyPart('Head')"></svg-head>
+				<svg-chest style="width:64px;height:83px;" ng-class="{'selected' : selectedBodyPart == 'Chest / Upper back'}" id="chest" ng-click="selectBodyPart('Chest / Upper back')"></svg-chest>
+				<svg-abdomen style="width:77px;height:85px;" ng-class="{'selected' : selectedBodyPart == 'Abdomen / Lower back'}" id="abdomen" ng-click="selectBodyPart('Abdomen / Lower back')"></svg-abdomen>
+				<svg-legs style="width:79px;height:153px;" ng-class="{'selected' : selectedBodyPart == 'Legs'}" id="legs" ng-click="selectBodyPart('Legs')"></svg-legs>
+				<svg-arm-left style="width:48px;height:156px;" ng-class="{'selected' : selectedBodyPart == 'Arms'}" id="left-arm" ng-click="selectBodyPart('Arms')"></svg-arm-left>
+				<svg-arm-right style="width:48px;height:156px;" ng-class="{'selected' : selectedBodyPart == 'Arms'}" id="right-arm" ng-click="selectBodyPart('Arms')"></svg-arm-right>
+				<!--
+				<img src="/client-assets/css/img/body_head.svg" width="41" height="50" id="head" ng-click="selectBodyPart('Head')">
+				<img src="/client-assets/css/img/body_chest.svg" width="64" height="83" id="chest" ng-click="selectBodyPart('Chest')">
+				<img src="/client-assets/css/img/body_center.svg" width="77" height="85" id="abdomen" ng-click="selectBodyPart('Abdomen')">
+				<img src="/client-assets/css/img/body_legs.svg" width="79" height="153" id="legs" ng-click="selectBodyPart('Legs')">
+				<img src="/client-assets/css/img/body_arm_left.svg" width="48" height="156" id="left-arm" ng-click="selectBodyPart('Arms')">
+				<img src="/client-assets/css/img/body_arm_right.svg" width="48" height="156" id="right-arm" ng-click="selectBodyPart('Arms')">
+				-->
+			</div>
+			<br>
+			<a class="md-button" ng-show="selectedBodyPart" ng-click="backToList()">Back to Symptoms List</a>
+		</div> 
+
+		<div layout="column" flex layout-align="start center" class="md-whiteframe-z1 c4c-groups-container" >
+			<h3 ng-hide="selectedBodyPart">or select from the <span style="font-weight: 400">list</span></h3>
+			<h3 ng-show="selectedBodyPart">you selected <span style="font-weight: 400">{{selectedBodyPart}}</span></h3>
+			<md-content layout="column" flex layout-align="start center" md-scroll-y layout-padding>
+				<md-button ng-repeat="g in list" 
+						   class="md-raised c4c-medium-button"
+						   md-no-ink
+						   ng-class="{'md-primary' : selectedItem == $index}" 
+						   ng-click="drillDown(g, $index)">
+			    	<div layout="row" layout-align="start space-between">
+				    	<span flex>{{g.name}}</span>
+			    		<ng-md-icon icon="chevron_right" size="25"></ng-md-icon>
+			    	</div>						   
+		   		</md-button>
+			</md-content>
+		</div>
+		<div layout="column" flex layout-align="start center" class="md-whiteframe-z1 c4c-symptoms-container" ng-show="selected">
+			<h3 ng-hide="selectedBodyPart2">{{selected.name}}</h3>
+			<h3 ng-show="selectedBodyPart2"><span style="font-weight: 400">{{selectedBodyPart2}}</span> symptoms</h3>
+			<md-content layout="column" flex layout-align="start center" md-scroll-y layout-padding>
+				<md-button ng-repeat="s in selected.symptoms" 
+						   class="md-raised c4c-medium-button" 
+						   md-no-ink
+						   ng-click="newSession(s)">
+			    	<div layout="row" layout-align="start space-between">
+				    	<span flex>{{s.name}}</span>
+			    		<ng-md-icon icon="chevron_right" size="25"></ng-md-icon>
+			    	</div>						   
+		   		</md-button>
+			</md-content>
+		</div> 		   
+	</div>
+</div>

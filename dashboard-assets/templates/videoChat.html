@@ -1,0 +1,29 @@
+<md-dialog style="min-height:660px;">
+	<md-toolbar>
+		<div class="md-toolbar-tools">
+	    	<h2>Video Chat</h2>
+	      	<span flex></span>
+	      	<md-button class="md-icon-button" ng-click="cancel($event)">
+				<ng-md-icon icon="close" style="fill:#fff"></ng-md-icon>
+	      	</md-button>
+		</div>
+	</md-toolbar>
+	<md-dialog-content>
+		<div id="chat-holder">
+			<video class="video-caller" id="caller" width="640" height="480"></video>
+		    <video class="video-self" id="self" width="200" height="200"></video>
+		    <div layout="row" layout-align="center center" class="call-toolbar">
+		    	<div class="call-toolbar-backdrop"></div>
+		    	<md-button>
+		    		<ng-md-icon icon="call"></ng-md-icon>
+		    	</md-button>
+		    	<md-button>
+		    		<ng-md-icon icon="call_end"></ng-md-icon>
+		    	</md-button>
+		    	<md-button>
+		    		<ng-md-icon icon="mic"></ng-md-icon>
+		    	</md-button>
+		    </div>
+		</div>
+	</md-dialog-content>
+</md-dialog>

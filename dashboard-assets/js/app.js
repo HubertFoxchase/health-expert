@@ -5,13 +5,17 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'ngMessages', 'angu
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
       scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ],
       userRoles    : ["Doctor", "Nurse", "Reception", "Support", "Other"],
-      observationsJson : "js/observations.js",
+      observationsJson : "/dashboard-assets/js/observations.js",
       calendar : {
     	  officeOpenHour : 7,
     	  officeCloseHour : 19,
     	  appointmentDuration : 15,
     	  appointmentStep: 5,
     	  daysOpen : [1,2,3,4,5]
+      },
+      rtcServer : {
+    	  httpUrl : "http://c4c-nibler.rhcloud.com:8000",
+    	  httpsUrl : "https://c4c-nibler.rhcloud.com:8443"
       }
 })
 .constant('angularMomentConfig', {
@@ -57,12 +61,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
           	return $api.load();
 	    	}]
 		}
-      })
-	 .when('/authorise', {
-			templateUrl: '/dashboard-assets/templates/authorise.html',
-			controller: 'GridCtrl',
-	        controllerAs: 'grid'
-	  })      
+      })    
       .when('/grid', {
         templateUrl: '/dashboard-assets/templates/grid.html',
         controller: 'GridCtrl',
@@ -162,5 +161,12 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
     		if(error.code == 401){
     			location.href = "/auth/login?url=" + encodeURI("/");
     		}
+    	});
+    	
+    	//rtc events
+    	$rootScope.$on('$callerListChanged', function(event, data){
+    		
+    		$rootScope.callers = data;
+    		$rootScope.$apply();
     	});
 }]);

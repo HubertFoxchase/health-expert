@@ -1,0 +1,37 @@
+<div layout="column" layout-align="start space-between" style="height: 650px">
+	
+	<div layout="row" layout-margin layout-align="space-between start" style="height: 50px" class="sub-header-container">
+		<h3 style="margin: 10px 0">Video call</h3>
+		<span flex></span>
+		<h3 style="margin: 10px 0">
+			Progress : <strong>
+			{{$root.progress  | number:0}}% 
+			complete</strong>
+		</h3>
+	</div>	
+	
+	<div layout="row" flex layout-align="start space-between" style="md-whiteframe-z1" layout-margin layout-padding>
+
+		<div flex layout="column" layout-align="center center" class="chat-holder" >
+			<video flex class="video-caller" id="caller"></video>
+			<div id="call-status" ng-show="status == 'connecting'">Connecting call ...</div>
+			<div id="call-status" ng-show="status == 'rejected'">Call rejected</div>
+			<div id="call-status" ng-show="status == 'disconnected'">Call ended</div>
+			<div id="call-status" ng-show="status == 'localstreamfailed'">Can't initialise local camera</div>
+		    <div layout="row" layout-align="center center" class="call-toolbar">
+		    	<div class="call-toolbar-backdrop"></div>
+		    	<md-button ng-click="call()" ng-show="status == 'disconnected' || status == 'rejected'">
+		    		<ng-md-icon icon="call"></ng-md-icon>
+		    	</md-button>
+		    	<md-button ng-click="hangup()" ng-show="status == 'connected' || status == 'connecting'">
+		    		<ng-md-icon icon="call_end"></ng-md-icon>
+		    	</md-button>
+		    	<md-button ng-click="mute()">
+		    		<ng-md-icon icon="mic"></ng-md-icon>
+		    	</md-button>
+		    </div>
+		    <video flex class="video-self" id="self"></video>
+		</div>
+
+	</div>      
+</div>

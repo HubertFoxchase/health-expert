@@ -56,6 +56,7 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
     			console.log("Me loaded: " + (Date.now() - start) + " ms");
 				if(!resp.error) {
 					$rootScope.user = resp;
+					$rootScope.user.isAdmin = resp.type == 1 || resp.type == 3;
 					$rootScope.organisation = $rootScope.user.organisation;
 
 		        	_api.user.list({organisation_id:$rootScope.organisation.id}).execute(function(resp){
@@ -193,5 +194,115 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
     };
 }])
 
+.factory('$rtc',  ['$q', '$config', '$rootScope', function ($q, $config, $rootScope) {
 
+	var selfVideoEl = null;
+	var callerVideoEl = null;
+	var applicationName = $rootScope.organisation.apikey;
+	var roomName = "c4c";
+	var userName = $rootScope.user ? $rootScope.user.name : "Doctor";	
+	
+	//rtc
+	if (window.location.protocol == "https:"){
+		easyrtc.setSocketUrl($config.rtcServer.httpsUrl);
+	}
+	else {
+		easyrtc.setSocketUrl($config.rtcServer.httpUrl);
+	}
+		
+	easyrtc.enableAudio(false);
+	easyrtc.enableAudioReceive(true);    
+	easyrtc.enableDataChannels(true);
+
+	easyrtc.setApplicationName(applicationName);
+	easyrtc.setUsername(userName);	
+	
+	easyrtc.joinRoom(roomName,
+					$rootScope.organisation.name,
+					function(roomName){
+						console.log("Doctor " + userName + " joined room " + roomName);
+					},
+					function(error){
+						console.log("Doctor " + userName + " counld not join room. Error : " + error);
+					}
+	);
+
+	easyrtc.connect(applicationName, 
+			function(id){
+				//connection successful
+				$rootScope.user.callId = id;
+				easyrtc.setRoomApiField(roomName, "doctor", $rootScope.user.name);
+			}, 
+			function(error){
+				//connection successful
+			    console.log("Cannot connect. Error : " + error);
+			} 
+	);
+	
+	var connectToRoom = function(roomName) {
+	
+		easyrtc.setRoomOccupantListener(function(room, data){
+
+				//remove doctors from the list
+				angular.forEach(data, function(el, index){
+					if(!el.apiField || el.apiField.doctor){
+						delete data[index];
+					};
+				});			
+			
+				$rootScope.$broadcast('$callerListChanged', data);			  
+		});		  
+	}
+	
+	var hangup = function(){
+		easyrtc.hangupAll();
+	}
+	
+	var setPresense = function(status){
+		easyrtc.setPresense(status, "");
+	}
+	
+	easyrtc.setAcceptChecker(function(callerId, callback){
+		$rootScope.$broadcast('$incomingCall', {callerId:callerId, callback:callback});
+	});
+	
+	easyrtc.setStreamAcceptor(function(callerId, stream){
+
+        if(easyrtc.getLocalStream()) {
+        	easyrtc.setVideoObjectSrc(selfVideoEl, easyrtc.getLocalStream());
+        }
+        else {
+        	//do something
+        }
+		
+		easyrtc.setVideoObjectSrc(callerVideoEl, stream);
+	});
+
+	easyrtc.setOnStreamClosed(function(callerId){
+	    easyrtc.setVideoObjectSrc(callerVideoEl, "");
+	});	
+	
+	var hangup = function(caller){
+		
+		if(caller){
+			easyrtc.hangup(caller);
+		}
+		else {
+			easyrtc.hangupAll();
+		}
+	}	
+	
+	return {
+		connectToRoom : connectToRoom,
+		setSelfVideoEl : function(el){
+			selfVideoEl = el;
+		},
+		setCallerVideoEl : function(el){
+			callerVideoEl = el;
+		},
+		hangup : hangup,		
+		setPresense : setPresense
+	}
+
+}])
 ;

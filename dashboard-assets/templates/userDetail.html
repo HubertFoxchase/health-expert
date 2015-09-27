@@ -7,14 +7,14 @@
 	<form name="userForm" flex="50" layout-padding class="md-whiteframe-z1 user-form">
 		<md-input-container> 
 			<label>Name</label> 
-			<input md-maxlength="30" required name="name" ng-model="user.name">
+			<input md-maxlength="30" required name="name" ng-model="user.name" ng-disabled="!allowChange">
 			<div ng-messages="userForm.name.$error" ng-show="userForm.name.$touched && userForm.name.$invalid">
 				<div ng-message="required">This is required.</div>
 			</div>
 		</md-input-container>
 		<md-input-container> 
 			<label>Email</label> 
-			<input required name="email" ng-model="user.email">
+			<input required name="email" ng-model="user.email"  ng-disabled="!allowChange">
 			<div ng-messages="userForm.email.$error" ng-show="userForm.email.$touched && userForm.email.$invalid">
 				<div ng-message="required">This is required.</div>
 			</div>
@@ -23,10 +23,10 @@
 			<fieldset class="radio-btn">
 				<legend>User Role</legend>
 				<md-radio-group ng-model="user.role" aria-label="User Role"> 
-					<md-radio-button value="1">Doctor</md-radio-button> 
-					<md-radio-button value="2">Nurse</md-radio-button> 
-					<md-radio-button value="3">Support</md-radio-button>
-					<md-radio-button value="4">Other</md-radio-button> 
+					<md-radio-button value="1" ng-disabled="!allowChange">Doctor</md-radio-button> 
+					<md-radio-button value="2" ng-disabled="!allowChange">Nurse</md-radio-button> 
+					<md-radio-button value="3" ng-disabled="!allowChange">Support</md-radio-button>
+					<md-radio-button value="4" ng-disabled="!allowChange">Other</md-radio-button> 
 				</md-radio-group> 
 			</fieldset>
 		</md-input-container>
@@ -35,6 +35,6 @@
 </div>
 
 <div layout="row"  layout="row" class="form-tools" layout-align="start center">
-		<md-button class="md-raised md-accent" ng-click="save(user)" ng-disabled="!userForm.$valid" >Save</md-button>
+		<md-button class="md-raised md-accent" ng-click="save(user)" ng-disabled="!userForm.$valid" ng-show="allowChange">Save</md-button>
 		<md-button md-no-ink class="md-primary" ng-href="#/account">Cancel</md-button>
 </div>
