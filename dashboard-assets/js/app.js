@@ -162,11 +162,4 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
     			location.href = "/auth/login?url=" + encodeURI("/");
     		}
     	});
-    	
-    	//rtc events
-    	$rootScope.$on('$callerListChanged', function(event, data){
-    		
-    		$rootScope.callers = data;
-    		$rootScope.$apply();
-    	});
 }]);

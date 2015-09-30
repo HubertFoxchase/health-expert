@@ -330,6 +330,7 @@ angular.module("controllers", []).
 				else {
 					$rootScope.session = resp;
 					$rootScope.patient = resp.patient;
+					$rootScope.patient.id = resp.patient_id;
 					$rootScope.progress = 25; //this is a recovered session, we can set progress to 25%
 	
 				    $rootScope.readyClass = "app-ready";
@@ -410,14 +411,60 @@ angular.module("controllers", []).
 		
 	}])
 	
-	.controller("EndCtrl", ['$scope', '$rootScope',  "$location", '$rtc', function($scope, $rootScope, $location, $rtc){
+	.controller("EndCtrl", ['$scope', '$rootScope',  '$routeParams', '$location', '$api', '$rtc', function($scope, $rootScope, $routeParams, $location, $api, $rtc){
 
 		$rootScope.progress = 100;
-	    $rootScope.readyClass = "app-ready";
+
+		var _api = $api.get();
+		
+		if(!$rootScope.session){
+			_api.session.get({id:$routeParams.session}).execute(function(resp){
+				
+				if(resp.error){
+					$rootScope.$emit("$commsError", {title:"Can't load session", description : resp.error.message});
+				}
+				else {
+					$rootScope.session = $scope.session = resp;
+					$rootScope.patient = resp.patient;
+					$rootScope.patient.id = resp.patient_id;
+					$rootScope.progress = 100; //this is a recovered session, we can set progress to 25%
+
+					$rootScope.readyClass = "app-ready";
+					$scope.$apply();
+				}
+			});
+		}
+		else {
+			$rootScope.readyClass = "app-ready";
+		}
 	    
     	//rtc events
     	$rootScope.$on('$callerListChanged', function(event, data){
-    		$scope.callers = data;
+    		
+    		var totalContactsCount = 0;
+    		var freeContactsCount = 0;
+    		var contacts  = [];
+    		
+    		//process list and select doctor to call
+    		for(var c in data){
+    			if(data[c].presence.show == "chat"){
+    				contacts.push(data[c]);
+    				totalContactsCount++;
+    				freeContactsCount++;
+    			}
+    			if(data[c].presence.show == "dnd"){
+    				totalContactsCount++;
+    			}
+    		}
+    		
+    		$scope.total = totalContactsCount;
+    		$scope.free = freeContactsCount;
+    		
+    		if(freeContactsCount > 0){
+        		var ix = Math.floor(Math.random() * (freeContactsCount - 1));
+        		$scope.contact = contacts[ix];
+    		}
+    		
     		$scope.$apply();
     	});	    
 	    
@@ -444,6 +491,7 @@ angular.module("controllers", []).
 		$scope.hangup = function(){
 			$rtc.hangup($routeParams.caller);
 			$scope.status = "disconnected";
+			console.log("user hangup");
 			$scope.$apply();
 		}
 
@@ -453,26 +501,32 @@ angular.module("controllers", []).
 
     	$rootScope.$on('$localStreamFailed', function(event, data){
     		$scope.status = "localstreamfailed";
+			console.log("local stream failed event");
     		$scope.$apply();
     	});			
 		
 		
     	$rootScope.$on('$callRejejcted', function(event, data){
     		$scope.status = "rejected";
+			console.log("call rejected event");
     		$scope.$apply();
     	});			
 
     	$rootScope.$on('$callDisconnected', function(event, data){
     		$scope.status = "disconnected";
+			console.log("call discinnected event");
     		$scope.$apply();
     	});			
 
     	$rootScope.$on('$callConnected', function(event, data){
     		$scope.status = "connected";
+			console.log("call connected event");
     		$scope.$apply();
     	});	    	
 		
-		$rtc.call($routeParams.caller); 
+		$rtc.call($routeParams.caller);
+		
+		console.log("requesting call");
 		
 		$scope.status = "connecting";
 		

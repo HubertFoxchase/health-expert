@@ -67,7 +67,7 @@ c4c_api = endpoints.api(name='c4c',
 @c4c_api.api_class(resource_name='organisation')
 class AdminApi(remote.Service):
 
-    @Organisation.method(request_fields=('name',),
+    @Organisation.method(request_fields=('name', 'settings'),
                     response_fields=('id', 'name', 'created',),
                     path='organisation', 
                     http_method='POST',
@@ -78,7 +78,7 @@ class AdminApi(remote.Service):
         model.put()
         return model
 
-    @Organisation.method(request_fields=('name', 'active'),
+    @Organisation.method(request_fields=('name', 'settings', 'active'),
                     path='organisation/{id}', 
                     http_method='POST',
                     name='update')   
@@ -761,9 +761,11 @@ class MyAuth():
                                                token_ts=session_final.get('token_ts'))
             cls.user = _user
             cls.token = _token
-            cls.user['type'] = session_final.get('type')
-            cls.user['email'] = session_final.get('email')
-            cls.user['organisation_id'] = session_final.get('organisation_id')
+            
+            if cls.user:
+                cls.user['type'] = session_final.get('type')
+                cls.user['email'] = session_final.get('email')
+                cls.user['organisation_id'] = session_final.get('organisation_id')
 
     @classmethod
     def user_to_dict(cls, user):

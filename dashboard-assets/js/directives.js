@@ -12,7 +12,7 @@ angular.module("directives", [])
 			role : '=userRole'
 		},
 		link : function (scope, element){
-			element.text($config.userRoles[scope.role]);
+			element.text($config.userRoles[scope.role-1]);
 		}
 
 	};

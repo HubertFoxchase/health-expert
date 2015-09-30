@@ -108,18 +108,6 @@
 					</md-item-content>
 				</a> 
 			</md-item> 		
-			<md-subheader>Incoming</md-subheader> 
-			<md-item ng-repeat="(id, caller) in $root.callers"> 
-				<a ng-click="$root.rtcCall(id)">
-					<md-item-content md-ink-ripple layout="row"	layout-align="start center">
-						<div class="inset">
-							<ng-md-icon icon="person"></ng-md-icon>
-						</div>
-						<div class="inset">{{caller.username}}</div>
-					</md-item-content>
-				</a> 
-			</md-item> 		
-
 		</md-list> 
 
 	</md-sidenav>

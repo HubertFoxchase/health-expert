@@ -24,10 +24,6 @@
 			            	<ng-md-icon icon="check_circle"></ng-md-icon>
 			          	</md-button> 				
 
-			        	<md-button class="md-icon-button call-btn" md-no-ink ng-click="acceptCall(true, $event)" aria-label="Back">
-			            	<ng-md-icon icon="call"></ng-md-icon>
-			          	</md-button> 	
-		
 			 			<div layout="row" class="item">
 			 				<div class="dd">Patient</div>
 			 				<div class="dt">{{item.patient.ref}}</div>
@@ -61,45 +57,90 @@
 		</div>
 	</div>
 	<div layout="column" id="appointments" flex>
-		<div layout="row" class="session-tools">
-			<h3>Appointments</h3>
-			<span flex></span>
-		</div>
-		<md-content layout="column" class="md-whiteframe-z1">
-			<div layout="column" flex style="position: relative;">
-				
-				<div layout="row" class="table-header">
-				    <div flex="5"></div>
-				    <div flex="20">Date</div>
-				    <div flex="20">Time</div>
-				    <div flex="20">Duration</div>
-				    <div flex="35">Doctor</div>
-				</div>
-		
-				<div class="table-row" layout="row" layout-align="center center" ng-show="appointmentsLoading">
-					<div flex="20">Loading ...</div>
-				</div>		
-
-				<div class="table-row" layout="row" layout-align="center center" ng-hide="appointmentsLoading || appointments.length > 0">
-					<div flex="70">No upcoming appointments</div>
-				</div>
-				
-				<div layout="row" ng-repeat="item in appointments" 
-								  class="table-row" 
-								  ng-click="showAppointment($event, item)">
-				    <div flex="5"></div>
-				    <div flex="20">{{item.date  | amDateFormat:'MMM DD'}}</div>
-				    <div flex="20">{{item.date  | amDateFormat:'h:mmA'}}</div>
-				    <div flex="20">{{item.duration}} min</div>
-				    <div flex="35">{{item.doctor.name}}</div>
-				</div>
+		<div layout="column" flex>
+			<div layout="row" class="session-tools">
+				<h3>Appointments</h3>
+				<span flex></span>
 			</div>
-		</md-content>
-		<div class="lock-size" layout="row" layout-align="center center">
-			<md-button aria-label="appointment" class="md-fab" ng-click="newPatient($event)">
-				<md-tooltip md-direction="bottom">New appointment</md-tooltip>
-				<ng-md-icon icon="person_add"></ng-md-icon>
-			</md-button>
-		</div>			
+			<md-content layout="column" class="md-whiteframe-z1">
+				<div layout="column" flex style="position: relative;">
+					
+					<div layout="row" class="table-header">
+					    <div flex="5"></div>
+					    <div flex="20">Date</div>
+					    <div flex="20">Time</div>
+					    <div flex="20">Duration</div>
+					    <div flex="35">Doctor</div>
+					</div>
+			
+					<div class="table-row" layout="row" layout-align="center center" ng-show="appointmentsLoading">
+						<div flex="20">Loading ...</div>
+					</div>		
+	
+					<div class="table-row" layout="row" layout-align="center center" ng-hide="appointmentsLoading || appointments.length > 0">
+						<div flex="70">No upcoming appointments</div>
+					</div>
+					
+					<div layout="row" ng-repeat="item in appointments" 
+									  class="table-row" 
+									  ng-click="showAppointment($event, item)">
+					    <div flex="5"></div>
+					    <div flex="20">{{item.date  | amDateFormat:'MMM DD'}}</div>
+					    <div flex="20">{{item.date  | amDateFormat:'h:mmA'}}</div>
+					    <div flex="20">{{item.duration}} min</div>
+					    <div flex="35">{{item.doctor.name}}</div>
+					</div>
+				</div>
+			</md-content>
+			<div class="lock-size" layout="row" layout-align="center center">
+				<md-button aria-label="appointment" class="md-fab" ng-click="newPatient($event)">
+					<md-tooltip md-direction="bottom">New appointment</md-tooltip>
+					<ng-md-icon icon="person_add"></ng-md-icon>
+				</md-button>
+			</div>			
+		</div>
+		<div layout="column" flex>
+			<div layout="row" class="session-tools">
+				<h3>Incoming calls</h3>
+				<span flex></span>
+			</div>
+			<md-content layout="column" class="md-whiteframe-z1">
+				<div layout="column" flex style="position: relative;">
+					
+					<div layout="row" class="table-header">
+					    <div flex="5"></div>
+					    <div flex="30">Patient</div>
+					    <div flex="35">Call status</div>
+					    <div flex="15"></div>
+					    <div flex="15"></div>
+					</div>
+					
+					<div layout="row" ng-repeat="(id, caller) in callers" 
+									  class="table-row" no-hover>
+					    <div flex="5"></div>
+					    <div flex="30">{{caller.username}}</div>
+					    <div flex="35">{{caller.status}}</div>
+					    <div flex="15">
+				        	<md-button class="md-icon-button call-btn" 
+				        			   md-no-ink 
+				        			   ng-click="acceptCall(id, $event)" 
+				        			   ng-show="caller.status == 'rinning'"
+				        			   aria-label="Accept Call">
+				            	<ng-md-icon icon="call" style="fill:green"></ng-md-icon>
+				          	</md-button> 
+					    </div>
+					    <div flex="15">
+				        	<md-button class="md-icon-button call-btn" 
+				        			   md-no-ink 
+				        			   ng-click="rejectCall(id, $event)" 
+				        			   ng-show="caller.status == 'rinning'"
+				        			   aria-label="Reject Call">
+				            	<ng-md-icon icon="do_not_disturb"></ng-md-icon>
+				          	</md-button> 
+					    </div>
+					</div>
+				</div>
+			</md-content>
+		</div>
 	</div>
 </div>

@@ -18,13 +18,14 @@ from locale import format_string
 
 class Organisation(EndpointsModel):
     
-    _message_fields_schema = ('id', 'name', 'apikey', 'created',)
+    _message_fields_schema = ('id', 'name', 'apikey', 'created', 'settings')
     
     name = ndb.StringProperty()
     apikey = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
     active = ndb.BooleanProperty(default = True)
+    settings = ndb.StringProperty(default='{}')
     
 class UserType(messages.Enum):
     ADMIN = 1

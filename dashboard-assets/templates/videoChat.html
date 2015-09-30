@@ -11,14 +11,15 @@
 	<md-dialog-content>
 		<div id="chat-holder">
 			<video class="video-caller" id="caller" width="640" height="480"></video>
+			<div class="call-status" ng-show="status == 'connecting'">Connecting call ...</div>
+			<div class="call-status" ng-show="status == 'rejected'">Call rejected</div>
+			<div class="call-status" ng-show="status == 'disconnected'">Call ended</div>
+			<div class="call-status" ng-show="status == 'localstreamfailed'">Can't initialise local camera</div>			
 		    <video class="video-self" id="self" width="200" height="200"></video>
 		    <div layout="row" layout-align="center center" class="call-toolbar">
 		    	<div class="call-toolbar-backdrop"></div>
 		    	<md-button>
-		    		<ng-md-icon icon="call"></ng-md-icon>
-		    	</md-button>
-		    	<md-button>
-		    		<ng-md-icon icon="call_end"></ng-md-icon>
+		    		<ng-md-icon icon="call_end" ng-click="hangup(callerId)"></ng-md-icon>
 		    	</md-button>
 		    	<md-button>
 		    		<ng-md-icon icon="mic"></ng-md-icon>

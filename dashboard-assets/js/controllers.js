@@ -154,50 +154,88 @@ angular.module("controllers", []).
 			return moment(d1).isSame(moment(d2), 'd');
 		}
 	    
-		$rootScope.rtcCall = function(id){
+		if($rtc.supportVideoCalls){
 			
-		
-		}
-		
-		var callback;
-		
-		$rootScope.$on('$incomingCall', function(event, data){
+			$rootScope.rtcCall = function(id){
+				
+			
+			}
+			
+			
+			
+			var callback = {};
+			var callerId;
+			var patientId;
+			
+			$rootScope.$on('$incomingCall', function(event, data){
+	
+				callerId = data.callerId
+				
+				if($rootScope.callers[callerId].apiField.patient)
+					patientId = $rootScope.callers[callerId].apiField.patient.fieldValue;
+				
+				$rootScope.callers[callerId].status = 'rinning';
+				callback[callerId] = data.callback;
+				
+				$scope.callers = $rootScope.callers;
+	    		$scope.$apply();
 
-			var patientId = $rootScope.callers[data.callerId].apiField.patient.fieldValue;
-			callback = data.callback;
+			});	
 			
-		});	
-		
-		$scope.acceptCall =  function(val, $event){
+	    	$rootScope.$on('$callerListChanged', function(event, data){
+	    		
+        		for(var callerId in data){
+            		
+        			if($rootScope.callers && $rootScope.callers[callerId]){
+        				data[callerId].status = $rootScope.callers[callerId].status;
+        			}
+        			else {
+        				data[callerId].status = 'idle';
+        			}
+        		}
+	    		
+				$scope.callers = $rootScope.callers = data;
+	    		$scope.$apply();
+	    	});
+			
+			$scope.acceptCall =  function(callerId, $event){
+	
+		        var ret = $mdDialog.show({
+			          templateUrl: '/dashboard-assets/templates/videoChat.html',
+			          parent: angular.element(document.body),
+			          controller: 'VideoChatCtrl',
+			          locals: {
+			        	  $callerId : callerId
+			          },
+			          onComplete : function(){
+			      		
+			              	$rtc.setSelfVideoEl(document.getElementById("self"));
+			              	$rtc.setCallerVideoEl(document.getElementById("caller"));
+			              	
+							callback[callerId](true);
+							
+							$rootScope.callers[callerId].status = 'connecting';
+			          }
+			        });
+			        
+			        ret.then(function(val){
+			        	$rtc.hangup();
+			        },
+			        function(){
+			        	$rtc.hangup();
+			        });			
+				
+				$event.stopPropagation();			
+			}
+			
+			$scope.rejectCall = function(callerId, $event){
+				callback[callerId](false);
+				$rootScope.callers[callerId].status = 'idle';
+			}
+			
+			$rtc.connectToRoom();			
 
-	        var ret = $mdDialog.show({
-		          templateUrl: '/dashboard-assets/templates/videoChat.html',
-		          parent: angular.element(document.body),
-		          controller: 'VideoChatCtrl',
-		          locals: {
-		        	  $callerId : 0
-		          },
-		          onComplete : function(){
-		      		
-		              	$rtc.setSelfVideoEl(document.getElementById("self"));
-		              	$rtc.setCallerVideoEl(document.getElementById("caller"));
-		              	
-						callback(val);
-		          }
-		        });
-		        
-		        ret.then(function(val){
-		        	$rtc.hangup();
-		        },
-		        function(){
-		        	$rtc.hangup();
-		        });			
-			
-			$event.stopPropagation();			
 		}
-		
-		$rtc.connectToRoom();			
-		
 		console.log("Grid page loaded: " + (Date.now() - start) + " ms");
 	    
 	    $rootScope.readyClass = "app-ready";
@@ -936,6 +974,36 @@ angular.module("controllers", []).
 		}	
 	}])
 	.controller("VideoChatCtrl", ['$scope', '$rootScope', '$api', '$location', '$mdDialog', '$config', '$rtc', '$callerId',function($scope, $rootScope, $api, $location, $mdDialog, $config, $rtc, $callerId){
+
+		$scope.status = "connecting";
+		$scope.callerId = $callerId;
+		
+		$scope.hangup = function(id){
+			$rtc.hangup(id);
+			$scope.status = "disconnected";
+			//$scope.$apply();
+		}
+
+		$scope.mute = function(){
+
+		}
+
+    	$rootScope.$on('$localStreamFailed', function(event, data){
+    		$scope.status = "localstreamfailed";
+    		//$scope.$apply();
+    	});			
+		
+    	$rootScope.$on('$callDisconnected', function(event, callerId){
+    		$scope.status = "disconnected";
+    		$rootScope.callers[callerId].status = "idle";
+    		//$scope.$apply();
+    	});	
+    	
+    	$rootScope.$on('$callConnected', function(event, callerId){
+    		$scope.status = "connected";
+    		$rootScope.callers[callerId].status = "talking";
+    		//$scope.$apply();
+    	});    	
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();

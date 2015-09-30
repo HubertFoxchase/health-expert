@@ -59,6 +59,14 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 					$rootScope.user.isAdmin = resp.type == 1 || resp.type == 3;
 					$rootScope.organisation = $rootScope.user.organisation;
 
+					try {
+						$rootScope.organisation.settings = JSON.parse($rootScope.organisation.settings);
+					}
+					catch(e){
+						$rootScope.organisation.settings = {};
+					}
+					
+					
 		        	_api.user.list({organisation_id:$rootScope.organisation.id}).execute(function(resp){
 						
 		    			console.log("Users loaded: " + (Date.now() - start) + " ms");
@@ -196,6 +204,13 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 
 .factory('$rtc',  ['$q', '$config', '$rootScope', function ($q, $config, $rootScope) {
 
+	
+	if(!$rootScope.organisation.settings.supportVideoCalls){
+		return {
+			supportVideoCalls : false
+		};
+	}
+	
 	var selfVideoEl = null;
 	var callerVideoEl = null;
 	var applicationName = $rootScope.organisation.apikey;
@@ -210,7 +225,7 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 		easyrtc.setSocketUrl($config.rtcServer.httpUrl);
 	}
 		
-	easyrtc.enableAudio(false);
+	easyrtc.enableAudio(true);
 	easyrtc.enableAudioReceive(true);    
 	easyrtc.enableDataChannels(true);
 
@@ -269,17 +284,23 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 	easyrtc.setStreamAcceptor(function(callerId, stream){
 
         if(easyrtc.getLocalStream()) {
+        	
         	easyrtc.setVideoObjectSrc(selfVideoEl, easyrtc.getLocalStream());
+            selfVideoEl.muted = true;		
+
+    		easyrtc.setVideoObjectSrc(callerVideoEl, stream);
+
+    		$rootScope.$broadcast('$callConnected', callerId);
         }
         else {
-        	//do something
+        	
+        	$rootScope.$broadcast('$localStreamFailed', callerId);
         }
-		
-		easyrtc.setVideoObjectSrc(callerVideoEl, stream);
 	});
 
 	easyrtc.setOnStreamClosed(function(callerId){
 	    easyrtc.setVideoObjectSrc(callerVideoEl, "");
+        $rootScope.$broadcast('$callDisconnected', callerId);
 	});	
 	
 	var hangup = function(caller){
@@ -293,6 +314,7 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 	}	
 	
 	return {
+		supportVideoCalls : true,
 		connectToRoom : connectToRoom,
 		setSelfVideoEl : function(el){
 			selfVideoEl = el;

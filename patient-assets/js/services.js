@@ -104,7 +104,7 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 		easyrtc.setSocketUrl($config.rtcServer.httpUrl);
 	}
 		
-	easyrtc.enableAudio(false);
+	easyrtc.enableAudio(true);
 	easyrtc.enableAudioReceive(true);    
 	easyrtc.enableDataChannels(true);
 
@@ -198,7 +198,7 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
       
     easyrtc.setOnStreamClosed( function (callerId) {
         easyrtc.setVideoObjectSrc(callerVideoEl, "");
-        $rootScope.$broadcast('$callDisconnected', {});
+        $rootScope.$broadcast('$callDisconnected', callerId);
     });		
 	
 	return {

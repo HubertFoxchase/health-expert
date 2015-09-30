@@ -14,10 +14,10 @@
 
 		<div flex layout="column" layout-align="center center" class="chat-holder" >
 			<video flex class="video-caller" id="caller"></video>
-			<div id="call-status" ng-show="status == 'connecting'">Connecting call ...</div>
-			<div id="call-status" ng-show="status == 'rejected'">Call rejected</div>
-			<div id="call-status" ng-show="status == 'disconnected'">Call ended</div>
-			<div id="call-status" ng-show="status == 'localstreamfailed'">Can't initialise local camera</div>
+			<div class="call-status" ng-show="status == 'connecting'">Connecting call ...</div>
+			<div class="call-status" ng-show="status == 'rejected'">Call rejected</div>
+			<div class="call-status" ng-show="status == 'disconnected'">Call ended</div>
+			<div class="call-status" ng-show="status == 'localstreamfailed'">Can't initialise local camera</div>			
 		    <div layout="row" layout-align="center center" class="call-toolbar">
 		    	<div class="call-toolbar-backdrop"></div>
 		    	<md-button ng-click="call()" ng-show="status == 'disconnected' || status == 'rejected'">
