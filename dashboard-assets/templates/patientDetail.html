@@ -65,7 +65,7 @@
 			<md-button class="md-raised md-accent" ng-click="save(patient, true)" ng-disabled="!userForm.$valid" hg-show="patient.id == 0">
 				Save + New Appointment
 			</md-button>
-			<md-button md-no-ink class="md-primary" ng-href="#/patients">Cancel</md-button>
+			<md-button md-no-ink class="md-primary" ng-click="back()">Cancel</md-button>
 		</div>
 	</div>
 	<div layout="column" flex style="margin-left: 20px">

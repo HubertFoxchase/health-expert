@@ -98,9 +98,48 @@ indexes:
   - name: active
   - name: organisation_ref
   - name: age
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: age
   - name: dob
   - name: gender
   - name: ref
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: age
+    direction: desc
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: dob
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: dob
+    direction: desc
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: gender
+
+- kind: Patient
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: gender
+    direction: desc
 
 - kind: Patient
   properties:
@@ -151,7 +190,33 @@ indexes:
   - name: active
   - name: organisation_ref
   - name: status
+
+- kind: Session
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: status
   - name: created
+    direction: desc
+
+- kind: Session
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: status
+    direction: desc
+
+- kind: Session
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: updated
+
+- kind: Session
+  properties:
+  - name: active
+  - name: organisation_ref
+  - name: updated
     direction: desc
 
 - kind: Session
@@ -167,6 +232,11 @@ indexes:
   - name: status
   - name: created
     direction: desc
+
+- kind: Session
+  properties:
+  - name: active
+  - name: updated
 
 - kind: Session
   properties:

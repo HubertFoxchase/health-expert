@@ -239,6 +239,15 @@ ng-md-icon {
 	font-weight: bold;
 }
 
+.table-header div a{
+	cursor: pointer;
+}
+
+.table-header div a:hover{
+	text-decoration: underline;
+}
+
+
 .table-row > div, .table-header > div{
 	line-height: 30px;
 	padding-top: 5px;
@@ -542,3 +551,7 @@ ng-md-icon {
 	top: 50%;
 }
 
+md-toast {
+	margin-right: -100px;
+    right: 50% !important;	
+}

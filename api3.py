@@ -205,7 +205,7 @@ class UserApi(remote.Service):
             raise endpoints.NotFoundException('User not found.')
         
         if model.organisation_id != int(u['organisation_id']):
-            raise endpoints.UnauthorizedException('Not authorised')            
+            raise endpoints.ForbiddenException('Not authorised')            
         
         model.active = False
         model.put_async()
@@ -253,7 +253,7 @@ class PatientApi(remote.Service):
         u = _isValidUser()
         
         if model.organisation_id != int(u['organisation_id']):
-            raise endpoints.UnauthorizedException('Not authorised')  
+            raise endpoints.ForbiddenException('Not authorised')  
         
         if model.dob is not None :
             model.age = (datetime.datetime.today() - model.dob).days // 356
@@ -475,14 +475,14 @@ class SessionApi(remote.Service):
         u = _isValidUser()
         
         if request.organisation != int(u['organisation_id']):
-            raise endpoints.UnauthorizedException('Not authorised 1056')          
+            raise endpoints.ForbiddenException('Not authorised. Code: 1056')          
 
         patient = ndb.Key(Patient, request.patient).get()
         
         if patient.organisation_ref.integer_id() != int(u['organisation_id']):
             logging.debug(patient.organisation_ref.integer_id())
             logging.debug(int(u['organisation_id']))
-            raise endpoints.UnauthorizedException('Not authorised 1057')          
+            raise endpoints.ForbiddenException('Not authorised. Code: 1057')          
         
         session = Session(
                           patient = patient, 
@@ -530,15 +530,17 @@ class SessionApi(remote.Service):
         session.put()
         return session.ToMessage()
 
-    @Session.query_method(query_fields=('organisation_id',),
+    @Session.query_method(query_fields=('limit', 'order', 'pageToken'),
                           collection_fields =('id', 'created', 'ended', 'updated', 'status', 'outcome', 'patient'),
                           path='sessions/list', 
                           http_method='GET',
                           name='list')   
     def SessionList(self, query):
-        _isValidUser()
+        u = _isValidUser()
         
-        return query.filter(Session.active == True).order(-Session.created, Session.key)
+        organisation_ref = ndb.Key(Organisation, u['organisation_id'])
+        
+        return query.filter(Session.active == True).filter(Session.organisation_ref == organisation_ref)
     
     @Session.query_method(query_fields=('organisation_id', 'doctor_id'),
                           collection_fields =('id', 'created', 'ended', 'updated', 'status', 'outcome', 'patient'),
@@ -750,22 +752,23 @@ class MyAuth():
         cookie = Cookie.SimpleCookie()
         cookie.load(cookie_string)
         
-        session_name = cookie['auth'].value
-        session_name_data = serializer.deserialize('auth', session_name)
-        session_dict = SessionDict(cls, data=session_name_data, new=False)
-        
-        if session_dict:
-            session_final = dict(zip(SESSION_ATTRIBUTES, session_dict.get('_user')))
-            _user, _token = cls.validate_token(session_final.get('user_id'), 
-                                               session_final.get('token'),
-                                               token_ts=session_final.get('token_ts'))
-            cls.user = _user
-            cls.token = _token
+        if "auth" in cookie :
+            session_name = cookie['auth'].value
+            session_name_data = serializer.deserialize('auth', session_name)
+            session_dict = SessionDict(cls, data=session_name_data, new=False)
             
-            if cls.user:
-                cls.user['type'] = session_final.get('type')
-                cls.user['email'] = session_final.get('email')
-                cls.user['organisation_id'] = session_final.get('organisation_id')
+            if session_dict:
+                session_final = dict(zip(SESSION_ATTRIBUTES, session_dict.get('_user')))
+                _user, _token = cls.validate_token(session_final.get('user_id'), 
+                                                   session_final.get('token'),
+                                                   token_ts=session_final.get('token_ts'))
+                cls.user = _user
+                cls.token = _token
+                
+                if cls.user:
+                    cls.user['type'] = session_final.get('type')
+                    cls.user['email'] = session_final.get('email')
+                    cls.user['organisation_id'] = session_final.get('organisation_id')
 
     @classmethod
     def user_to_dict(cls, user):
@@ -893,8 +896,8 @@ def _isAdminUser():
             raise endpoints.UnauthorizedException('Not authorised')
         elif not a.token :
             raise endpoints.UnauthorizedException('Invalid or expired token.')
-        #elif int(a.user['type']) != int(UserType.ADMIN) :
-        #    raise endpoints.UnauthorizedException('Access denied')       
+        elif int(a.user['type']) != int(UserType.ADMIN) :
+            raise endpoints.ForbiddenException('Access denied')       
 
         return a.user
 
@@ -924,7 +927,7 @@ def _isOrganisationAdminUser():
         elif not a.token :
             raise endpoints.UnauthorizedException('Invalid or expired token.')
         elif int(a.user['type']) not in [int(UserType.ORGANISATION_ADMIN), int(UserType.ADMIN)] :
-            raise endpoints.UnauthorizedException('Access denied')       
+            raise endpoints.ForbiddenException('Access denied')       
 
         return a.user
 

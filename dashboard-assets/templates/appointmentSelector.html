@@ -23,7 +23,7 @@
 			<div layout="column" class="cal-doctor">
 				<h4>Select doctor</h4>
 				<md-radio-group ng-model="doctor">
-					<md-radio-button ng-value="item" 
+					<md-radio-button ng-value="item.id" 
 									 class="md-primary" 
 									 ng-repeat="(id, item) in $root.doctors"
 									 aria-label="{{item.name}}">{{item.name}}</md-radio-button>

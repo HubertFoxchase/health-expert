@@ -14,13 +14,27 @@
 		    <div flex="5" layout="row" layout-align="center center" class="checkbox-container">
 		    	<md-checkbox ng-click="toggleAll(selected, $event)"></md-checkbox>
 		    </div>
-		    <div flex="10">Patient</div>
+		    <div flex="10" >Patient</div>
 		    <div flex="10">Gender</div>
 		    <div flex="10">Age</div>
 		    <div flex="30">Diagnosis</div>
 		    <div flex="10">Confidence</div>
-		    <div flex="10">Status</div>
-		    <div flex="15">Timestamp</div>
+		    <div flex="10">
+		    	<a ng-click="setOrder('status')">
+			    	<span>Status</span>
+			    	<ng-md-icon icon="unfold_more" ng-hide="order == 'status' || order == '-status'"></ng-md-icon>
+			    	<ng-md-icon icon="arrow_drop_up" ng-show="order == 'status'"></ng-md-icon>
+			    	<ng-md-icon icon="arrow_drop_down"  ng-show="order == '-status'"></ng-md-icon>
+		    	</a>	
+		    </div>
+		    <div flex="15">
+		    	<a ng-click="setOrder('updated')">
+			    	<span>Updated</span>
+			    	<ng-md-icon icon="unfold_more" ng-hide="order == 'updated' || order == '-updated'"></ng-md-icon>
+			    	<ng-md-icon icon="arrow_drop_up" ng-show="order == 'updated'"></ng-md-icon>
+			    	<ng-md-icon icon="arrow_drop_down"  ng-show="order == '-updated'"></ng-md-icon>
+		    	</a>	
+		    </div>
 		</div>
 
 		<div class="table-row" layout="row" layout-align="center center" ng-hide="sessions">

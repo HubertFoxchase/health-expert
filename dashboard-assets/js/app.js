@@ -149,7 +149,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 
     //$locationProvider.html5Mode({enabled: true,requireBase:false});
 }])
-.run(["$rootScope", "$location", function ($rootScope, $location) {
+.run(["$rootScope", "$location", "$animate", function ($rootScope, $location, $animate) {
 	
 		console.log("Run started: " + (Date.now() - start) + " ms");
     	
@@ -162,4 +162,14 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
     			location.href = "/auth/login?url=" + encodeURI("/");
     		}
     	});
+    	
+    	$rootScope.$on('$unauthorised', function(event, error){
+			location.href = "/auth/login?url=" + encodeURI("/");
+    	});    	
+
+    	$rootScope.$on('$forbidden', function(event, error){
+    		//TODO do something here
+    	}); 
+    	
+    	$animate.enabled(false);
 }]);

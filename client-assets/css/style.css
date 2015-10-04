@@ -159,6 +159,7 @@ md-toolbar {
 
 .c4c-large-button {
     margin: 10px 0px;
+    height:68px;
     line-height: 52px;
     font-size: 20px;
     text-align: left;

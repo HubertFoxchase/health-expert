@@ -32,16 +32,28 @@ angular.module("controllers", []).
 		$rootScope.showBackBtn = false;
 		$rootScope.backLocation = "/grid";
 		$scope.appointmentsLoading = true;
+		$scope.showCallers = false;
+		$rootScope.patient = null;
+		$rootScope.item = null;
+		$rootScope.doctor = null;
+		
 	    
 		$scope.selected = [];
 		
-		$scope.doctor_id = $routeParams.doctor;
-		
 		var loadSessions = function(params){
 			_api.session.listActive(params).execute(function(resp){
-				$scope.sessions = resp.items;
-				$rootScope.gridItems = resp.items;
-				$scope.$apply()
+				
+				if(!resp.error){
+					$scope.sessions = resp.items;
+					$rootScope.gridItems = resp.items;
+					$scope.$apply()
+				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}
 			});
 		}
 		
@@ -57,9 +69,19 @@ angular.module("controllers", []).
 			}
 			
 			func(params).execute(function(resp){
-				$scope.appointmentsLoading = false;
-				$scope.appointments = resp.items;
-				$scope.$apply()
+				
+				if(!resp.error){
+					$scope.appointmentsLoading = false;
+					$scope.appointments = resp.items;
+					$scope.$apply()
+				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}
+
 			});
 		}		
 
@@ -67,9 +89,11 @@ angular.module("controllers", []).
 				organisation_id:$rootScope.organisation.id,
 				order : 'date'
 		};
+
+			
 		
 		if($routeParams.doctor) {
-			params.doctor_id = $routeParams.doctor;
+			$scope.doctor_id = params.doctor_id = $rootScope.doctor = $routeParams.doctor;	
 		}
 		
 		loadSessions(params);
@@ -104,7 +128,7 @@ angular.module("controllers", []).
 
 		$scope.deleteSelected = function(selected){
 			_api.session.deleteByIdList({ids:selected}).execute(function(resp){
-				if(resp) {
+				if(!resp.error) {
 					var list = $scope.sessions;
 			    	angular.forEach(selected, function(value, key) {
 			    		for(i=0;i<list.length;i++){
@@ -116,6 +140,12 @@ angular.module("controllers", []).
 			    	});
 					$scope.$apply()
 				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}					
 			});
 		}
 	    
@@ -156,12 +186,12 @@ angular.module("controllers", []).
 	    
 		if($rtc.supportVideoCalls){
 			
+			$scope.showCallers = true;
+			
 			$rootScope.rtcCall = function(id){
 				
 			
 			}
-			
-			
 			
 			var callback = {};
 			var callerId;
@@ -250,13 +280,22 @@ angular.module("controllers", []).
 		
 		var loadSession = function(){
 			_api.session.get({id:$routeParams.id}).execute(function(resp){
-				$scope.item = resp;
 				
-				angular.forEach($scope.item.symptoms.items, function(val){
-					val.parent = $observations.getParent(val.id, true)
-				});
-				
-				$scope.$apply()
+				if(!resp.error){
+					$scope.item = resp;
+					
+					angular.forEach($scope.item.symptoms.items, function(val){
+						val.parent = $observations.getParent(val.id, true)
+					});
+					
+					$scope.$apply();
+				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}
 			});
 		}
 
@@ -281,15 +320,31 @@ angular.module("controllers", []).
 		
 		$scope.delete = function(id){
 			_api.session.delete({id:$routeParams.id}).execute(function(resp){
-				$rootScope.gridItems = null;
-				$scope.back();
+				if(!resp.error){
+					$rootScope.gridItems = null;
+					$scope.back();
+				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}
 			});
 		}
 
 		$scope.review = function(id){
 			_api.session.markReviewed({id:$routeParams.id}).execute(function(resp){
-				$rootScope.gridItems = null;
-				$scope.back();
+				if(!resp.error){
+					$rootScope.gridItems = null;
+					$scope.back();
+				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}
 			});
 		}
 
@@ -303,30 +358,81 @@ angular.module("controllers", []).
 		$rootScope.showBackBtn = false;
 		$rootScope.backLocation = "/history";
 		$scope.historyLoading =  true;
+		$rootScope.item = null;
 
 		$scope.selected = [];
+		
+		var orderDirection = {};
 
-		var loadSessions = function(){
-			$mdToast.simple().content('Loading ...');
-			_api.session.list({organisation:$rootScope.organisation.id}).execute(function(resp){
-				if(resp.error){
-					
-				}
-				else {
+		var loadSessions = function(params){
+			
+			var toast = $mdToast
+							.simple()
+							.content('Loading ...')
+							.position("top right")
+							.parent(document.getElementById("main-content-container"))
+							.hideDelay(0);
+			$mdToast.show(toast);
+			
+			var _params = {
+					limit : 25,
+					order : "-updated"
+			}
+			
+			if(params){
+				angular.extend(_params, params);
+			}			
+			
+			_api.session.list(_params).execute(function(resp){
+
+				$mdToast.hide();
+
+				if(!resp.error){
 					$scope.historyLoading =  false;
 					$scope.sessions = resp.items;
+					$scope.pageToken = resp.items.pageToken;
 					$rootScope.gridItems = resp.items;
-					$mdToast.hide();
 					$scope.$apply()
 				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}				
 			});
 		}
 
 		loadSessions();
 		
 		$rootScope.$on('refresh', function(){
-			loadSessions();
+			if($scope.order){
+				loadSessions({order:$scope.order});
+			}
+			else {
+				loadSessions();
+			}
 		});
+		
+		$scope.setOrder = function(val){
+			
+			if(orderDirection[val]){
+				orderDirection[val] = !orderDirection[val];
+			}
+			else {
+				orderDirection[val] = true;
+			}
+			
+			$scope.order =  orderDirection[val] ? val : ("-" + val);
+			
+			if($scope.patients && $scope.patients.length < 25){
+				$scope.orderRepeater = $scope.order;
+			}
+			else {
+				$scope.orderRepeater = null;
+				loadSessions({order:$scope.order});			
+			}
+		}		
 		
 		$scope.showDetail = function(itemData, $event) {
 			$rootScope.item = itemData;
@@ -364,20 +470,43 @@ angular.module("controllers", []).
 	    }
 
 		$scope.deleteSelected = function(selected){
-			_api.session.deleteByIdList({ids:selected}).execute(function(resp){
-				if(resp) {
-					var list = $scope.sessions;
-			    	angular.forEach(selected, function(value, key) {
-			    		for(i=0;i<list.length;i++){
-			    			if(list[i].id == value){
-						        list.splice(i, 1);
-						        break;
-			    			}
-			    		}
-			    	});
-					$scope.$apply()
-				}
-			});
+			
+			if(selected && selected.length > 0) {
+				
+				var str = selected.length == 1 ? "Deleting session ... " : 'Deleting ' + selected.length + ' sessions ...'
+				var toast = $mdToast
+							.simple()
+							.content(str)
+							.position("top right")
+							.parent(document.getElementById("main-content-container"))
+							.hideDelay(0);
+				$mdToast.show(toast);				
+			
+				_api.session.deleteByIdList({ids:selected}).execute(function(resp){
+
+					$mdToast.hide();
+					
+					if(!resp.error) {
+						var list = $scope.sessions;
+				    	angular.forEach(selected, function(value, key) {
+				    		for(i=0;i<list.length;i++){
+				    			if(list[i].id == value){
+							        list.splice(i, 1);
+							        break;
+				    			}
+				    		}
+				    	});
+				    	$scope.selected = [];
+						$scope.$apply();
+					}
+					else if(resp.error.code == 401){
+						$rootScope.$emit('$unauthorised', resp.error);
+					}
+					else if(resp.error.code == 403){
+						$rootScope.$emit('$forbidden', resp.error);
+					}					
+				});
+			}
 		}
 	    
 	    $scope.markSelected = function(){
@@ -395,13 +524,22 @@ angular.module("controllers", []).
 		
 		var _api = $api.get();
 		$scope.selected = [];
+		$rootScope.item = null;		
 		
 		$rootScope.showBackBtn = false;
 
 		var loadUsers = function(){
 			_api.user.list({organisation_id:$rootScope.organisation.id}).execute(function(resp){
-				$scope.users = resp.items;
-				$scope.$apply()
+				if(!resp.error){
+					$scope.users = resp.items;
+					$scope.$apply();
+				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}
 			});
 		}
 
@@ -424,7 +562,14 @@ angular.module("controllers", []).
 			    			}
 			    		}
 			    	});
+			    	$scope.selected = [];
 					$scope.$apply()
+				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
 				}
 			});
 		}
@@ -472,8 +617,16 @@ angular.module("controllers", []).
 		
 		var loadUser = function(){
 			_api.user.get({id:$routeParams.id}).execute(function(resp){
-				$scope.user = resp;
-				$scope.$apply()
+				if(!resp.error){
+					$scope.user = resp;
+					$scope.$apply()
+				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}				
 			});
 		}
 
@@ -495,13 +648,20 @@ angular.module("controllers", []).
 					if(resp){
 						$location.path("/account");
 					}
+					
 				});
 			}
 			else {
 				_api.user.insert(user).execute(function(resp){
-					if(resp){
+					if(!resp.error){
 						$location.path("/account");
 					}
+					else if(resp.error.code == 401){
+						$rootScope.$emit('$unauthorised', resp.error);
+					}
+					else if(resp.error.code == 403){
+						$rootScope.$emit('$forbidden', resp.error);
+					}				
 				});
 			}
 		}		
@@ -538,20 +698,73 @@ angular.module("controllers", []).
 	    $rootScope.readyClass = "app-ready";
 		
 	}]).	
-	controller("PatientsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', function($scope, $rootScope, $routeParams, $api, $location){
+	controller("PatientsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', '$location', '$mdToast', function($scope, $rootScope, $routeParams, $api, $location, $mdToast){
 		
 		var _api = $api.get();
 		$rootScope.showBackBtn = false;
+		$rootScope.backLocation = "/patients";		
 		$scope.selected = [];
+		$rootScope.patient = null;
+		$scope.order = "";
+		var orderDirection = {};
 
-		var loadPatients = function(){
-			_api.patient.list({organisation:$rootScope.organisation.id}).execute(function(resp){
-				$scope.patients = resp.items;
-				$scope.$apply()
+		var loadPatients = function(params){
+
+			var toast = $mdToast
+						.simple()
+						.content('Loading ...')
+						.position("top right")
+						.parent(document.getElementById("main-content-container"))
+						.hideDelay(0);
+			$mdToast.show(toast);
+			
+			var _params = {
+					limit : 25,
+					order : "ref"
+			}
+			
+			if(params){
+				angular.extend(_params, params);
+			}
+			
+			_api.patient.list(_params).execute(function(resp){
+
+				$mdToast.hide();
+				
+				if(!resp.error){
+					$scope.patients = resp.items;
+					$scope.$apply();
+				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}				
 			});
 		}
 
 		loadPatients();
+		
+		$scope.setOrder = function(val){
+			
+			if(orderDirection[val]){
+				orderDirection[val] = !orderDirection[val];
+			}
+			else {
+				orderDirection[val] = true;
+			}
+			
+			$scope.order =  orderDirection[val] ? val : ("-" + val);
+			
+			if($scope.patients && $scope.patients.length < 25){
+				$scope.orderRepeater = $scope.order;
+			}
+			else {
+				$scope.orderRepeater = null;
+				loadPatients({order:$scope.order});			
+			}
+		}
 		
 		$scope.showDetail = function(itemData, $event) {
 			$rootScope.patient = itemData;
@@ -564,20 +777,43 @@ angular.module("controllers", []).
 		}
 
 		$scope.deleteSelected = function(selected){
-			_api.patient.deleteByIdList({ids:selected}).execute(function(resp){
-				if(resp) {
-					var list = $scope.patients;
-			    	angular.forEach(selected, function(value, key) {
-			    		for(i=0;i<list.length;i++){
-			    			if(list[i].id == value){
-						        list.splice(i, 1);
-						        break;
-			    			}
-			    		}
-			    	});
-					$scope.$apply()
-				}
-			});
+
+			if(selected && selected.length > 0) {
+				
+				var str = selected.length == 1 ? "Deleting patient ... " : 'Deleting ' + selected.length + ' patients ...'
+				var toast = $mdToast
+							.simple()
+							.content(str)
+							.position("top right")
+							.parent(document.getElementById("main-content-container"))
+							.hideDelay(0);
+				$mdToast.show(toast);			
+				
+				_api.patient.deleteByIdList({ids:selected}).execute(function(resp){
+					
+					$mdToast.hide();
+					
+					if(!resp.error) {
+						var list = $scope.patients;
+				    	angular.forEach(selected, function(value, key) {
+				    		for(i=0;i<list.length;i++){
+				    			if(list[i].id == value){
+							        list.splice(i, 1);
+							        break;
+				    			}
+				    		}
+				    	});
+				    	$scope.selected = [];
+						$scope.$apply()
+					}
+					else if(resp.error.code == 401){
+						$rootScope.$emit('$unauthorised', resp.error);
+					}
+					else if(resp.error.code == 403){
+						$rootScope.$emit('$forbidden', resp.error);
+					}				
+				});
+			}
 		}
 		
 		$scope.toggle = function (item, list, $event) {
@@ -618,7 +854,6 @@ angular.module("controllers", []).
 		var _api = $api.get();
 
 		$rootScope.showBackBtn = true;
-		$rootScope.backLocation = "/patients";
 		$scope.appointmentsLoading = true;
 		
 		var loadPatient = function(){
@@ -633,17 +868,28 @@ angular.module("controllers", []).
 					
 					$scope.$apply()
 				}
-				else {
-					//handle error
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
 				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}				
 			});
 		}
 
 		var loadPatientAppointments = function(){
 			_api.appointment.listByPatient({patient_id:$routeParams.id}).execute(function(resp){
-				$scope.appointmentsLoading = false;
-				$scope.appointments = resp.items;
-				$scope.$apply()
+				if(!resp.error){
+					$scope.appointmentsLoading = false;
+					$scope.appointments = resp.items;
+					$scope.$apply();
+				}
+				else if(resp.error.code == 401){
+					$rootScope.$emit('$unauthorised', resp.error);
+				}
+				else if(resp.error.code == 403){
+					$rootScope.$emit('$forbidden', resp.error);
+				}				
 			});
 		}
 		
@@ -655,6 +901,7 @@ angular.module("controllers", []).
 	          parent: angular.element(document.body),
 	          controller: 'AppointmentSelectCtrl',
 	          locals: { $appointment : appointment,
+	        	  		$doctor : null,
 	        	  		$patient : null
 	        	      }
 	        });
@@ -675,6 +922,7 @@ angular.module("controllers", []).
 	          parent: angular.element(document.body),
 	          controller: 'AppointmentSelectCtrl',
 	          locals: { $patient : patient,
+	        	  		$doctor : $rootScope.doctor,
 	        	  		$appointment : null
 	        	  	  }
 	        });
@@ -714,7 +962,12 @@ angular.module("controllers", []).
 		}
 		
 		$scope.back = function(){
-			$location.path("/patients"); 
+			$rootScope.patient = null;
+			
+			if($rootScope.backLocation)
+				$location.path($rootScope.backLocation); 
+			else
+				$location.path("/patients")
 		}
 		
 		$scope.updateAge = function(patient){
@@ -733,6 +986,12 @@ angular.module("controllers", []).
 					if(!resp.error){
 						$scope.back();
 					}
+					else if(resp.error.code == 401){
+						$rootScope.$emit('$unauthorised', resp.error);
+					}
+					else if(resp.error.code == 403){
+						$rootScope.$emit('$forbidden', resp.error);
+					}				
 				});
 			}
 			else {
@@ -747,6 +1006,12 @@ angular.module("controllers", []).
 							$scope.back();
 						}
 					}
+					else if(resp.error.code == 401){
+						$rootScope.$emit('$unauthorised', resp.error);
+					}
+					else if(resp.error.code == 403){
+						$rootScope.$emit('$forbidden', resp.error);
+					}				
 				});
 			}
 		}
@@ -754,7 +1019,7 @@ angular.module("controllers", []).
 	    $rootScope.readyClass = "app-ready";
 		
 	}]).
-	controller("AppointmentSelectCtrl", ['$scope', '$rootScope', '$api', '$location', '$mdDialog', '$config', '$patient', '$appointment', function($scope, $rootScope, $api, $location, $mdDialog, $config, $patient, $appointment){
+	controller("AppointmentSelectCtrl", ['$scope', '$rootScope', '$api', '$location', '$mdDialog', '$config', '$patient', '$appointment', '$doctor', function($scope, $rootScope, $api, $location, $mdDialog, $config, $patient, $appointment, $doctor){
 		
 		var _api = $api.get();
 		
@@ -787,7 +1052,7 @@ angular.module("controllers", []).
 
 		if($appointment) {
 			$scope.appointmentDuration = $appointment.duration;
-			$scope.doctor = $appointment.doctor;
+			$scope.doctor = $appointment.doctor.id;
 			$scope.selected = moment($appointment.date);
 			$scope.date = moment($appointment.date);
 			$scope.changed = true;
@@ -799,6 +1064,7 @@ angular.module("controllers", []).
 		else {
 			$scope.date = moment();
 			$scope.appointmentDuration = $config.calendar.appointmentDuration;
+			$scope.doctor = $doctor;
 
 			if($scope.today.hour() > $config.calendar.officeCloseHour){
 				$scope.selected = moment($scope.today).add(1, 'd');

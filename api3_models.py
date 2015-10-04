@@ -31,6 +31,7 @@ class UserType(messages.Enum):
     ADMIN = 1
     NORMAL = 2
     ORGANISATION_ADMIN = 3
+    PATIENT = 4
     
 
 class UserRole(messages.Enum):
