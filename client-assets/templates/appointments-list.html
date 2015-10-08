@@ -1,0 +1,62 @@
+<div layout="row" style="height: 650px">
+	<span flex></span>
+	<div layout="column">
+		
+		<div layout="row" flex>
+			<h3>Appointments</h3>
+			<span flex></span>
+			<div layout="row" layout-align="end center" style="margin-right: -8px;">
+		 		<md-button class="md-raised md-primary md-accent" ng-href="#/start">New Appointment</md-button>
+			</div>
+		</div>
+		
+		<div layout="column" flex class="md-whiteframe-z1">
+		
+			<div layout="row" class="table-header">
+			    <div style="width:95px"></div>
+			    <div ng-repeat="doc in doctors"
+			    	 style="width:180px; text-align: center;">
+					{{doc.name}}
+			   	</div>
+			</div>		
+
+			<md-content layout="column" 
+						layout-align="start center" 
+						md-scroll-y 
+						id="calendar-holder"
+						style="height:600px; position:relative">
+			
+				<table flex layout-fill class="cal-table">
+					<tr ng-repeat="row in hours">
+						<td class="cal-hour-cell">
+							<h3>
+								{{row}}
+								<span ng-show="row < 12">am</span>
+								<span ng-show="row >= 12">pm</span>
+							</h3>
+						</td>
+						<td class="cal-minutes-cell" 
+							ng-repeat="col in calendarCols" 
+							layout="column">
+							<div flex 
+								 class="cal-appointment-cell"
+								 ng-class="{'empty' : col > numOfDoctors}"
+								 ng-repeat="subrow in [0, 15, 30, 45]">
+							</div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="now-line" style="top:{{nowPosY}}px;"></div>
+				
+				<div class="appointment doctor-color-{{getColourIndex(a)}}"
+					 ng-repeat="a in appointments"
+					 style="top:{{getPosY(a)}}px;left:{{getPosX(a)}}px;">
+					{{a.patient.ref}}
+				</div>
+			</md-content>
+
+		</div>
+	</div>
+	<span flex></span>
+</div>

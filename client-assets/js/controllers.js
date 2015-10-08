@@ -51,6 +51,46 @@ angular.module("controllers", []).
 			}
 		}
 	}]).
+	controller("HomeCtrl", ['$scope', '$rootScope', '$location', function($scope, $rootScope, $location){
+		$scope.start = function(){
+			$location.path("/pin");
+		}
+		
+	    $rootScope.readyClass = "app-ready";
+		
+	}]).
+	controller("PinCtrl", ['$scope', '$rootScope', '$location', function($scope, $rootScope, $location){
+		
+		var pin = "";
+		$scope.display = "";
+		$scope.pinError = false;
+		
+		$scope.pinpadKeyPress = function(num){
+			pin = pin + "" + num;
+			$scope.display += "*";
+			$scope.pinError = false;
+		}
+
+		$scope.pinpadClear = function(num){
+			pin = "";
+			$scope.display = "";
+			$scope.pinError = false;
+		}
+
+		$scope.pinpadCheck = function(){
+			if(pin == "1234"){
+				$location.path("/list");
+			}
+			else {
+				pin = "";
+				$scope.display = "";				
+				$scope.pinError = true;
+			}
+		}	
+		
+	    $rootScope.readyClass = "app-ready";
+		
+	}]).
 	controller("PinpadCtrl", ['$scope', '$rootScope', '$mdDialog', '$next', function($scope, $rootScope, $mdDialog, $next){
 		
 		var pin = "";
@@ -86,6 +126,102 @@ angular.module("controllers", []).
 		
 		
 	}]).
+	controller("AppointmentsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", function($scope, $rootScope, $routeParams, $api, $location){
+
+		var _api = $api.get();
+		
+		var _now = new Date();
+		var _today = new Date(_now.getFullYear(), _now.getMonth(), _now.getDate()).getTime(); 		
+
+		var loadAppointment = function(order){
+			var params = {
+					organisation : $rootScope.organisation.id,
+					limit : 100
+			}
+			
+			if(order) {
+				params.order = order;
+			}
+			
+			_api.appointment.list(params).execute(function(resp){
+				
+				if(!resp.error) {
+					$scope.appointments = resp.items;
+					$scope.$apply();
+					
+					var int = ((_now - _today - 7 * 60 * 60 * 1000) / (60 * 60 * 1000));
+					document.getElementById("calendar-holder").scrollTop = int * 91 - 1 - 91;
+				}
+				else {
+					$rootScope.$emit("$commsError", {title:"Can't load appointments", description : resp.error.message})
+				}
+			});
+		}		
+
+		loadAppointment('date');
+
+		var _doctors = $rootScope.doctors
+		$scope.numOfDoctors = _doctors.length;
+		$scope.doctors = _doctors.slice(0);
+		
+		var _doctorIndex = {};
+		for(var i = 0; i < _doctors.length; i++){
+			_doctorIndex[_doctors[i].id] = i;
+		}
+		
+		for(;$scope.doctors.length < 5;)
+			$scope.doctors.push({}); 
+		
+		$scope.hours = new Array(19-7);
+		for(var i = 0; i < $scope.hours.length; i++){
+			$scope.hours[i] = i + 7;
+		}
+
+		$scope.minutes = new Array(60 / 15);
+		for(var i = 0; i < $scope.minutes.length; i++){
+			$scope.minutes[i] = i * 15;
+		}
+		
+		
+		$scope.calendarCols = new Array($scope.doctors.length);
+		for(var i = 0; i < $scope.calendarCols.length; i++){
+			$scope.calendarCols[i] = i + 1;
+		}
+		
+		$scope.getColourIndex = function(a){
+			return _doctorIndex[a.doctor.id] + 1;
+		}
+
+		$scope.getPosX = function(a){
+			return _doctorIndex[a.doctor.id] * 181 + 96;
+		}
+
+		$scope.getPosY = function(a){
+			var t = new Date(a.date).getTime();
+			var int = (t - _today - 7 * 60 * 60 * 1000) / (15 * 60 * 1000);
+
+			return int * 22 + Math.floor(int / 4) * 3 ;
+		}
+		
+		$scope.nowPosY = function(){
+			var t = new Date().getTime();
+			var int = (t - _today - 7 * 60 * 60 * 1000) / (60 * 60 * 1000);
+
+			return int * 91 - 1 ;
+		}();		
+		
+		$scope.selectAppointment = function(patient, $event) {
+			//$rootScope.patient = patient;
+			$rootScope.progress = 15;
+			//$location.path("/" + patient.id + "/reason");
+	    };
+	    
+	    $scope.min = function(a,b){
+	    	return Math.min(a,b);
+	    }
+	    
+	    $rootScope.readyClass = "app-ready";
+	}]).	
 	controller("PatientCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", function($scope, $rootScope, $routeParams, $api, $location){
 
 		var _api = $api.get();
@@ -102,12 +238,12 @@ angular.module("controllers", []).
 			
 			_api.patient.list(params).execute(function(resp){
 				
-				if(resp.error) {
-					$rootScope.$emit("$commsError", {title:"Can't load patients list", description : resp.error.message})
-				}
-				else {
+				if(!resp.error) {
 					$scope.patients = resp.items;
 					$scope.$apply()
+				}
+				else {
+					$rootScope.$emit("$commsError", {title:"Can't load patients list", description : resp.error.message})
 				}
 			});
 		}

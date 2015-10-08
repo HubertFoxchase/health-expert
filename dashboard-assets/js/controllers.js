@@ -1214,7 +1214,7 @@ angular.module("controllers", []).
 	        			id : $appointment.id,
 		        		date: $scope.selected.toDate(),
 		        		duration: $scope.appointmentDuration,
-		        		doctor_id: $scope.doctor.id,
+		        		doctor_id: $scope.doctor,
 		        	}
 		        	
 				_api.appointment.update(params).execute(function(resp){
@@ -1227,7 +1227,7 @@ angular.module("controllers", []).
 	        	var params = {
 		        		date: $scope.selected.toDate(),
 		        		duration: $scope.appointmentDuration,
-		        		doctor_id:$scope.doctor.id,
+		        		doctor_id:$scope.doctor,
 		        		patient_id:$patient.id
 		        	}
 		        	

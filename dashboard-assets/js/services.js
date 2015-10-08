@@ -75,16 +75,14 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 							
 							angular.forEach(resp.items, function(el, index, array){
 								$rootScope.doctors[el.id] = el;
-							})
-
+							});							
+							
 							deferred.resolve(_api);
 						}
 						else {
 				            deferred.reject({code:resp.error.code, message:resp.error.message});
 						}
 		        	});
-		        	
-					deferred.resolve(_api);
 				}
 				else {
 		            deferred.reject({code:resp.error.code, message:resp.error.message});

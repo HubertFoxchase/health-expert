@@ -4,7 +4,7 @@ angular.module('services', []).
 
 factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootScope) {
 
-	var deferred = $q.defer();;
+	var deferred = $q.defer();
 	var _api = null;
 	
     var clientId = $config.clientId,
@@ -41,33 +41,64 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
     }      
 
     var apiReady = function() {
-        if (gapi.client.c4c) {
-        	_api = gapi.client.c4c;
 
-        	// get organisation
+		console.log("API loaded: " + (Date.now() - start) + " ms");
+    	
+    	if (gapi.client.c4c) {
+        	_api = gapi.client.c4c;
+        	
+        	// get user and organisation
 			_api.user.me().execute(function(resp){
 				
+    			console.log("Me loaded: " + (Date.now() - start) + " ms");
 				if(!resp.error) {
 					$rootScope.user = resp;
+					$rootScope.user.isAdmin = resp.type == 1 || resp.type == 3;
 					$rootScope.organisation = $rootScope.user.organisation;
 
-					deferred.resolve(_api);
+					try {
+						$rootScope.organisation.settings = JSON.parse($rootScope.organisation.settings);
+					}
+					catch(e){
+						$rootScope.organisation.settings = {};
+					}
+					
+		        	_api.user.list({organisation_id:$rootScope.organisation.id}).execute(function(resp){
+						
+		    			console.log("Users loaded: " + (Date.now() - start) + " ms");
+		        		if(!resp.error) {
+							$rootScope.doctors = resp.items;
+							
+							deferred.resolve(_api);
+						}
+						else {
+				            deferred.reject({code:resp.error.code, message:resp.error.message});
+						}
+		        	});
 				}
 				else {
-		            deferred.reject({code:500, message:'Unspecified API load error'});
+		            deferred.reject({code:resp.error.code, message:resp.error.message});
 				}
-			});       	
+			});        	
         } 
         else {
-            deferred.reject('api load error');
+            deferred.reject({code:500, message:'Unspecified API load error'});
         }
     }      
 
     return {
     	load : function() {
-    	    //gapi.load('auth', {'callback': checkAuth});
-    	    gapi.load('client', {'callback': clientReady});
-            return deferred.promise;
+    		if(_api) {
+	            deferred.resolve(_api);
+    		}
+    		else {
+	    	    //gapi.load('auth', {'callback': checkAuth});
+	        	
+    			console.log("Started loading API: " + (Date.now() - start) + " ms");
+
+	        	gapi.load('client', {'callback': clientReady});
+	            return deferred.promise;
+    		}
     	},
     	
     	handleAuthClick : function (event) {

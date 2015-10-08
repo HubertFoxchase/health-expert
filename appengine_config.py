@@ -20,4 +20,8 @@ if os.environ.get('SERVER_SOFTWARE', '').startswith('Development'):
     imp.load_source('socket', psocket)
     
 #add libs folder for future better content organisation
-sys.path.append(os.path.join(os.path.dirname(__file__), "libs"))
+#from google.appengine.ext import vendor
+
+#vendor.add('lib')
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "lib"))

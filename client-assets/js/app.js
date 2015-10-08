@@ -4,7 +4,14 @@ angular.module('c4c', ['ngMaterial', 'ngMdIcons', 'ngRoute', 'ngMessages', 'cont
 .value('$config', {
       clientId     : '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com',
       scope        : [ 'https://www.googleapis.com/auth/userinfo.email' ],
-      observationsJson : "/client-assets/js/observations.js"
+      observationsJson : "/client-assets/js/observations.js",
+      calendar : {
+    	  officeOpenHour : 7,
+    	  officeCloseHour : 19,
+    	  appointmentDuration : 15,
+    	  appointmentStep: 5,
+    	  daysOpen : [1,2,3,4,5]
+      }      
 })
 .config(['$routeProvider', '$locationProvider', '$mdThemingProvider',
 function($routeProvider, $locationProvider, $mdThemingProvider) {
@@ -37,9 +44,25 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 	    .accentPalette('c4cPalette');	
 	
 	$routeProvider
+		.when('/home', {
+			templateUrl: '/client-assets/templates/home-screen.html',
+			controller: 'HomeCtrl',
+			resolve : { init: ['$api', function($api) {
+		          	return $api.load();
+	        	}]
+			}
+		})
+		.when('/pin', {
+			templateUrl: '/client-assets/templates/pin-pad.html',
+			controller: 'PinCtrl',
+			resolve : { init: ['$api', function($api) {
+		          	return $api.load();
+	        	}]
+			}
+		})
 		.when('/list', {
-			templateUrl: '/client-assets/templates/patients-list.html',
-			controller: 'PatientCtrl',
+			templateUrl: '/client-assets/templates/appointments-list.html',
+			controller: 'AppointmentsCtrl',
 			resolve : { init: ['$api', function($api) {
 		          	return $api.load();
 	        	}]
@@ -134,7 +157,7 @@ function($routeProvider, $locationProvider, $mdThemingProvider) {
 			}
 		})		
 	    .otherwise({
-	          redirectTo: '/list'
+	          redirectTo: '/home'
 	    });		
 
     //$locationProvider.html5Mode({enabled: true,requireBase:false});
