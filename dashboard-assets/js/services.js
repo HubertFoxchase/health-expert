@@ -216,6 +216,12 @@ factory('$api',  ['$q', '$config', '$rootScope', function ($q, $config, $rootSco
 	var userName = $rootScope.user ? $rootScope.user.name : "Doctor";	
 	
 	//rtc
+	easyrtc.setOnError(function(error){
+		//error.errorCode, error.errorString
+		console.log(error.errorString);
+	});
+
+	
 	if (window.location.protocol == "https:"){
 		easyrtc.setSocketUrl($config.rtcServer.httpsUrl);
 	}

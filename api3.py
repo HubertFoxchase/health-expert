@@ -4,33 +4,18 @@ Created on 5 Mar 2015
 @author: Michael Lisovski
 '''
 
-import endpoints
-import datetime
+
 import api3_messages
 import logging
-from protorpc import messages
-from google.appengine.ext import ndb
-from google.appengine.api import memcache
-from protorpc import remote, message_types
+from protorpc import remote
 from protorpc import message_types
 from api3_models import *
 
 import infermedica_api
 import string
 import random
-import os
 
-import webapp2
-import webapp2_extras
-from webapp2_extras import auth
-from webapp2_extras import sessions
-from webapp2_extras import securecookie
-from webapp2_extras.sessions import SessionDict
-
-import Cookie
-from array import array
-
-
+from myauth import MyAuth
 
 
 WEB_CLIENT_ID = '817202020074-1b97ag04r8rhfj6r40bocobupn92g5bj.apps.googleusercontent.com'
@@ -43,16 +28,6 @@ APP_ID = "b2bc2e86"
 APP_KEY = "92d49a8b4302920c299e038041049741"
 
 RAISE_UNAUTHORISED = True
-
-TOKEN_CONFIG = {
-    'token_max_age': 86400 * 7 * 3,
-    'token_new_age': 86400,
-    'token_cache_age': 3600,
-}
-
-SESSION_ATTRIBUTES = ['user_id', 'remember', 'token', 'token_ts', 'cache_ts', 'email', 'type', 'organisation_id']
-
-SESSION_SECRET_KEY = 'YOUR_SECRET_KEY'
 
 c4c_api = endpoints.api(name='c4c', 
                version='v1',
@@ -245,7 +220,7 @@ class UserApi(remote.Service):
 class PatientApi(remote.Service):
    
     @Patient.method(request_fields=('ref', 'age', 'dob', 'gender', 'organisation_id', ),
-                    response_fields=('id', 'ref', 'age', 'gender', 'organisation', ),
+                    response_fields=('id', 'ref', 'age', 'gender', 'organisation_id', ),
                     path='patient', 
                     http_method='POST',
                     name='insert')   
@@ -274,7 +249,7 @@ class PatientApi(remote.Service):
         return query.filter(Patient.active == True).filter(Patient.organisation_ref == organisation_ref)
 
     @Patient.method(path='patient/{id}', 
-                    response_fields=('id', 'ref', 'age', 'dob', 'gender', 'organisation', ),
+                    response_fields=('id', 'ref', 'age', 'dob', 'gender', 'organisation_id', ),
                     http_method='GET',
                     name='get')   
     def PatientGet(self, model):
@@ -285,7 +260,7 @@ class PatientApi(remote.Service):
         return model        
 
     @Patient.method(request_fields=('ref', 'age', 'dob', 'gender'),
-                    response_fields=('id', 'ref', 'age', 'dob', 'gender', 'organisation', ),
+                    response_fields=('id', 'ref', 'age', 'dob', 'gender', 'organisation_id', ),
                     path='patient/{id}', 
                     http_method='POST',
                     name='update')   
@@ -406,6 +381,20 @@ class AppointmentApi(remote.Service):
                             ).filter(Appointment.date > date - datetime.timedelta(hours=2)
                                      ).filter(Appointment.organisation_ref == organisation_ref)
 
+    @Appointment.query_method(query_fields=('query_date', 'limit', 'order', 'pageToken', ),
+                          collection_fields=('id', 'date', 'duration', 'patient', 'doctor_id'),
+                          path='appointments/listByDate', 
+                          http_method='GET',
+                          name='listByDate')   
+    def AppointmentsListByDate(self, query):
+        u = _isValidUser()
+        
+        #TODO: check for valid organisation
+        organisation_ref = ndb.Key(Organisation, u['organisation_id'])
+        
+        return query.filter(Appointment.active == True
+                            ).filter(Appointment.organisation_ref == organisation_ref)
+
     @Appointment.query_method(query_fields=('doctor_id', 'limit', 'order', 'pageToken'),
                           collection_fields=('id', 'date', 'duration', 'patient'),
                           path='appointments/listByDoctor', 
@@ -491,10 +480,10 @@ class SessionApi(remote.Service):
                           symptoms = Symptoms())
         
         if request.doctor is not None :
-            session.doctor_ref = ndb.Key(User, request.doctor), 
+            session.doctor_ref = ndb.Key(User, request.doctor)
 
         if request.appointment is not None :
-            session.appointment_ref = ndb.Key(Appointment, request.appointment), 
+            session.appointment_ref = ndb.Key(Appointment, request.appointment) 
 
 
         inf_api = infermedica_api.API(app_id=APP_ID, app_key=APP_KEY)
@@ -735,117 +724,6 @@ class SessionApi(remote.Service):
         ndb.delete_multi(query.iter(keys_only=True))
         return query 
 
-class MyAuth():
-    
-    user = None
-    token = None
-    email = None
-    organisation_ref = None
-    
-
-    @classmethod
-    def get_user_from_cookie(cls):
-        
-        serializer = securecookie.SecureCookieSerializer(SESSION_SECRET_KEY)
-        
-        cookie_string = os.environ.get('HTTP_COOKIE')
-        cookie = Cookie.SimpleCookie()
-        cookie.load(cookie_string)
-        
-        if "auth" in cookie :
-            session_name = cookie['auth'].value
-            session_name_data = serializer.deserialize('auth', session_name)
-            session_dict = SessionDict(cls, data=session_name_data, new=False)
-            
-            if session_dict:
-                session_final = dict(zip(SESSION_ATTRIBUTES, session_dict.get('_user')))
-                _user, _token = cls.validate_token(session_final.get('user_id'), 
-                                                   session_final.get('token'),
-                                                   token_ts=session_final.get('token_ts'))
-                cls.user = _user
-                cls.token = _token
-                
-                if cls.user:
-                    cls.user['type'] = session_final.get('type')
-                    cls.user['email'] = session_final.get('email')
-                    cls.user['organisation_id'] = session_final.get('organisation_id')
-
-    @classmethod
-    def user_to_dict(cls, user):
-        """Returns a dictionary based on a user object.
-
-        Extra attributes to be retrieved must be set in this module's
-        configuration.
-
-        :param user:
-            User object: an instance the custom user model.
-        :returns:
-            A dictionary with user data.
-        """
-        if not user:
-            return None
-
-        user_dict = dict((a, getattr(user, a)) for a in [])
-        user_dict['user_id'] = user.get_id()
-        user_dict['organisation_id'] = user.get_organisation_id()
-        
-        return user_dict
-
-    @classmethod
-    def get_user_by_auth_token(cls, user_id, token):
-        """Returns a user dict based on user_id and auth token.
-
-        :param user_id:
-            User id.
-        :param token:
-            Authentication token.
-        :returns:
-            A tuple ``(user_dict, token_timestamp)``. Both values can be None.
-            The token timestamp will be None if the user is invalid or it
-            is valid but the token requires renewal.
-        """
-        user, ts = User.get_by_auth_token(user_id, token)
-        return cls.user_to_dict(user), ts
-
-    @classmethod
-    def validate_token(cls, user_id, token, token_ts=None):
-        """Validates a token.
-
-        Tokens are random strings used to authenticate temporarily. They are
-        used to validate sessions or service requests.
-
-        :param user_id:
-            User id.
-        :param token:
-            Token to be checked.
-        :param token_ts:
-            Optional token timestamp used to pre-validate the token age.
-        :returns:
-            A tuple ``(user_dict, token)``.
-        """
-        now = int(time.time())
-        delete = token_ts and ((now - token_ts) > TOKEN_CONFIG['token_max_age'])
-        create = False
-
-        if not delete:
-            # Try to fetch the user.
-            user, ts = cls.get_user_by_auth_token(user_id, token)
-            if user:
-                # Now validate the real timestamp.
-                delete = (now - ts) > TOKEN_CONFIG['token_max_age']
-                create = (now - ts) > TOKEN_CONFIG['token_new_age']
-
-        if delete or create or not user:
-            if delete or create:
-                # Delete token from db.
-                User.delete_auth_token(user_id, token)
-
-                if delete:
-                    user = None
-
-            token = None
-
-        return user, token
 
 
 def _lookupName(lookupId, lookupList):
@@ -880,8 +758,7 @@ def _isValidUser():
             if user is None:
                 raise endpoints.UnauthorizedException('Not authorised')
 '''
-
-        
+      
 
 def _isAdminUser():
     

@@ -74,11 +74,11 @@
 					</div>
 			
 					<div class="table-row" layout="row" layout-align="center center" ng-show="appointmentsLoading">
-						<div flex="20">Loading ...</div>
+						<div flex="20" style="text-align: center;">Loading ...</div>
 					</div>		
 	
 					<div class="table-row" layout="row" layout-align="center center" ng-hide="appointmentsLoading || appointments.length > 0">
-						<div flex="70">No upcoming appointments</div>
+						<div flex="70" style="text-align: center;">No upcoming appointments</div>
 					</div>
 					
 					<div layout="row" ng-repeat="item in appointments" 

@@ -126,16 +126,18 @@ angular.module("controllers", []).
 		
 		
 	}]).
-	controller("AppointmentsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", function($scope, $rootScope, $routeParams, $api, $location){
+	controller("AppointmentsCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", '$config', function($scope, $rootScope, $routeParams, $api, $location, $config){
 
 		var _api = $api.get();
+
+		var _calConfig =  $config.calendar;
 		
 		var _now = new Date();
 		var _today = new Date(_now.getFullYear(), _now.getMonth(), _now.getDate()).getTime(); 		
 
-		var loadAppointment = function(order){
+		var loadAppointments = function(order){
 			var params = {
-					organisation : $rootScope.organisation.id,
+					query_date : _now.toISOString(),
 					limit : 100
 			}
 			
@@ -143,7 +145,7 @@ angular.module("controllers", []).
 				params.order = order;
 			}
 			
-			_api.appointment.list(params).execute(function(resp){
+			_api.appointment.listByDate(params).execute(function(resp){
 				
 				if(!resp.error) {
 					$scope.appointments = resp.items;
@@ -158,7 +160,9 @@ angular.module("controllers", []).
 			});
 		}		
 
-		loadAppointment('date');
+		loadAppointments('date');
+		
+		$scope.date = _now;
 
 		var _doctors = $rootScope.doctors
 		$scope.numOfDoctors = _doctors.length;
@@ -169,7 +173,7 @@ angular.module("controllers", []).
 			_doctorIndex[_doctors[i].id] = i;
 		}
 		
-		for(;$scope.doctors.length < 5;)
+		for(;$scope.doctors.length < 4;)
 			$scope.doctors.push({}); 
 		
 		$scope.hours = new Array(19-7);
@@ -189,32 +193,39 @@ angular.module("controllers", []).
 		}
 		
 		$scope.getColourIndex = function(a){
-			return _doctorIndex[a.doctor.id] + 1;
+			return _doctorIndex[a.doctor_id] + 1;
 		}
 
 		$scope.getPosX = function(a){
-			return _doctorIndex[a.doctor.id] * 181 + 96;
+			return _doctorIndex[a.doctor_id] * 181 + 96;
 		}
 
 		$scope.getPosY = function(a){
 			var t = new Date(a.date).getTime();
-			var int = (t - _today - 7 * 60 * 60 * 1000) / (15 * 60 * 1000);
+			var int = (t - _today - _calConfig.officeOpenHour * 60 * 60 * 1000) / (15 * 60 * 1000);
 
-			return int * 22 + Math.floor(int / 4) * 3 ;
+			return int * 25 + Math.floor(int / 4) * 3 ;
 		}
 		
-		$scope.nowPosY = function(){
+		$scope.nowLineStyle = function(){
 			var t = new Date().getTime();
-			var int = (t - _today - 7 * 60 * 60 * 1000) / (60 * 60 * 1000);
+			var int = (t - _today - _calConfig.officeOpenHour * 60 * 60 * 1000) / (60 * 60 * 1000);
 
-			return int * 91 - 1 ;
+			if(int > (_calConfig.officeCloseHour - _calConfig.officeOpenHour + 1)){
+				return "display:none";
+			}
+			else {
+				return "top: " + (int * 103 - 1) + "px"; ;
+			}
 		}();		
 		
-		$scope.selectAppointment = function(patient, $event) {
-			//$rootScope.patient = patient;
+		$scope.selectAppointment = function(a, $event) {
+			$rootScope.appointment = a;
+			$rootScope.patient = a.patient;
 			$rootScope.progress = 15;
-			//$location.path("/" + patient.id + "/reason");
+			$location.path("/" + $rootScope.patient.id + "/reason");
 	    };
+	    
 	    
 	    $scope.min = function(a,b){
 	    	return Math.min(a,b);
@@ -248,29 +259,6 @@ angular.module("controllers", []).
 			});
 		}
 		
-		var loadAppointment = function(order){
-			var params = {
-					organisation : $rootScope.organisation.id,
-					limit : 100
-			}
-			
-			if(order) {
-				params.order = order;
-			}
-			
-			_api.appointment.list(params).execute(function(resp){
-				
-				if(!resp.error) {
-					$rootScope.$emit("$commsError", {title:"Can't load appointments", description : resp.error.message})
-				}
-				else {
-					$scope.appointments = resp.items;
-					$scope.$apply()
-				}
-			});
-		}		
-
-		//loadAppointment('date');
 		loadPatients('ref');
 		
 		$rootScope.patient = null;
@@ -291,6 +279,8 @@ angular.module("controllers", []).
 	controller("StartCtrl", ['$scope', '$rootScope',  '$routeParams', '$api', "$location", "$mdDialog", "groupsOfSymptoms", "body", "$http", "$config", function($scope, $rootScope, $routeParams, $api, $location, $mdDialog, groupsOfSymptoms, body, $http, $config){
 		
 		var _api = $api.get();
+		
+		$scope.progress = null;
 
 		if(!$rootScope.patient){
 			$rootScope.patient = {id:$routeParams.patient};
@@ -421,21 +411,31 @@ angular.module("controllers", []).
 		
 		$scope.newSession = function(symptom){
 			console.log("new session");
+			$scope.progress = 'indeterminate';
 
-			$rootScope.reasonForVisit = symptom.name
-		
-			_api.session.new({
+			$rootScope.reasonForVisit = symptom.name;
+			
+			var params = {
 					organisation : $rootScope.organisation.id,
 					patient : $rootScope.patient.id,
 					present : [symptom.id]
-			}).execute(function(resp){
+			};			
+
+			
+			if($rootScope.appointment) {
+				params.appointment = $rootScope.appointment.id;
+				params.doctor = $rootScope.appointment.doctor_id;
+			}
+
+			_api.session.new(params).execute(function(resp){
 				
-				if(resp.error){
-					$rootScope.$emit("$commsError", {title:"Can't start diagnostic session", description : resp.error.message})
+				if(!resp.error){
+					$rootScope.session = resp;
+location.hash = "/" + resp.id + "/symptom";
 				}
 				else {
-					$rootScope.session = resp;
-					location.hash = "/" + resp.id + "/symptom";
+					$rootScope.$emit("$commsError", {title:"Can't start diagnostic session", description : resp.error.message})
+					$scope.progress = null;
 				}
 			});
 		}		

@@ -420,6 +420,9 @@ md-content[md-scroll-y]::-webkit-scrollbar-button:end:increment {
 	left: 0;
 }
 
+#easyrtcErrorDialog_body {
+	display: none;
+}
 
 #self{
 	position:absolute;

@@ -100,8 +100,9 @@ angular.module("controllers", []).
 		loadAppointments(params);
 		
 			
-		$rootScope.$on('refresh', function(){
+		$scope.$on('refresh', function(){
 			loadSessions($routeParams.doctor);
+			console.log("refresh grid session");
 		});
 		
 		$scope.showDetail = function(itemData, $event) {
@@ -199,7 +200,7 @@ angular.module("controllers", []).
 			
 			$rootScope.$on('$incomingCall', function(event, data){
 	
-				callerId = data.callerId
+				callerId = data.callerId;
 				
 				if($rootScope.callers[callerId].apiField.patient)
 					patientId = $rootScope.callers[callerId].apiField.patient.fieldValue;
@@ -301,8 +302,9 @@ angular.module("controllers", []).
 
 		loadSession();
 		
-		$rootScope.$on('refresh', function(){
+		$scope.$on('refresh', function(){
 			loadSession();
+			console.log("refresh session");
 		});
 		
 		$scope.indent = function(id){
@@ -405,13 +407,15 @@ angular.module("controllers", []).
 
 		loadSessions();
 		
-		$rootScope.$on('refresh', function(){
+		$scope.$on('refresh', function(){
 			if($scope.order){
 				loadSessions({order:$scope.order});
 			}
 			else {
 				loadSessions();
 			}
+			
+			console.log("refresh history page");
 		});
 		
 		$scope.setOrder = function(val){
@@ -1027,6 +1031,7 @@ angular.module("controllers", []).
 		$scope.dateChanged = false;
 		$scope.hourChanged = false;
 		$scope.minutesChanged = false;
+		$scope.progress = null;
 		
 		$scope.weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 		
@@ -1208,6 +1213,8 @@ angular.module("controllers", []).
 		}	
 
 		$scope.save = function(){
+			
+			$scope.progress = 'indeterminate';
 			
 			if($appointment){
 	        	var params = {

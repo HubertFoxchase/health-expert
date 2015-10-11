@@ -10,11 +10,13 @@ import time
 from protorpc import messages
 from google.appengine.ext import ndb
 from endpoints_proto_datastore.ndb import EndpointsModel, EndpointsAliasProperty, EndpointsDateTimeProperty
+from endpoints_proto_datastore import utils
 from webapp2_extras import auth
 from webapp2_extras import security
 from webapp2_extras.appengine.auth.models import Unique
 from webapp2_extras.appengine.auth.models import UserToken
 from locale import format_string
+
 
 class Organisation(EndpointsModel):
     
@@ -143,6 +145,7 @@ class User(EndpointsModel):
         """
         token_key = cls.token_model.get_key(user_id, subject, token)
         user_key = ndb.Key(cls, user_id)
+        
         # Use get_multi() to save a RPC call.
         valid_token, user = ndb.get_multi([token_key, user_key])
         
@@ -317,7 +320,7 @@ class User(EndpointsModel):
 
 class Patient(EndpointsModel):
     
-    _message_fields_schema = ('id', 'ref', 'gender', 'dob', 'age', 'organisation', 'organisation_id', )
+    _message_fields_schema = ('id', 'ref', 'gender', 'dob', 'age', 'organisation_id', )
     
     ref = ndb.StringProperty()
     gender = ndb.StringProperty()
@@ -341,12 +344,12 @@ class Patient(EndpointsModel):
     @EndpointsAliasProperty(setter=OrganisationId, property_type=messages.IntegerField)
     def organisation_id(self):
         return self.organisation_ref.integer_id()   
-
+'''
     @EndpointsAliasProperty(property_type=Organisation.ProtoModel())
     def organisation(self):
         if self.organisation_ref is not None:
             return self.organisation_ref.get()
-
+'''
 
 
 class Appointment(EndpointsModel):
@@ -425,7 +428,22 @@ class Appointment(EndpointsModel):
         if self.doctor_ref is not None:
             return self.doctor_ref.get()
     
+    def QueryDateSet(self, value):
+        try:
+            date = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except TypeError:
+            raise endpoints.BadRequestException('Invalid timestamp for query_date.')
 
+        date = datetime.datetime.combine(date, datetime.datetime.min.time())
+    
+        self._endpoints_query_info._filters.add(ndb.AND(Appointment.date >= date, Appointment.date <= date + datetime.timedelta(hours=24)))
+
+    @EndpointsAliasProperty(name='query_date', setter=QueryDateSet)
+    def QueryDate(self):
+        raise endpoints.BadRequestException('query_date value should never be accessed.')
+
+
+    
 '''    
     def OrganisationSet(self, value):
         if not isinstance(value, (int, long)):

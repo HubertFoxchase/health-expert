@@ -429,7 +429,7 @@ table.cal-table tr {
 } 
 
 .cal-appointment-cell {
-	height:22px; 
+	height:25px; 
 	border-bottom: 1px dotted #ccc;
 	border-left:1px solid #ccc;
 }
@@ -440,14 +440,14 @@ table.cal-table tr {
 }
 
 .cal-appointment-cell:last-child {
-	height:22px; 
+	height:25px; 
 	border-bottom: none;
 }
 
 .appointment {
 	position: absolute;
 	width: 150px;
-	min-height: 20px;
+	min-height: 23px;
 	border: 1px solid #ddd;
 	background-color: #eee;
 	padding: 0px 3px;

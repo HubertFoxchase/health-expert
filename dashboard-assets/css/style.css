@@ -496,6 +496,10 @@ ng-md-icon {
 	right: 0px;
 }
 
+#easyrtcErrorDialog_body {
+	display: none;
+}
+
 #chat-holder {
 	position: relative;
 	margin: 20px;
@@ -520,7 +524,6 @@ ng-md-icon {
 	top: 0;
 	left: 0;
 }
-
 
 #chat-holder #self{
 	position: absolute;

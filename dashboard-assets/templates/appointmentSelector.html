@@ -99,7 +99,8 @@
 		<span ng-show="!changed">Please select the time for the appointment</span>
 		<span ng-hide="!changed || doctor">Please select doctor or nurse</span>
 		<span flex></span>
-		<md-button class="md-raised md-accent" ng-click="save($event)" ng-disabled="!(changed && doctor)">
+		<md-progress-circular class="md-hue-2" md-mode="{{progress}}" md-diameter="25px"></md-progress-circular>		
+		<md-button class="md-raised md-accent" ng-click="save($event)" ng-disabled="!(changed && doctor) || progress == 'indeterminate'">
 		  Save
 		</md-button>
 		<md-button ng-click="cancel($event)" style="margin-right:20px;">

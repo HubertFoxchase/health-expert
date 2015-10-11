@@ -21,14 +21,6 @@
 				<svg-legs style="width:79px;height:153px;" ng-class="{'selected' : selectedBodyPart == 'Legs'}" id="legs" ng-click="selectBodyPart('Legs')"></svg-legs>
 				<svg-arm-left style="width:48px;height:156px;" ng-class="{'selected' : selectedBodyPart == 'Arms'}" id="left-arm" ng-click="selectBodyPart('Arms')"></svg-arm-left>
 				<svg-arm-right style="width:48px;height:156px;" ng-class="{'selected' : selectedBodyPart == 'Arms'}" id="right-arm" ng-click="selectBodyPart('Arms')"></svg-arm-right>
-				<!--
-				<img src="/client-assets/css/img/body_head.svg" width="41" height="50" id="head" ng-click="selectBodyPart('Head')">
-				<img src="/client-assets/css/img/body_chest.svg" width="64" height="83" id="chest" ng-click="selectBodyPart('Chest')">
-				<img src="/client-assets/css/img/body_center.svg" width="77" height="85" id="abdomen" ng-click="selectBodyPart('Abdomen')">
-				<img src="/client-assets/css/img/body_legs.svg" width="79" height="153" id="legs" ng-click="selectBodyPart('Legs')">
-				<img src="/client-assets/css/img/body_arm_left.svg" width="48" height="156" id="left-arm" ng-click="selectBodyPart('Arms')">
-				<img src="/client-assets/css/img/body_arm_right.svg" width="48" height="156" id="right-arm" ng-click="selectBodyPart('Arms')">
-				-->
 			</div>
 			<br>
 			<a class="md-button" ng-show="selectedBodyPart" ng-click="backToList()">Back to Symptoms List</a>
@@ -42,6 +34,7 @@
 						   class="md-raised c4c-medium-button"
 						   md-no-ink
 						   ng-class="{'md-primary' : selectedItem == $index}" 
+						   ng-disabled="progress == 'indeterminate'"
 						   ng-click="drillDown(g, $index)">
 			    	<div layout="row" layout-align="start space-between">
 				    	<span flex>{{g.name}}</span>
@@ -50,13 +43,14 @@
 		   		</md-button>
 			</md-content>
 		</div>
-		<div layout="column" flex layout-align="start center" class="md-whiteframe-z1 c4c-symptoms-container" ng-show="selected">
+		<div layout="column" flex layout-align="start center" class="md-whiteframe-z1 c4c-symptoms-container" ng-show="selected" style="position:relative">
 			<h3 ng-hide="selectedBodyPart2">{{selected.name}}</h3>
 			<h3 ng-show="selectedBodyPart2"><span style="font-weight: 400">{{selectedBodyPart2}}</span> symptoms</h3>
 			<md-content layout="column" flex layout-align="start center" md-scroll-y layout-padding>
 				<md-button ng-repeat="s in selected.symptoms" 
 						   class="md-raised c4c-medium-button" 
 						   md-no-ink
+						   ng-disabled="progress == 'indeterminate'"
 						   ng-click="newSession(s)">
 			    	<div layout="row" layout-align="start space-between">
 				    	<span flex>{{s.name}}</span>
@@ -64,6 +58,11 @@
 			    	</div>						   
 		   		</md-button>
 			</md-content>
+			<md-progress-circular 
+					class="md-hue-2" 
+					md-mode="{{progress}}" 
+					md-diameter="25px" 
+					style="position:absolute; top:0px; right:0px"></md-progress-circular>
 		</div> 		   
 	</div>
 </div>

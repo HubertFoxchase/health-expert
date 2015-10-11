@@ -22,6 +22,7 @@ import string
 import random
 
 from sendgrid import SendGridClient, Mail
+import myauth
 
 SENDGRID_USER = 'click4care'
 SENDGRID_PASSWORD = 'skynet1997'
@@ -44,9 +45,12 @@ def user_required(handler):
         auth = self.auth
         
         if not auth.get_user_by_session():
+            
             _params = {'url' : self.request.path_qs}
             self.redirect(self.uri_for('login') + '?' + urllib.urlencode(_params), abort=True)
         else:
+            logging.debug('all good, user validated')
+            
             return handler(self, *args, **kwargs)
 
     return check_login
@@ -451,6 +455,23 @@ class SetPasswordHandlerAjax(BaseHandler):
         obj = {'success': success} 
         self.response.out.write(json.dumps(obj))        
 
+class RefreshAuthHandlerAjax(BaseHandler):
+
+    def get(self):
+        
+        _user = self.auth.get_user_by_session()
+        
+        logging.debug(_user)
+        
+        self._serve_page(_user is not None)
+
+
+    def _serve_page(self, success=False, ts=None):
+
+        self.response.headers['Content-Type'] = 'application/json'   
+        obj = {'success': success, 'expires': ts} 
+        self.response.out.write(json.dumps(obj))
+
 
 class LoginHandler(BaseHandler):
 
@@ -486,22 +507,12 @@ class LogoutHandler(BaseHandler):
         self.redirect(self.uri_for('home'))
 
 
-config = {
-    'webapp2_extras.auth': 
-    {
-      'user_model': 'api3_models.User',
-      'user_attributes': ['email', 'type', 'organisation_id']
-    },
-    'webapp2_extras.sessions': 
-    {
-        'secret_key': 'YOUR_SECRET_KEY'
-    }
-}
-
 app = webapp2.WSGIApplication([
     webapp2.Route('/', AppMainHandler, name='home'),
     webapp2.Route('/client', ClientMainHandler, name='client'),
     webapp2.Route('/patient', PatientMainHandler, name='client'),
+    
+    webapp2.Route('/auth/ajax/refreshauth', RefreshAuthHandlerAjax),
     
     webapp2.Route('/auth/ajax/completesignup', CompleteSignupHandlerAjax),
     webapp2.Route('/auth/ajax/inviteuser', InviteHandlerAjax),
@@ -518,7 +529,7 @@ app = webapp2.WSGIApplication([
 
     webapp2.Route('/auth/forgot', ForgotPasswordHandler, name='forgot' ),
     webapp2.Route('/auth/ajax/forgot', ForgotPasswordHandlerAjax, name='ajax_forgot' ),
-], debug=True, config=config)
+], debug=True, config=myauth.AUTH_CONFIG)
 
 logging.getLogger().setLevel(logging.DEBUG)
 
